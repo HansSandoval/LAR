@@ -1,11 +1,11 @@
 from fastapi import FastAPI
+from routers import rutas
 
 app = FastAPI()
+
+# Incluir routers
+app.include_router(rutas.router)
 
 @app.get("/")
 def read_root():
     return {"mensaje": "🚀 API de gestión de rutas funcionando!"}
-
-@app.get("/ruta/{id}")
-def obtener_ruta(id: int):
-    return {"ruta_id": id, "detalle": "Aquí irán los datos de la ruta"}
