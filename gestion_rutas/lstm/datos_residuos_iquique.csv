@@ -1,0 +1,2521 @@
+Calle,Fecha,Residuos (kg),Personal,Clima,Evento
+Padre Hurtado,2025-09-01,127,3,nublado,ninguno
+Padre Hurtado,2025-09-02,190,2,soleado,festivo
+Padre Hurtado,2025-09-03,197,4,nublado,feria
+Padre Hurtado,2025-09-04,154,2,nublado,ninguno
+Padre Hurtado,2025-09-05,154,2,nublado,festivo
+Padre Hurtado,2025-09-06,196,4,nublado,ninguno
+Padre Hurtado,2025-09-07,165,3,soleado,ninguno
+Padre Hurtado,2025-09-08,199,4,soleado,festivo
+Padre Hurtado,2025-09-09,93,2,nublado,festivo
+Padre Hurtado,2025-09-10,162,2,soleado,feria
+Padre Hurtado,2025-09-11,80,4,nublado,ninguno
+Padre Hurtado,2025-09-12,185,3,nublado,feria
+Padre Hurtado,2025-09-13,158,2,nublado,feria
+Padre Hurtado,2025-09-14,196,3,soleado,ninguno
+Padre Hurtado,2025-09-15,191,2,nublado,ninguno
+Padre Hurtado,2025-09-16,176,4,soleado,festivo
+Padre Hurtado,2025-09-17,103,2,nublado,ninguno
+Padre Hurtado,2025-09-18,188,3,nublado,ninguno
+Padre Hurtado,2025-09-19,194,3,soleado,ninguno
+Padre Hurtado,2025-09-20,100,3,soleado,ninguno
+Padre Hurtado,2025-09-21,179,4,nublado,feria
+Padre Hurtado,2025-09-22,120,4,soleado,feria
+Padre Hurtado,2025-09-23,97,2,nublado,ninguno
+Padre Hurtado,2025-09-24,135,3,nublado,feria
+Padre Hurtado,2025-09-25,145,3,nublado,ninguno
+Padre Hurtado,2025-09-26,199,4,nublado,festivo
+Padre Hurtado,2025-09-27,160,4,soleado,feria
+Padre Hurtado,2025-09-28,176,4,soleado,ninguno
+Padre Hurtado,2025-09-29,113,3,nublado,feria
+Padre Hurtado,2025-09-30,144,3,nublado,ninguno
+Av. Arturo Prat Chacón,2025-09-01,126,3,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-02,84,2,soleado,feria
+Av. Arturo Prat Chacón,2025-09-03,100,3,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-04,172,3,nublado,feria
+Av. Arturo Prat Chacón,2025-09-05,97,2,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-06,80,4,soleado,feria
+Av. Arturo Prat Chacón,2025-09-07,85,2,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-08,154,3,nublado,ninguno
+Av. Arturo Prat Chacón,2025-09-09,179,2,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-10,177,2,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-11,179,3,nublado,feria
+Av. Arturo Prat Chacón,2025-09-12,193,3,nublado,festivo
+Av. Arturo Prat Chacón,2025-09-13,112,4,soleado,feria
+Av. Arturo Prat Chacón,2025-09-14,107,3,nublado,ninguno
+Av. Arturo Prat Chacón,2025-09-15,189,4,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-16,142,4,nublado,feria
+Av. Arturo Prat Chacón,2025-09-17,111,2,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-18,162,3,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-19,165,4,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-20,178,2,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-21,159,2,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-22,128,3,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-23,193,2,nublado,ninguno
+Av. Arturo Prat Chacón,2025-09-24,84,4,nublado,feria
+Av. Arturo Prat Chacón,2025-09-25,89,2,nublado,ninguno
+Av. Arturo Prat Chacón,2025-09-26,165,3,nublado,feria
+Av. Arturo Prat Chacón,2025-09-27,146,4,nublado,ninguno
+Av. Arturo Prat Chacón,2025-09-28,192,2,soleado,ninguno
+Av. Arturo Prat Chacón,2025-09-29,189,2,nublado,ninguno
+Av. Arturo Prat Chacón,2025-09-30,172,2,soleado,ninguno
+Av. La Tirana,2025-09-01,113,2,nublado,ninguno
+Av. La Tirana,2025-09-02,144,3,nublado,ninguno
+Av. La Tirana,2025-09-03,158,4,soleado,ninguno
+Av. La Tirana,2025-09-04,118,3,soleado,ninguno
+Av. La Tirana,2025-09-05,97,4,soleado,ninguno
+Av. La Tirana,2025-09-06,187,3,nublado,feria
+Av. La Tirana,2025-09-07,173,2,soleado,festivo
+Av. La Tirana,2025-09-08,190,4,nublado,ninguno
+Av. La Tirana,2025-09-09,148,3,soleado,ninguno
+Av. La Tirana,2025-09-10,138,4,nublado,feria
+Av. La Tirana,2025-09-11,101,2,soleado,ninguno
+Av. La Tirana,2025-09-12,90,3,soleado,feria
+Av. La Tirana,2025-09-13,98,4,nublado,ninguno
+Av. La Tirana,2025-09-14,190,4,soleado,ninguno
+Av. La Tirana,2025-09-15,196,4,nublado,ninguno
+Av. La Tirana,2025-09-16,185,2,soleado,feria
+Av. La Tirana,2025-09-17,141,2,soleado,ninguno
+Av. La Tirana,2025-09-18,84,4,nublado,feria
+Av. La Tirana,2025-09-19,125,3,soleado,feria
+Av. La Tirana,2025-09-20,162,3,nublado,ninguno
+Av. La Tirana,2025-09-21,123,4,nublado,ninguno
+Av. La Tirana,2025-09-22,155,4,soleado,ninguno
+Av. La Tirana,2025-09-23,95,4,nublado,festivo
+Av. La Tirana,2025-09-24,137,3,soleado,feria
+Av. La Tirana,2025-09-25,82,3,soleado,ninguno
+Av. La Tirana,2025-09-26,170,2,soleado,ninguno
+Av. La Tirana,2025-09-27,149,4,soleado,ninguno
+Av. La Tirana,2025-09-28,137,2,soleado,ninguno
+Av. La Tirana,2025-09-29,99,3,soleado,ninguno
+Av. La Tirana,2025-09-30,159,2,nublado,ninguno
+Tamarugal,2025-09-01,167,4,soleado,ninguno
+Tamarugal,2025-09-02,173,2,nublado,ninguno
+Tamarugal,2025-09-03,99,3,soleado,ninguno
+Tamarugal,2025-09-04,177,4,nublado,ninguno
+Tamarugal,2025-09-05,90,4,nublado,ninguno
+Tamarugal,2025-09-06,95,4,soleado,feria
+Tamarugal,2025-09-07,199,4,soleado,ninguno
+Tamarugal,2025-09-08,181,4,soleado,feria
+Tamarugal,2025-09-09,151,3,nublado,festivo
+Tamarugal,2025-09-10,175,3,nublado,ninguno
+Tamarugal,2025-09-11,171,3,nublado,ninguno
+Tamarugal,2025-09-12,150,4,nublado,feria
+Tamarugal,2025-09-13,96,4,soleado,feria
+Tamarugal,2025-09-14,104,3,soleado,ninguno
+Tamarugal,2025-09-15,198,4,nublado,ninguno
+Tamarugal,2025-09-16,155,2,soleado,ninguno
+Tamarugal,2025-09-17,193,3,soleado,ninguno
+Tamarugal,2025-09-18,126,4,soleado,ninguno
+Tamarugal,2025-09-19,101,2,soleado,feria
+Tamarugal,2025-09-20,93,4,soleado,ninguno
+Tamarugal,2025-09-21,118,2,nublado,ninguno
+Tamarugal,2025-09-22,169,2,nublado,ninguno
+Tamarugal,2025-09-23,145,3,soleado,ninguno
+Tamarugal,2025-09-24,155,4,soleado,feria
+Tamarugal,2025-09-25,146,4,soleado,ninguno
+Tamarugal,2025-09-26,125,2,soleado,ninguno
+Tamarugal,2025-09-27,170,3,nublado,ninguno
+Tamarugal,2025-09-28,85,2,nublado,ninguno
+Tamarugal,2025-09-29,116,4,soleado,ninguno
+Tamarugal,2025-09-30,194,2,soleado,feria
+C. Uno,2025-09-01,126,4,soleado,ninguno
+C. Uno,2025-09-02,126,3,soleado,ninguno
+C. Uno,2025-09-03,193,2,soleado,feria
+C. Uno,2025-09-04,193,2,soleado,feria
+C. Uno,2025-09-05,171,3,nublado,feria
+C. Uno,2025-09-06,149,3,nublado,ninguno
+C. Uno,2025-09-07,172,4,soleado,ninguno
+C. Uno,2025-09-08,187,2,nublado,feria
+C. Uno,2025-09-09,184,2,soleado,ninguno
+C. Uno,2025-09-10,162,2,nublado,ninguno
+C. Uno,2025-09-11,177,4,soleado,ninguno
+C. Uno,2025-09-12,136,4,nublado,ninguno
+C. Uno,2025-09-13,136,2,nublado,ninguno
+C. Uno,2025-09-14,151,4,nublado,ninguno
+C. Uno,2025-09-15,153,3,nublado,ninguno
+C. Uno,2025-09-16,139,2,nublado,ninguno
+C. Uno,2025-09-17,189,2,nublado,festivo
+C. Uno,2025-09-18,116,4,nublado,ninguno
+C. Uno,2025-09-19,85,4,nublado,feria
+C. Uno,2025-09-20,157,3,soleado,festivo
+C. Uno,2025-09-21,182,2,nublado,ninguno
+C. Uno,2025-09-22,89,3,nublado,ninguno
+C. Uno,2025-09-23,97,3,nublado,ninguno
+C. Uno,2025-09-24,131,4,nublado,ninguno
+C. Uno,2025-09-25,176,2,soleado,festivo
+C. Uno,2025-09-26,182,3,soleado,festivo
+C. Uno,2025-09-27,190,2,nublado,ninguno
+C. Uno,2025-09-28,81,2,nublado,ninguno
+C. Uno,2025-09-29,166,3,soleado,feria
+C. Uno,2025-09-30,155,3,soleado,feria
+Pje. Dos,2025-09-01,119,4,soleado,ninguno
+Pje. Dos,2025-09-02,181,4,nublado,ninguno
+Pje. Dos,2025-09-03,171,3,nublado,ninguno
+Pje. Dos,2025-09-04,179,3,soleado,ninguno
+Pje. Dos,2025-09-05,160,2,soleado,ninguno
+Pje. Dos,2025-09-06,196,3,soleado,festivo
+Pje. Dos,2025-09-07,96,2,nublado,feria
+Pje. Dos,2025-09-08,157,2,nublado,ninguno
+Pje. Dos,2025-09-09,192,2,soleado,ninguno
+Pje. Dos,2025-09-10,134,4,nublado,ninguno
+Pje. Dos,2025-09-11,100,2,soleado,ninguno
+Pje. Dos,2025-09-12,138,2,nublado,ninguno
+Pje. Dos,2025-09-13,189,2,soleado,ninguno
+Pje. Dos,2025-09-14,119,2,soleado,ninguno
+Pje. Dos,2025-09-15,92,3,soleado,ninguno
+Pje. Dos,2025-09-16,89,4,soleado,ninguno
+Pje. Dos,2025-09-17,101,2,soleado,ninguno
+Pje. Dos,2025-09-18,98,3,soleado,feria
+Pje. Dos,2025-09-19,85,4,nublado,feria
+Pje. Dos,2025-09-20,97,4,soleado,ninguno
+Pje. Dos,2025-09-21,188,2,nublado,ninguno
+Pje. Dos,2025-09-22,99,2,soleado,ninguno
+Pje. Dos,2025-09-23,97,4,nublado,ninguno
+Pje. Dos,2025-09-24,188,2,nublado,ninguno
+Pje. Dos,2025-09-25,174,2,nublado,ninguno
+Pje. Dos,2025-09-26,146,4,nublado,feria
+Pje. Dos,2025-09-27,127,2,nublado,ninguno
+Pje. Dos,2025-09-28,183,3,soleado,feria
+Pje. Dos,2025-09-29,105,4,nublado,feria
+Pje. Dos,2025-09-30,90,2,nublado,feria
+Manuel Balmaceda,2025-09-01,125,2,nublado,ninguno
+Manuel Balmaceda,2025-09-02,191,3,soleado,ninguno
+Manuel Balmaceda,2025-09-03,193,2,soleado,ninguno
+Manuel Balmaceda,2025-09-04,135,3,nublado,feria
+Manuel Balmaceda,2025-09-05,183,2,nublado,ninguno
+Manuel Balmaceda,2025-09-06,162,4,nublado,ninguno
+Manuel Balmaceda,2025-09-07,147,4,nublado,ninguno
+Manuel Balmaceda,2025-09-08,156,3,soleado,ninguno
+Manuel Balmaceda,2025-09-09,136,3,soleado,ninguno
+Manuel Balmaceda,2025-09-10,131,2,nublado,ninguno
+Manuel Balmaceda,2025-09-11,189,4,nublado,ninguno
+Manuel Balmaceda,2025-09-12,166,2,soleado,feria
+Manuel Balmaceda,2025-09-13,146,3,nublado,ninguno
+Manuel Balmaceda,2025-09-14,141,4,nublado,ninguno
+Manuel Balmaceda,2025-09-15,170,2,soleado,ninguno
+Manuel Balmaceda,2025-09-16,165,4,nublado,ninguno
+Manuel Balmaceda,2025-09-17,132,4,nublado,ninguno
+Manuel Balmaceda,2025-09-18,109,2,nublado,festivo
+Manuel Balmaceda,2025-09-19,108,3,nublado,feria
+Manuel Balmaceda,2025-09-20,192,3,nublado,feria
+Manuel Balmaceda,2025-09-21,123,3,nublado,ninguno
+Manuel Balmaceda,2025-09-22,100,3,nublado,ninguno
+Manuel Balmaceda,2025-09-23,118,3,nublado,festivo
+Manuel Balmaceda,2025-09-24,126,4,nublado,ninguno
+Manuel Balmaceda,2025-09-25,173,3,nublado,feria
+Manuel Balmaceda,2025-09-26,167,3,nublado,ninguno
+Manuel Balmaceda,2025-09-27,104,3,nublado,ninguno
+Manuel Balmaceda,2025-09-28,84,2,soleado,ninguno
+Manuel Balmaceda,2025-09-29,114,4,soleado,ninguno
+Manuel Balmaceda,2025-09-30,81,2,nublado,ninguno
+Los Chunchos,2025-09-01,164,4,nublado,ninguno
+Los Chunchos,2025-09-02,179,2,nublado,ninguno
+Los Chunchos,2025-09-03,185,4,soleado,ninguno
+Los Chunchos,2025-09-04,137,2,nublado,ninguno
+Los Chunchos,2025-09-05,125,4,soleado,ninguno
+Los Chunchos,2025-09-06,113,2,nublado,feria
+Los Chunchos,2025-09-07,174,3,soleado,ninguno
+Los Chunchos,2025-09-08,195,4,soleado,ninguno
+Los Chunchos,2025-09-09,136,3,nublado,ninguno
+Los Chunchos,2025-09-10,162,4,soleado,festivo
+Los Chunchos,2025-09-11,149,4,soleado,ninguno
+Los Chunchos,2025-09-12,171,4,soleado,ninguno
+Los Chunchos,2025-09-13,157,2,nublado,ninguno
+Los Chunchos,2025-09-14,84,2,nublado,ninguno
+Los Chunchos,2025-09-15,83,2,soleado,ninguno
+Los Chunchos,2025-09-16,133,3,soleado,ninguno
+Los Chunchos,2025-09-17,196,3,soleado,ninguno
+Los Chunchos,2025-09-18,108,4,soleado,ninguno
+Los Chunchos,2025-09-19,151,4,soleado,festivo
+Los Chunchos,2025-09-20,138,2,nublado,ninguno
+Los Chunchos,2025-09-21,177,3,soleado,ninguno
+Los Chunchos,2025-09-22,92,4,nublado,ninguno
+Los Chunchos,2025-09-23,107,4,soleado,ninguno
+Los Chunchos,2025-09-24,167,3,nublado,feria
+Los Chunchos,2025-09-25,153,3,soleado,feria
+Los Chunchos,2025-09-26,148,4,nublado,ninguno
+Los Chunchos,2025-09-27,133,2,nublado,festivo
+Los Chunchos,2025-09-28,165,3,nublado,ninguno
+Los Chunchos,2025-09-29,180,2,nublado,ninguno
+Los Chunchos,2025-09-30,85,4,nublado,ninguno
+Francisco Bilbao,2025-09-01,94,3,soleado,ninguno
+Francisco Bilbao,2025-09-02,116,3,soleado,feria
+Francisco Bilbao,2025-09-03,112,3,soleado,ninguno
+Francisco Bilbao,2025-09-04,149,3,soleado,ninguno
+Francisco Bilbao,2025-09-05,97,2,soleado,ninguno
+Francisco Bilbao,2025-09-06,148,4,soleado,feria
+Francisco Bilbao,2025-09-07,189,3,soleado,ninguno
+Francisco Bilbao,2025-09-08,111,3,soleado,ninguno
+Francisco Bilbao,2025-09-09,187,3,soleado,ninguno
+Francisco Bilbao,2025-09-10,196,3,nublado,feria
+Francisco Bilbao,2025-09-11,151,4,soleado,feria
+Francisco Bilbao,2025-09-12,145,3,soleado,ninguno
+Francisco Bilbao,2025-09-13,183,3,soleado,ninguno
+Francisco Bilbao,2025-09-14,91,3,nublado,ninguno
+Francisco Bilbao,2025-09-15,197,3,soleado,ninguno
+Francisco Bilbao,2025-09-16,103,2,soleado,ninguno
+Francisco Bilbao,2025-09-17,197,4,nublado,ninguno
+Francisco Bilbao,2025-09-18,118,4,nublado,feria
+Francisco Bilbao,2025-09-19,181,4,soleado,ninguno
+Francisco Bilbao,2025-09-20,120,3,soleado,ninguno
+Francisco Bilbao,2025-09-21,113,3,nublado,ninguno
+Francisco Bilbao,2025-09-22,101,2,nublado,ninguno
+Francisco Bilbao,2025-09-23,90,2,nublado,ninguno
+Francisco Bilbao,2025-09-24,126,4,soleado,ninguno
+Francisco Bilbao,2025-09-25,186,2,nublado,ninguno
+Francisco Bilbao,2025-09-26,171,2,nublado,feria
+Francisco Bilbao,2025-09-27,196,4,nublado,feria
+Francisco Bilbao,2025-09-28,108,3,soleado,ninguno
+Francisco Bilbao,2025-09-29,110,3,nublado,feria
+Francisco Bilbao,2025-09-30,135,4,soleado,ninguno
+Ontario,2025-09-01,98,2,soleado,ninguno
+Ontario,2025-09-02,117,3,nublado,ninguno
+Ontario,2025-09-03,129,3,nublado,ninguno
+Ontario,2025-09-04,145,3,soleado,ninguno
+Ontario,2025-09-05,94,4,soleado,ninguno
+Ontario,2025-09-06,148,4,nublado,ninguno
+Ontario,2025-09-07,134,3,nublado,ninguno
+Ontario,2025-09-08,103,4,nublado,feria
+Ontario,2025-09-09,177,3,nublado,ninguno
+Ontario,2025-09-10,127,4,soleado,feria
+Ontario,2025-09-11,141,3,soleado,ninguno
+Ontario,2025-09-12,107,2,soleado,ninguno
+Ontario,2025-09-13,83,2,soleado,ninguno
+Ontario,2025-09-14,150,3,nublado,festivo
+Ontario,2025-09-15,166,2,soleado,ninguno
+Ontario,2025-09-16,149,4,nublado,ninguno
+Ontario,2025-09-17,113,3,soleado,ninguno
+Ontario,2025-09-18,149,4,nublado,ninguno
+Ontario,2025-09-19,167,4,nublado,ninguno
+Ontario,2025-09-20,92,3,soleado,ninguno
+Ontario,2025-09-21,86,3,nublado,feria
+Ontario,2025-09-22,152,2,nublado,feria
+Ontario,2025-09-23,149,2,soleado,ninguno
+Ontario,2025-09-24,131,3,soleado,ninguno
+Ontario,2025-09-25,171,3,soleado,feria
+Ontario,2025-09-26,85,2,soleado,ninguno
+Ontario,2025-09-27,176,4,soleado,ninguno
+Ontario,2025-09-28,100,2,soleado,feria
+Ontario,2025-09-29,87,3,soleado,ninguno
+Ontario,2025-09-30,178,3,soleado,ninguno
+Via Local Dos,2025-09-01,197,2,soleado,feria
+Via Local Dos,2025-09-02,163,3,nublado,ninguno
+Via Local Dos,2025-09-03,191,3,soleado,feria
+Via Local Dos,2025-09-04,93,2,soleado,ninguno
+Via Local Dos,2025-09-05,154,3,nublado,ninguno
+Via Local Dos,2025-09-06,127,3,nublado,ninguno
+Via Local Dos,2025-09-07,186,2,soleado,ninguno
+Via Local Dos,2025-09-08,198,3,nublado,ninguno
+Via Local Dos,2025-09-09,133,2,soleado,ninguno
+Via Local Dos,2025-09-10,84,3,nublado,ninguno
+Via Local Dos,2025-09-11,160,3,soleado,ninguno
+Via Local Dos,2025-09-12,123,3,soleado,ninguno
+Via Local Dos,2025-09-13,134,2,nublado,ninguno
+Via Local Dos,2025-09-14,189,4,nublado,ninguno
+Via Local Dos,2025-09-15,120,3,soleado,feria
+Via Local Dos,2025-09-16,106,3,nublado,ninguno
+Via Local Dos,2025-09-17,147,3,nublado,ninguno
+Via Local Dos,2025-09-18,95,2,nublado,ninguno
+Via Local Dos,2025-09-19,129,2,nublado,ninguno
+Via Local Dos,2025-09-20,129,2,nublado,ninguno
+Via Local Dos,2025-09-21,138,3,soleado,ninguno
+Via Local Dos,2025-09-22,154,4,nublado,ninguno
+Via Local Dos,2025-09-23,160,3,nublado,ninguno
+Via Local Dos,2025-09-24,179,4,soleado,ninguno
+Via Local Dos,2025-09-25,193,4,nublado,ninguno
+Via Local Dos,2025-09-26,146,4,nublado,ninguno
+Via Local Dos,2025-09-27,199,4,soleado,ninguno
+Via Local Dos,2025-09-28,132,2,nublado,ninguno
+Via Local Dos,2025-09-29,132,2,soleado,feria
+Via Local Dos,2025-09-30,133,2,nublado,festivo
+Toronto,2025-09-01,110,4,nublado,ninguno
+Toronto,2025-09-02,190,3,nublado,ninguno
+Toronto,2025-09-03,118,2,soleado,feria
+Toronto,2025-09-04,188,4,nublado,ninguno
+Toronto,2025-09-05,118,3,soleado,ninguno
+Toronto,2025-09-06,80,4,nublado,ninguno
+Toronto,2025-09-07,195,2,soleado,ninguno
+Toronto,2025-09-08,187,4,nublado,feria
+Toronto,2025-09-09,100,4,soleado,feria
+Toronto,2025-09-10,126,4,soleado,ninguno
+Toronto,2025-09-11,173,2,soleado,ninguno
+Toronto,2025-09-12,164,3,soleado,ninguno
+Toronto,2025-09-13,151,4,nublado,feria
+Toronto,2025-09-14,176,4,soleado,ninguno
+Toronto,2025-09-15,186,4,nublado,ninguno
+Toronto,2025-09-16,164,4,soleado,ninguno
+Toronto,2025-09-17,87,4,soleado,feria
+Toronto,2025-09-18,184,3,nublado,ninguno
+Toronto,2025-09-19,189,4,soleado,festivo
+Toronto,2025-09-20,134,2,soleado,festivo
+Toronto,2025-09-21,110,3,soleado,ninguno
+Toronto,2025-09-22,139,3,soleado,ninguno
+Toronto,2025-09-23,93,3,soleado,ninguno
+Toronto,2025-09-24,102,4,nublado,ninguno
+Toronto,2025-09-25,110,2,nublado,feria
+Toronto,2025-09-26,153,3,nublado,ninguno
+Toronto,2025-09-27,154,3,soleado,ninguno
+Toronto,2025-09-28,130,4,soleado,ninguno
+Toronto,2025-09-29,143,3,soleado,ninguno
+Toronto,2025-09-30,196,2,nublado,ninguno
+C. Seis,2025-09-01,110,4,nublado,feria
+C. Seis,2025-09-02,116,4,nublado,feria
+C. Seis,2025-09-03,132,4,nublado,ninguno
+C. Seis,2025-09-04,82,2,nublado,feria
+C. Seis,2025-09-05,138,2,nublado,feria
+C. Seis,2025-09-06,83,3,soleado,ninguno
+C. Seis,2025-09-07,90,3,nublado,ninguno
+C. Seis,2025-09-08,175,2,soleado,ninguno
+C. Seis,2025-09-09,121,3,nublado,ninguno
+C. Seis,2025-09-10,140,3,soleado,feria
+C. Seis,2025-09-11,100,4,soleado,feria
+C. Seis,2025-09-12,87,4,nublado,feria
+C. Seis,2025-09-13,146,2,soleado,ninguno
+C. Seis,2025-09-14,121,2,nublado,ninguno
+C. Seis,2025-09-15,156,3,soleado,ninguno
+C. Seis,2025-09-16,100,2,nublado,ninguno
+C. Seis,2025-09-17,81,4,nublado,ninguno
+C. Seis,2025-09-18,168,4,soleado,ninguno
+C. Seis,2025-09-19,118,4,nublado,festivo
+C. Seis,2025-09-20,81,4,nublado,ninguno
+C. Seis,2025-09-21,176,2,soleado,ninguno
+C. Seis,2025-09-22,103,4,nublado,ninguno
+C. Seis,2025-09-23,112,2,soleado,feria
+C. Seis,2025-09-24,193,2,nublado,feria
+C. Seis,2025-09-25,139,4,soleado,ninguno
+C. Seis,2025-09-26,122,4,soleado,ninguno
+C. Seis,2025-09-27,100,4,soleado,ninguno
+C. Seis,2025-09-28,89,4,soleado,festivo
+C. Seis,2025-09-29,191,3,soleado,feria
+C. Seis,2025-09-30,139,4,soleado,ninguno
+Teresa Wilms Mont,2025-09-01,191,4,nublado,festivo
+Teresa Wilms Mont,2025-09-02,106,3,soleado,ninguno
+Teresa Wilms Mont,2025-09-03,84,3,soleado,ninguno
+Teresa Wilms Mont,2025-09-04,96,3,nublado,ninguno
+Teresa Wilms Mont,2025-09-05,186,3,soleado,feria
+Teresa Wilms Mont,2025-09-06,177,3,soleado,ninguno
+Teresa Wilms Mont,2025-09-07,102,3,nublado,feria
+Teresa Wilms Mont,2025-09-08,88,2,soleado,ninguno
+Teresa Wilms Mont,2025-09-09,96,3,nublado,ninguno
+Teresa Wilms Mont,2025-09-10,92,4,nublado,ninguno
+Teresa Wilms Mont,2025-09-11,108,2,nublado,ninguno
+Teresa Wilms Mont,2025-09-12,156,3,nublado,feria
+Teresa Wilms Mont,2025-09-13,194,4,soleado,festivo
+Teresa Wilms Mont,2025-09-14,116,3,nublado,ninguno
+Teresa Wilms Mont,2025-09-15,190,2,soleado,festivo
+Teresa Wilms Mont,2025-09-16,155,3,soleado,ninguno
+Teresa Wilms Mont,2025-09-17,83,2,soleado,ninguno
+Teresa Wilms Mont,2025-09-18,185,2,nublado,ninguno
+Teresa Wilms Mont,2025-09-19,95,3,nublado,ninguno
+Teresa Wilms Mont,2025-09-20,179,2,soleado,ninguno
+Teresa Wilms Mont,2025-09-21,140,2,nublado,ninguno
+Teresa Wilms Mont,2025-09-22,85,3,soleado,ninguno
+Teresa Wilms Mont,2025-09-23,92,4,soleado,ninguno
+Teresa Wilms Mont,2025-09-24,152,4,soleado,ninguno
+Teresa Wilms Mont,2025-09-25,123,4,soleado,ninguno
+Teresa Wilms Mont,2025-09-26,150,2,soleado,ninguno
+Teresa Wilms Mont,2025-09-27,131,3,soleado,ninguno
+Teresa Wilms Mont,2025-09-28,135,3,soleado,ninguno
+Teresa Wilms Mont,2025-09-29,147,2,soleado,ninguno
+Teresa Wilms Mont,2025-09-30,153,4,nublado,ninguno
+Pje. C,2025-09-01,121,4,soleado,ninguno
+Pje. C,2025-09-02,172,2,soleado,ninguno
+Pje. C,2025-09-03,177,4,soleado,ninguno
+Pje. C,2025-09-04,144,2,soleado,ninguno
+Pje. C,2025-09-05,101,3,nublado,ninguno
+Pje. C,2025-09-06,187,4,nublado,feria
+Pje. C,2025-09-07,133,3,nublado,feria
+Pje. C,2025-09-08,104,3,nublado,ninguno
+Pje. C,2025-09-09,159,3,nublado,ninguno
+Pje. C,2025-09-10,175,3,nublado,feria
+Pje. C,2025-09-11,154,2,nublado,ninguno
+Pje. C,2025-09-12,89,4,nublado,feria
+Pje. C,2025-09-13,187,4,nublado,feria
+Pje. C,2025-09-14,191,4,nublado,ninguno
+Pje. C,2025-09-15,80,3,soleado,feria
+Pje. C,2025-09-16,104,2,nublado,ninguno
+Pje. C,2025-09-17,97,3,soleado,ninguno
+Pje. C,2025-09-18,85,3,soleado,ninguno
+Pje. C,2025-09-19,181,2,nublado,ninguno
+Pje. C,2025-09-20,108,3,soleado,ninguno
+Pje. C,2025-09-21,181,3,nublado,feria
+Pje. C,2025-09-22,150,4,nublado,feria
+Pje. C,2025-09-23,145,4,soleado,ninguno
+Pje. C,2025-09-24,89,2,nublado,feria
+Pje. C,2025-09-25,97,3,nublado,festivo
+Pje. C,2025-09-26,131,3,nublado,ninguno
+Pje. C,2025-09-27,180,4,nublado,feria
+Pje. C,2025-09-28,97,2,soleado,ninguno
+Pje. C,2025-09-29,161,2,soleado,ninguno
+Pje. C,2025-09-30,140,2,nublado,ninguno
+Pje. B,2025-09-01,194,3,nublado,ninguno
+Pje. B,2025-09-02,197,4,soleado,feria
+Pje. B,2025-09-03,192,2,soleado,ninguno
+Pje. B,2025-09-04,135,2,nublado,ninguno
+Pje. B,2025-09-05,92,4,soleado,ninguno
+Pje. B,2025-09-06,83,2,nublado,feria
+Pje. B,2025-09-07,85,4,soleado,ninguno
+Pje. B,2025-09-08,83,4,nublado,feria
+Pje. B,2025-09-09,87,3,nublado,feria
+Pje. B,2025-09-10,185,4,soleado,feria
+Pje. B,2025-09-11,165,2,soleado,feria
+Pje. B,2025-09-12,86,3,soleado,ninguno
+Pje. B,2025-09-13,179,3,nublado,ninguno
+Pje. B,2025-09-14,92,2,soleado,ninguno
+Pje. B,2025-09-15,190,4,nublado,ninguno
+Pje. B,2025-09-16,134,2,nublado,ninguno
+Pje. B,2025-09-17,90,2,nublado,ninguno
+Pje. B,2025-09-18,88,4,nublado,festivo
+Pje. B,2025-09-19,160,4,nublado,feria
+Pje. B,2025-09-20,148,2,nublado,feria
+Pje. B,2025-09-21,149,2,nublado,ninguno
+Pje. B,2025-09-22,142,3,soleado,ninguno
+Pje. B,2025-09-23,109,4,soleado,ninguno
+Pje. B,2025-09-24,110,4,nublado,ninguno
+Pje. B,2025-09-25,151,4,nublado,ninguno
+Pje. B,2025-09-26,172,3,soleado,festivo
+Pje. B,2025-09-27,187,4,nublado,ninguno
+Pje. B,2025-09-28,96,3,soleado,feria
+Pje. B,2025-09-29,160,4,nublado,ninguno
+Pje. B,2025-09-30,196,3,nublado,ninguno
+Pje. A,2025-09-01,117,2,soleado,ninguno
+Pje. A,2025-09-02,96,4,soleado,ninguno
+Pje. A,2025-09-03,161,2,soleado,ninguno
+Pje. A,2025-09-04,123,2,nublado,ninguno
+Pje. A,2025-09-05,180,2,soleado,ninguno
+Pje. A,2025-09-06,193,4,nublado,festivo
+Pje. A,2025-09-07,100,2,nublado,ninguno
+Pje. A,2025-09-08,128,2,nublado,ninguno
+Pje. A,2025-09-09,87,2,soleado,ninguno
+Pje. A,2025-09-10,166,4,soleado,festivo
+Pje. A,2025-09-11,109,4,nublado,feria
+Pje. A,2025-09-12,87,2,soleado,festivo
+Pje. A,2025-09-13,86,3,soleado,ninguno
+Pje. A,2025-09-14,156,3,nublado,feria
+Pje. A,2025-09-15,88,3,nublado,ninguno
+Pje. A,2025-09-16,123,2,nublado,ninguno
+Pje. A,2025-09-17,144,2,nublado,ninguno
+Pje. A,2025-09-18,113,3,soleado,ninguno
+Pje. A,2025-09-19,88,3,nublado,ninguno
+Pje. A,2025-09-20,83,2,soleado,ninguno
+Pje. A,2025-09-21,96,3,nublado,festivo
+Pje. A,2025-09-22,192,3,soleado,feria
+Pje. A,2025-09-23,177,4,nublado,ninguno
+Pje. A,2025-09-24,162,2,soleado,feria
+Pje. A,2025-09-25,194,2,soleado,feria
+Pje. A,2025-09-26,107,2,nublado,feria
+Pje. A,2025-09-27,102,3,nublado,ninguno
+Pje. A,2025-09-28,99,4,soleado,ninguno
+Pje. A,2025-09-29,195,3,nublado,feria
+Pje. A,2025-09-30,134,2,nublado,ninguno
+Av. Cinco,2025-09-01,166,2,nublado,ninguno
+Av. Cinco,2025-09-02,100,2,soleado,ninguno
+Av. Cinco,2025-09-03,151,3,nublado,feria
+Av. Cinco,2025-09-04,118,4,nublado,ninguno
+Av. Cinco,2025-09-05,162,2,nublado,feria
+Av. Cinco,2025-09-06,180,3,nublado,ninguno
+Av. Cinco,2025-09-07,113,4,nublado,ninguno
+Av. Cinco,2025-09-08,173,3,nublado,feria
+Av. Cinco,2025-09-09,129,3,soleado,ninguno
+Av. Cinco,2025-09-10,172,4,soleado,ninguno
+Av. Cinco,2025-09-11,98,4,nublado,ninguno
+Av. Cinco,2025-09-12,189,2,nublado,ninguno
+Av. Cinco,2025-09-13,124,2,nublado,ninguno
+Av. Cinco,2025-09-14,109,3,nublado,ninguno
+Av. Cinco,2025-09-15,167,2,nublado,feria
+Av. Cinco,2025-09-16,153,2,soleado,festivo
+Av. Cinco,2025-09-17,154,2,nublado,ninguno
+Av. Cinco,2025-09-18,138,4,soleado,feria
+Av. Cinco,2025-09-19,82,2,nublado,ninguno
+Av. Cinco,2025-09-20,111,4,soleado,ninguno
+Av. Cinco,2025-09-21,86,4,nublado,ninguno
+Av. Cinco,2025-09-22,156,4,nublado,ninguno
+Av. Cinco,2025-09-23,93,4,nublado,ninguno
+Av. Cinco,2025-09-24,189,4,soleado,ninguno
+Av. Cinco,2025-09-25,161,2,soleado,ninguno
+Av. Cinco,2025-09-26,124,4,soleado,ninguno
+Av. Cinco,2025-09-27,192,3,nublado,ninguno
+Av. Cinco,2025-09-28,180,3,soleado,ninguno
+Av. Cinco,2025-09-29,148,2,soleado,ninguno
+Av. Cinco,2025-09-30,121,3,soleado,feria
+C. Seis,2025-09-01,104,2,soleado,ninguno
+C. Seis,2025-09-02,127,4,soleado,ninguno
+C. Seis,2025-09-03,140,4,soleado,ninguno
+C. Seis,2025-09-04,119,4,nublado,ninguno
+C. Seis,2025-09-05,161,4,nublado,feria
+C. Seis,2025-09-06,131,2,soleado,ninguno
+C. Seis,2025-09-07,139,3,nublado,ninguno
+C. Seis,2025-09-08,104,4,soleado,ninguno
+C. Seis,2025-09-09,107,2,nublado,feria
+C. Seis,2025-09-10,197,4,nublado,ninguno
+C. Seis,2025-09-11,193,3,soleado,ninguno
+C. Seis,2025-09-12,129,2,nublado,ninguno
+C. Seis,2025-09-13,150,2,soleado,ninguno
+C. Seis,2025-09-14,178,4,soleado,ninguno
+C. Seis,2025-09-15,120,2,soleado,ninguno
+C. Seis,2025-09-16,109,2,soleado,ninguno
+C. Seis,2025-09-17,83,4,soleado,ninguno
+C. Seis,2025-09-18,166,4,soleado,feria
+C. Seis,2025-09-19,174,3,soleado,ninguno
+C. Seis,2025-09-20,133,3,nublado,festivo
+C. Seis,2025-09-21,174,3,soleado,ninguno
+C. Seis,2025-09-22,139,3,nublado,ninguno
+C. Seis,2025-09-23,185,2,soleado,ninguno
+C. Seis,2025-09-24,100,2,soleado,ninguno
+C. Seis,2025-09-25,184,4,soleado,ninguno
+C. Seis,2025-09-26,157,2,nublado,feria
+C. Seis,2025-09-27,174,2,nublado,ninguno
+C. Seis,2025-09-28,130,4,nublado,ninguno
+C. Seis,2025-09-29,127,2,soleado,ninguno
+C. Seis,2025-09-30,134,2,soleado,ninguno
+Costanera,2025-09-01,191,3,nublado,ninguno
+Costanera,2025-09-02,135,2,nublado,ninguno
+Costanera,2025-09-03,106,2,nublado,ninguno
+Costanera,2025-09-04,189,4,nublado,ninguno
+Costanera,2025-09-05,190,3,nublado,ninguno
+Costanera,2025-09-06,153,4,nublado,feria
+Costanera,2025-09-07,150,4,soleado,ninguno
+Costanera,2025-09-08,189,3,nublado,ninguno
+Costanera,2025-09-09,193,2,soleado,ninguno
+Costanera,2025-09-10,179,3,nublado,ninguno
+Costanera,2025-09-11,182,3,nublado,feria
+Costanera,2025-09-12,88,3,soleado,festivo
+Costanera,2025-09-13,130,4,nublado,ninguno
+Costanera,2025-09-14,186,4,nublado,ninguno
+Costanera,2025-09-15,98,4,soleado,feria
+Costanera,2025-09-16,93,2,soleado,ninguno
+Costanera,2025-09-17,115,3,nublado,ninguno
+Costanera,2025-09-18,111,2,nublado,ninguno
+Costanera,2025-09-19,151,3,soleado,ninguno
+Costanera,2025-09-20,188,4,soleado,ninguno
+Costanera,2025-09-21,169,2,nublado,festivo
+Costanera,2025-09-22,151,4,nublado,ninguno
+Costanera,2025-09-23,88,2,nublado,ninguno
+Costanera,2025-09-24,96,3,nublado,ninguno
+Costanera,2025-09-25,144,3,soleado,festivo
+Costanera,2025-09-26,139,4,soleado,ninguno
+Costanera,2025-09-27,85,3,nublado,ninguno
+Costanera,2025-09-28,187,3,nublado,ninguno
+Costanera,2025-09-29,153,3,nublado,feria
+Costanera,2025-09-30,146,2,nublado,ninguno
+Playa Ancha,2025-09-01,135,3,soleado,ninguno
+Playa Ancha,2025-09-02,172,2,nublado,ninguno
+Playa Ancha,2025-09-03,174,4,nublado,ninguno
+Playa Ancha,2025-09-04,162,4,soleado,ninguno
+Playa Ancha,2025-09-05,100,4,soleado,feria
+Playa Ancha,2025-09-06,132,2,soleado,festivo
+Playa Ancha,2025-09-07,174,4,soleado,ninguno
+Playa Ancha,2025-09-08,187,4,soleado,feria
+Playa Ancha,2025-09-09,116,4,nublado,festivo
+Playa Ancha,2025-09-10,163,2,soleado,ninguno
+Playa Ancha,2025-09-11,186,3,soleado,ninguno
+Playa Ancha,2025-09-12,191,4,nublado,ninguno
+Playa Ancha,2025-09-13,139,4,soleado,ninguno
+Playa Ancha,2025-09-14,94,4,nublado,feria
+Playa Ancha,2025-09-15,99,4,soleado,ninguno
+Playa Ancha,2025-09-16,106,3,soleado,ninguno
+Playa Ancha,2025-09-17,86,3,nublado,festivo
+Playa Ancha,2025-09-18,163,2,soleado,ninguno
+Playa Ancha,2025-09-19,109,3,nublado,feria
+Playa Ancha,2025-09-20,185,3,soleado,ninguno
+Playa Ancha,2025-09-21,154,4,nublado,ninguno
+Playa Ancha,2025-09-22,88,3,nublado,festivo
+Playa Ancha,2025-09-23,138,2,soleado,feria
+Playa Ancha,2025-09-24,177,3,nublado,ninguno
+Playa Ancha,2025-09-25,158,2,soleado,ninguno
+Playa Ancha,2025-09-26,92,4,soleado,ninguno
+Playa Ancha,2025-09-27,166,2,soleado,ninguno
+Playa Ancha,2025-09-28,110,2,soleado,ninguno
+Playa Ancha,2025-09-29,89,2,nublado,feria
+Playa Ancha,2025-09-30,134,2,nublado,festivo
+Pje. Uno,2025-09-01,187,4,nublado,ninguno
+Pje. Uno,2025-09-02,123,3,soleado,feria
+Pje. Uno,2025-09-03,117,4,soleado,ninguno
+Pje. Uno,2025-09-04,171,2,nublado,ninguno
+Pje. Uno,2025-09-05,143,4,soleado,feria
+Pje. Uno,2025-09-06,147,2,nublado,ninguno
+Pje. Uno,2025-09-07,198,3,nublado,ninguno
+Pje. Uno,2025-09-08,155,3,nublado,ninguno
+Pje. Uno,2025-09-09,155,4,soleado,ninguno
+Pje. Uno,2025-09-10,89,3,soleado,ninguno
+Pje. Uno,2025-09-11,191,3,nublado,ninguno
+Pje. Uno,2025-09-12,194,3,nublado,ninguno
+Pje. Uno,2025-09-13,83,2,nublado,feria
+Pje. Uno,2025-09-14,108,4,soleado,ninguno
+Pje. Uno,2025-09-15,168,2,soleado,ninguno
+Pje. Uno,2025-09-16,184,4,soleado,ninguno
+Pje. Uno,2025-09-17,150,3,soleado,ninguno
+Pje. Uno,2025-09-18,156,3,nublado,ninguno
+Pje. Uno,2025-09-19,165,4,nublado,ninguno
+Pje. Uno,2025-09-20,117,3,soleado,ninguno
+Pje. Uno,2025-09-21,92,3,nublado,ninguno
+Pje. Uno,2025-09-22,181,2,soleado,ninguno
+Pje. Uno,2025-09-23,137,4,nublado,ninguno
+Pje. Uno,2025-09-24,169,4,nublado,ninguno
+Pje. Uno,2025-09-25,142,3,nublado,ninguno
+Pje. Uno,2025-09-26,91,4,soleado,feria
+Pje. Uno,2025-09-27,99,4,nublado,feria
+Pje. Uno,2025-09-28,122,2,soleado,ninguno
+Pje. Uno,2025-09-29,178,3,nublado,ninguno
+Pje. Uno,2025-09-30,173,2,nublado,feria
+Pje. Tres,2025-09-01,86,2,nublado,ninguno
+Pje. Tres,2025-09-02,137,2,nublado,ninguno
+Pje. Tres,2025-09-03,121,3,nublado,ninguno
+Pje. Tres,2025-09-04,131,3,soleado,ninguno
+Pje. Tres,2025-09-05,188,3,soleado,feria
+Pje. Tres,2025-09-06,193,3,soleado,festivo
+Pje. Tres,2025-09-07,139,4,soleado,feria
+Pje. Tres,2025-09-08,198,3,nublado,feria
+Pje. Tres,2025-09-09,109,4,soleado,feria
+Pje. Tres,2025-09-10,182,3,nublado,ninguno
+Pje. Tres,2025-09-11,117,4,soleado,ninguno
+Pje. Tres,2025-09-12,133,2,soleado,ninguno
+Pje. Tres,2025-09-13,191,2,soleado,ninguno
+Pje. Tres,2025-09-14,143,3,nublado,ninguno
+Pje. Tres,2025-09-15,110,4,nublado,ninguno
+Pje. Tres,2025-09-16,112,3,nublado,ninguno
+Pje. Tres,2025-09-17,199,4,nublado,feria
+Pje. Tres,2025-09-18,154,3,nublado,ninguno
+Pje. Tres,2025-09-19,113,4,soleado,ninguno
+Pje. Tres,2025-09-20,123,4,nublado,ninguno
+Pje. Tres,2025-09-21,167,4,nublado,ninguno
+Pje. Tres,2025-09-22,191,2,soleado,feria
+Pje. Tres,2025-09-23,136,2,nublado,ninguno
+Pje. Tres,2025-09-24,195,4,nublado,ninguno
+Pje. Tres,2025-09-25,155,2,nublado,ninguno
+Pje. Tres,2025-09-26,162,2,soleado,feria
+Pje. Tres,2025-09-27,112,3,soleado,ninguno
+Pje. Tres,2025-09-28,81,4,soleado,festivo
+Pje. Tres,2025-09-29,119,2,nublado,ninguno
+Pje. Tres,2025-09-30,111,4,soleado,festivo
+Pje. Siete,2025-09-01,131,4,nublado,ninguno
+Pje. Siete,2025-09-02,135,4,nublado,ninguno
+Pje. Siete,2025-09-03,175,2,soleado,festivo
+Pje. Siete,2025-09-04,150,2,nublado,festivo
+Pje. Siete,2025-09-05,98,3,nublado,feria
+Pje. Siete,2025-09-06,124,4,nublado,festivo
+Pje. Siete,2025-09-07,159,3,nublado,ninguno
+Pje. Siete,2025-09-08,85,4,soleado,feria
+Pje. Siete,2025-09-09,167,3,nublado,ninguno
+Pje. Siete,2025-09-10,175,2,nublado,ninguno
+Pje. Siete,2025-09-11,124,2,nublado,ninguno
+Pje. Siete,2025-09-12,130,3,nublado,feria
+Pje. Siete,2025-09-13,97,3,nublado,ninguno
+Pje. Siete,2025-09-14,169,2,nublado,ninguno
+Pje. Siete,2025-09-15,134,2,soleado,ninguno
+Pje. Siete,2025-09-16,166,2,soleado,ninguno
+Pje. Siete,2025-09-17,113,3,soleado,festivo
+Pje. Siete,2025-09-18,133,3,nublado,feria
+Pje. Siete,2025-09-19,86,2,nublado,feria
+Pje. Siete,2025-09-20,96,2,nublado,ninguno
+Pje. Siete,2025-09-21,140,2,soleado,ninguno
+Pje. Siete,2025-09-22,168,2,soleado,festivo
+Pje. Siete,2025-09-23,182,3,nublado,ninguno
+Pje. Siete,2025-09-24,119,2,soleado,ninguno
+Pje. Siete,2025-09-25,199,2,soleado,ninguno
+Pje. Siete,2025-09-26,87,2,nublado,ninguno
+Pje. Siete,2025-09-27,115,2,nublado,feria
+Pje. Siete,2025-09-28,146,4,nublado,ninguno
+Pje. Siete,2025-09-29,168,3,nublado,ninguno
+Pje. Siete,2025-09-30,132,3,nublado,ninguno
+Dr. Amador Negme,2025-09-01,167,3,soleado,feria
+Dr. Amador Negme,2025-09-02,132,4,nublado,ninguno
+Dr. Amador Negme,2025-09-03,161,3,nublado,ninguno
+Dr. Amador Negme,2025-09-04,169,4,nublado,ninguno
+Dr. Amador Negme,2025-09-05,151,3,soleado,feria
+Dr. Amador Negme,2025-09-06,199,3,nublado,ninguno
+Dr. Amador Negme,2025-09-07,166,2,nublado,ninguno
+Dr. Amador Negme,2025-09-08,183,2,nublado,festivo
+Dr. Amador Negme,2025-09-09,109,4,nublado,feria
+Dr. Amador Negme,2025-09-10,83,2,nublado,ninguno
+Dr. Amador Negme,2025-09-11,139,3,soleado,feria
+Dr. Amador Negme,2025-09-12,150,4,nublado,ninguno
+Dr. Amador Negme,2025-09-13,100,3,nublado,ninguno
+Dr. Amador Negme,2025-09-14,107,2,soleado,ninguno
+Dr. Amador Negme,2025-09-15,141,3,soleado,festivo
+Dr. Amador Negme,2025-09-16,141,3,nublado,ninguno
+Dr. Amador Negme,2025-09-17,180,3,nublado,ninguno
+Dr. Amador Negme,2025-09-18,137,4,nublado,feria
+Dr. Amador Negme,2025-09-19,93,4,soleado,ninguno
+Dr. Amador Negme,2025-09-20,152,4,soleado,ninguno
+Dr. Amador Negme,2025-09-21,177,2,nublado,feria
+Dr. Amador Negme,2025-09-22,84,2,nublado,ninguno
+Dr. Amador Negme,2025-09-23,156,3,nublado,feria
+Dr. Amador Negme,2025-09-24,116,3,soleado,ninguno
+Dr. Amador Negme,2025-09-25,195,4,nublado,ninguno
+Dr. Amador Negme,2025-09-26,175,3,nublado,ninguno
+Dr. Amador Negme,2025-09-27,130,4,soleado,ninguno
+Dr. Amador Negme,2025-09-28,158,2,nublado,ninguno
+Dr. Amador Negme,2025-09-29,193,3,nublado,festivo
+Dr. Amador Negme,2025-09-30,125,3,soleado,ninguno
+Dr. Juan Noe,2025-09-01,174,2,soleado,feria
+Dr. Juan Noe,2025-09-02,164,4,nublado,feria
+Dr. Juan Noe,2025-09-03,158,4,soleado,feria
+Dr. Juan Noe,2025-09-04,128,2,soleado,ninguno
+Dr. Juan Noe,2025-09-05,194,4,nublado,festivo
+Dr. Juan Noe,2025-09-06,85,2,soleado,ninguno
+Dr. Juan Noe,2025-09-07,80,4,soleado,feria
+Dr. Juan Noe,2025-09-08,176,4,nublado,ninguno
+Dr. Juan Noe,2025-09-09,168,3,nublado,festivo
+Dr. Juan Noe,2025-09-10,153,2,nublado,ninguno
+Dr. Juan Noe,2025-09-11,156,2,soleado,ninguno
+Dr. Juan Noe,2025-09-12,120,3,nublado,ninguno
+Dr. Juan Noe,2025-09-13,129,3,soleado,feria
+Dr. Juan Noe,2025-09-14,171,4,soleado,festivo
+Dr. Juan Noe,2025-09-15,94,4,nublado,ninguno
+Dr. Juan Noe,2025-09-16,108,2,nublado,ninguno
+Dr. Juan Noe,2025-09-17,131,3,nublado,ninguno
+Dr. Juan Noe,2025-09-18,198,2,soleado,ninguno
+Dr. Juan Noe,2025-09-19,145,3,soleado,ninguno
+Dr. Juan Noe,2025-09-20,166,3,nublado,ninguno
+Dr. Juan Noe,2025-09-21,91,4,soleado,ninguno
+Dr. Juan Noe,2025-09-22,175,3,nublado,feria
+Dr. Juan Noe,2025-09-23,109,4,nublado,feria
+Dr. Juan Noe,2025-09-24,113,3,nublado,ninguno
+Dr. Juan Noe,2025-09-25,182,3,nublado,ninguno
+Dr. Juan Noe,2025-09-26,132,4,soleado,feria
+Dr. Juan Noe,2025-09-27,196,3,soleado,ninguno
+Dr. Juan Noe,2025-09-28,179,4,nublado,ninguno
+Dr. Juan Noe,2025-09-29,132,2,nublado,ninguno
+Dr. Juan Noe,2025-09-30,132,2,soleado,feria
+Pje. Cinco,2025-09-01,193,3,nublado,ninguno
+Pje. Cinco,2025-09-02,186,4,soleado,ninguno
+Pje. Cinco,2025-09-03,191,4,nublado,festivo
+Pje. Cinco,2025-09-04,179,4,nublado,feria
+Pje. Cinco,2025-09-05,134,3,soleado,ninguno
+Pje. Cinco,2025-09-06,179,2,soleado,festivo
+Pje. Cinco,2025-09-07,102,2,soleado,ninguno
+Pje. Cinco,2025-09-08,105,2,nublado,ninguno
+Pje. Cinco,2025-09-09,171,2,nublado,ninguno
+Pje. Cinco,2025-09-10,119,4,nublado,feria
+Pje. Cinco,2025-09-11,145,4,soleado,ninguno
+Pje. Cinco,2025-09-12,99,2,nublado,ninguno
+Pje. Cinco,2025-09-13,153,4,nublado,ninguno
+Pje. Cinco,2025-09-14,174,3,soleado,ninguno
+Pje. Cinco,2025-09-15,175,4,nublado,ninguno
+Pje. Cinco,2025-09-16,197,4,soleado,feria
+Pje. Cinco,2025-09-17,106,3,nublado,ninguno
+Pje. Cinco,2025-09-18,115,4,soleado,feria
+Pje. Cinco,2025-09-19,182,3,nublado,ninguno
+Pje. Cinco,2025-09-20,163,4,soleado,ninguno
+Pje. Cinco,2025-09-21,153,2,soleado,ninguno
+Pje. Cinco,2025-09-22,86,4,soleado,ninguno
+Pje. Cinco,2025-09-23,120,3,soleado,ninguno
+Pje. Cinco,2025-09-24,140,2,nublado,feria
+Pje. Cinco,2025-09-25,123,3,nublado,ninguno
+Pje. Cinco,2025-09-26,192,4,soleado,ninguno
+Pje. Cinco,2025-09-27,121,3,soleado,feria
+Pje. Cinco,2025-09-28,129,3,nublado,ninguno
+Pje. Cinco,2025-09-29,153,3,soleado,ninguno
+Pje. Cinco,2025-09-30,182,3,nublado,feria
+Pje. Seis,2025-09-01,117,3,nublado,ninguno
+Pje. Seis,2025-09-02,152,2,soleado,feria
+Pje. Seis,2025-09-03,116,3,soleado,festivo
+Pje. Seis,2025-09-04,144,2,nublado,ninguno
+Pje. Seis,2025-09-05,115,4,nublado,ninguno
+Pje. Seis,2025-09-06,182,3,soleado,ninguno
+Pje. Seis,2025-09-07,140,4,soleado,festivo
+Pje. Seis,2025-09-08,81,3,nublado,ninguno
+Pje. Seis,2025-09-09,110,2,nublado,ninguno
+Pje. Seis,2025-09-10,172,4,nublado,ninguno
+Pje. Seis,2025-09-11,84,4,soleado,ninguno
+Pje. Seis,2025-09-12,106,3,soleado,feria
+Pje. Seis,2025-09-13,196,3,nublado,ninguno
+Pje. Seis,2025-09-14,105,3,soleado,ninguno
+Pje. Seis,2025-09-15,124,4,soleado,feria
+Pje. Seis,2025-09-16,95,2,nublado,ninguno
+Pje. Seis,2025-09-17,112,3,nublado,ninguno
+Pje. Seis,2025-09-18,103,2,nublado,feria
+Pje. Seis,2025-09-19,171,2,soleado,ninguno
+Pje. Seis,2025-09-20,86,3,nublado,feria
+Pje. Seis,2025-09-21,132,3,nublado,ninguno
+Pje. Seis,2025-09-22,101,4,soleado,ninguno
+Pje. Seis,2025-09-23,110,4,nublado,ninguno
+Pje. Seis,2025-09-24,123,2,soleado,ninguno
+Pje. Seis,2025-09-25,131,4,nublado,ninguno
+Pje. Seis,2025-09-26,190,4,nublado,ninguno
+Pje. Seis,2025-09-27,123,2,nublado,ninguno
+Pje. Seis,2025-09-28,139,4,soleado,ninguno
+Pje. Seis,2025-09-29,83,4,soleado,feria
+Pje. Seis,2025-09-30,188,3,soleado,ninguno
+Pje. Siete,2025-09-01,197,3,soleado,ninguno
+Pje. Siete,2025-09-02,162,2,nublado,festivo
+Pje. Siete,2025-09-03,132,2,nublado,feria
+Pje. Siete,2025-09-04,91,3,nublado,feria
+Pje. Siete,2025-09-05,85,2,nublado,ninguno
+Pje. Siete,2025-09-06,164,2,soleado,ninguno
+Pje. Siete,2025-09-07,108,3,soleado,ninguno
+Pje. Siete,2025-09-08,131,4,nublado,ninguno
+Pje. Siete,2025-09-09,169,4,nublado,ninguno
+Pje. Siete,2025-09-10,168,3,soleado,ninguno
+Pje. Siete,2025-09-11,125,4,nublado,feria
+Pje. Siete,2025-09-12,84,2,soleado,festivo
+Pje. Siete,2025-09-13,121,3,soleado,festivo
+Pje. Siete,2025-09-14,163,2,soleado,festivo
+Pje. Siete,2025-09-15,87,3,soleado,ninguno
+Pje. Siete,2025-09-16,104,2,soleado,ninguno
+Pje. Siete,2025-09-17,91,4,soleado,ninguno
+Pje. Siete,2025-09-18,139,4,nublado,festivo
+Pje. Siete,2025-09-19,125,3,soleado,feria
+Pje. Siete,2025-09-20,113,3,soleado,ninguno
+Pje. Siete,2025-09-21,131,3,nublado,feria
+Pje. Siete,2025-09-22,162,4,nublado,ninguno
+Pje. Siete,2025-09-23,86,4,soleado,feria
+Pje. Siete,2025-09-24,116,3,nublado,ninguno
+Pje. Siete,2025-09-25,160,4,soleado,feria
+Pje. Siete,2025-09-26,139,4,nublado,ninguno
+Pje. Siete,2025-09-27,199,4,soleado,ninguno
+Pje. Siete,2025-09-28,136,2,soleado,ninguno
+Pje. Siete,2025-09-29,196,3,soleado,feria
+Pje. Siete,2025-09-30,180,2,nublado,ninguno
+Pje. Ocho,2025-09-01,136,2,nublado,feria
+Pje. Ocho,2025-09-02,169,3,soleado,ninguno
+Pje. Ocho,2025-09-03,85,4,nublado,feria
+Pje. Ocho,2025-09-04,132,3,nublado,ninguno
+Pje. Ocho,2025-09-05,146,4,soleado,ninguno
+Pje. Ocho,2025-09-06,100,2,nublado,ninguno
+Pje. Ocho,2025-09-07,119,3,nublado,feria
+Pje. Ocho,2025-09-08,82,2,nublado,feria
+Pje. Ocho,2025-09-09,87,2,soleado,ninguno
+Pje. Ocho,2025-09-10,125,3,soleado,ninguno
+Pje. Ocho,2025-09-11,130,4,soleado,ninguno
+Pje. Ocho,2025-09-12,119,2,nublado,ninguno
+Pje. Ocho,2025-09-13,103,2,soleado,ninguno
+Pje. Ocho,2025-09-14,154,4,soleado,ninguno
+Pje. Ocho,2025-09-15,176,2,soleado,ninguno
+Pje. Ocho,2025-09-16,182,4,soleado,ninguno
+Pje. Ocho,2025-09-17,121,3,soleado,feria
+Pje. Ocho,2025-09-18,186,4,soleado,ninguno
+Pje. Ocho,2025-09-19,144,2,nublado,feria
+Pje. Ocho,2025-09-20,104,2,nublado,ninguno
+Pje. Ocho,2025-09-21,135,4,nublado,ninguno
+Pje. Ocho,2025-09-22,138,4,nublado,ninguno
+Pje. Ocho,2025-09-23,178,4,soleado,ninguno
+Pje. Ocho,2025-09-24,192,3,soleado,ninguno
+Pje. Ocho,2025-09-25,91,2,soleado,ninguno
+Pje. Ocho,2025-09-26,181,3,nublado,feria
+Pje. Ocho,2025-09-27,93,2,soleado,ninguno
+Pje. Ocho,2025-09-28,89,2,nublado,ninguno
+Pje. Ocho,2025-09-29,199,3,nublado,ninguno
+Pje. Ocho,2025-09-30,106,3,nublado,feria
+Nueva Cuatro,2025-09-01,84,4,nublado,ninguno
+Nueva Cuatro,2025-09-02,195,4,nublado,ninguno
+Nueva Cuatro,2025-09-03,82,2,nublado,feria
+Nueva Cuatro,2025-09-04,196,2,nublado,ninguno
+Nueva Cuatro,2025-09-05,113,3,soleado,ninguno
+Nueva Cuatro,2025-09-06,89,3,soleado,ninguno
+Nueva Cuatro,2025-09-07,152,3,soleado,ninguno
+Nueva Cuatro,2025-09-08,164,4,nublado,ninguno
+Nueva Cuatro,2025-09-09,143,2,soleado,ninguno
+Nueva Cuatro,2025-09-10,136,2,soleado,ninguno
+Nueva Cuatro,2025-09-11,192,4,nublado,ninguno
+Nueva Cuatro,2025-09-12,131,3,nublado,ninguno
+Nueva Cuatro,2025-09-13,185,4,soleado,ninguno
+Nueva Cuatro,2025-09-14,136,4,soleado,ninguno
+Nueva Cuatro,2025-09-15,183,3,nublado,ninguno
+Nueva Cuatro,2025-09-16,83,4,soleado,ninguno
+Nueva Cuatro,2025-09-17,80,4,nublado,feria
+Nueva Cuatro,2025-09-18,89,2,nublado,feria
+Nueva Cuatro,2025-09-19,151,4,nublado,ninguno
+Nueva Cuatro,2025-09-20,89,2,nublado,feria
+Nueva Cuatro,2025-09-21,175,4,nublado,ninguno
+Nueva Cuatro,2025-09-22,129,2,nublado,ninguno
+Nueva Cuatro,2025-09-23,191,4,soleado,feria
+Nueva Cuatro,2025-09-24,146,3,nublado,ninguno
+Nueva Cuatro,2025-09-25,109,4,nublado,ninguno
+Nueva Cuatro,2025-09-26,183,3,soleado,ninguno
+Nueva Cuatro,2025-09-27,87,4,soleado,feria
+Nueva Cuatro,2025-09-28,117,4,soleado,ninguno
+Nueva Cuatro,2025-09-29,87,2,nublado,ninguno
+Nueva Cuatro,2025-09-30,162,4,nublado,ninguno
+Playa El Saladero,2025-09-01,104,4,soleado,feria
+Playa El Saladero,2025-09-02,106,2,soleado,feria
+Playa El Saladero,2025-09-03,91,2,nublado,ninguno
+Playa El Saladero,2025-09-04,132,2,soleado,ninguno
+Playa El Saladero,2025-09-05,114,4,nublado,ninguno
+Playa El Saladero,2025-09-06,193,3,nublado,festivo
+Playa El Saladero,2025-09-07,115,3,nublado,ninguno
+Playa El Saladero,2025-09-08,147,3,nublado,feria
+Playa El Saladero,2025-09-09,174,2,nublado,festivo
+Playa El Saladero,2025-09-10,165,4,nublado,ninguno
+Playa El Saladero,2025-09-11,109,4,soleado,ninguno
+Playa El Saladero,2025-09-12,88,3,soleado,ninguno
+Playa El Saladero,2025-09-13,159,3,soleado,ninguno
+Playa El Saladero,2025-09-14,168,2,nublado,festivo
+Playa El Saladero,2025-09-15,104,2,nublado,ninguno
+Playa El Saladero,2025-09-16,129,3,nublado,ninguno
+Playa El Saladero,2025-09-17,113,4,nublado,festivo
+Playa El Saladero,2025-09-18,188,4,soleado,feria
+Playa El Saladero,2025-09-19,174,2,nublado,ninguno
+Playa El Saladero,2025-09-20,86,3,nublado,ninguno
+Playa El Saladero,2025-09-21,90,4,nublado,ninguno
+Playa El Saladero,2025-09-22,95,4,soleado,ninguno
+Playa El Saladero,2025-09-23,157,2,nublado,ninguno
+Playa El Saladero,2025-09-24,106,2,soleado,feria
+Playa El Saladero,2025-09-25,153,3,nublado,ninguno
+Playa El Saladero,2025-09-26,178,2,soleado,ninguno
+Playa El Saladero,2025-09-27,191,2,soleado,ninguno
+Playa El Saladero,2025-09-28,85,2,nublado,ninguno
+Playa El Saladero,2025-09-29,196,2,nublado,feria
+Playa El Saladero,2025-09-30,138,4,soleado,ninguno
+Ines Solari Magnaso,2025-09-01,117,3,soleado,feria
+Ines Solari Magnaso,2025-09-02,80,2,nublado,ninguno
+Ines Solari Magnaso,2025-09-03,188,3,soleado,ninguno
+Ines Solari Magnaso,2025-09-04,85,4,soleado,ninguno
+Ines Solari Magnaso,2025-09-05,197,4,nublado,feria
+Ines Solari Magnaso,2025-09-06,193,3,nublado,feria
+Ines Solari Magnaso,2025-09-07,122,2,soleado,ninguno
+Ines Solari Magnaso,2025-09-08,150,2,soleado,feria
+Ines Solari Magnaso,2025-09-09,198,2,nublado,festivo
+Ines Solari Magnaso,2025-09-10,129,3,soleado,feria
+Ines Solari Magnaso,2025-09-11,185,3,nublado,ninguno
+Ines Solari Magnaso,2025-09-12,106,2,nublado,feria
+Ines Solari Magnaso,2025-09-13,124,4,soleado,festivo
+Ines Solari Magnaso,2025-09-14,102,3,soleado,ninguno
+Ines Solari Magnaso,2025-09-15,164,2,soleado,ninguno
+Ines Solari Magnaso,2025-09-16,182,3,soleado,festivo
+Ines Solari Magnaso,2025-09-17,157,2,nublado,feria
+Ines Solari Magnaso,2025-09-18,131,4,soleado,feria
+Ines Solari Magnaso,2025-09-19,93,2,soleado,feria
+Ines Solari Magnaso,2025-09-20,173,2,soleado,ninguno
+Ines Solari Magnaso,2025-09-21,140,2,nublado,feria
+Ines Solari Magnaso,2025-09-22,162,3,nublado,ninguno
+Ines Solari Magnaso,2025-09-23,123,4,soleado,feria
+Ines Solari Magnaso,2025-09-24,124,3,soleado,ninguno
+Ines Solari Magnaso,2025-09-25,181,3,soleado,ninguno
+Ines Solari Magnaso,2025-09-26,130,4,soleado,ninguno
+Ines Solari Magnaso,2025-09-27,136,2,nublado,ninguno
+Ines Solari Magnaso,2025-09-28,199,2,soleado,ninguno
+Ines Solari Magnaso,2025-09-29,98,3,soleado,ninguno
+Ines Solari Magnaso,2025-09-30,82,3,nublado,ninguno
+Playa Quintero,2025-09-01,100,2,soleado,ninguno
+Playa Quintero,2025-09-02,133,2,soleado,ninguno
+Playa Quintero,2025-09-03,167,3,soleado,feria
+Playa Quintero,2025-09-04,123,2,nublado,festivo
+Playa Quintero,2025-09-05,93,4,nublado,ninguno
+Playa Quintero,2025-09-06,196,2,nublado,ninguno
+Playa Quintero,2025-09-07,101,3,soleado,ninguno
+Playa Quintero,2025-09-08,125,3,nublado,ninguno
+Playa Quintero,2025-09-09,118,3,soleado,ninguno
+Playa Quintero,2025-09-10,98,3,nublado,ninguno
+Playa Quintero,2025-09-11,148,3,nublado,ninguno
+Playa Quintero,2025-09-12,119,2,soleado,ninguno
+Playa Quintero,2025-09-13,123,4,soleado,ninguno
+Playa Quintero,2025-09-14,129,4,soleado,ninguno
+Playa Quintero,2025-09-15,193,4,nublado,ninguno
+Playa Quintero,2025-09-16,191,4,nublado,ninguno
+Playa Quintero,2025-09-17,144,2,soleado,ninguno
+Playa Quintero,2025-09-18,95,3,nublado,ninguno
+Playa Quintero,2025-09-19,112,4,nublado,festivo
+Playa Quintero,2025-09-20,190,2,soleado,ninguno
+Playa Quintero,2025-09-21,169,2,nublado,ninguno
+Playa Quintero,2025-09-22,106,2,soleado,ninguno
+Playa Quintero,2025-09-23,154,2,nublado,festivo
+Playa Quintero,2025-09-24,104,3,nublado,ninguno
+Playa Quintero,2025-09-25,187,3,soleado,ninguno
+Playa Quintero,2025-09-26,136,4,nublado,ninguno
+Playa Quintero,2025-09-27,153,4,soleado,festivo
+Playa Quintero,2025-09-28,161,2,nublado,ninguno
+Playa Quintero,2025-09-29,192,4,soleado,ninguno
+Playa Quintero,2025-09-30,80,4,soleado,ninguno
+Pje. Playa Chauca,2025-09-01,183,4,nublado,ninguno
+Pje. Playa Chauca,2025-09-02,174,2,soleado,ninguno
+Pje. Playa Chauca,2025-09-03,197,4,nublado,ninguno
+Pje. Playa Chauca,2025-09-04,196,2,nublado,ninguno
+Pje. Playa Chauca,2025-09-05,90,4,soleado,ninguno
+Pje. Playa Chauca,2025-09-06,186,4,soleado,ninguno
+Pje. Playa Chauca,2025-09-07,194,2,soleado,ninguno
+Pje. Playa Chauca,2025-09-08,173,3,nublado,ninguno
+Pje. Playa Chauca,2025-09-09,162,4,nublado,feria
+Pje. Playa Chauca,2025-09-10,180,4,nublado,festivo
+Pje. Playa Chauca,2025-09-11,134,4,soleado,feria
+Pje. Playa Chauca,2025-09-12,199,4,soleado,ninguno
+Pje. Playa Chauca,2025-09-13,193,2,soleado,ninguno
+Pje. Playa Chauca,2025-09-14,117,2,nublado,feria
+Pje. Playa Chauca,2025-09-15,117,4,soleado,ninguno
+Pje. Playa Chauca,2025-09-16,195,4,nublado,ninguno
+Pje. Playa Chauca,2025-09-17,124,4,soleado,ninguno
+Pje. Playa Chauca,2025-09-18,185,2,nublado,ninguno
+Pje. Playa Chauca,2025-09-19,179,4,nublado,ninguno
+Pje. Playa Chauca,2025-09-20,122,3,soleado,ninguno
+Pje. Playa Chauca,2025-09-21,156,3,soleado,ninguno
+Pje. Playa Chauca,2025-09-22,163,2,nublado,festivo
+Pje. Playa Chauca,2025-09-23,167,2,nublado,festivo
+Pje. Playa Chauca,2025-09-24,194,2,nublado,ninguno
+Pje. Playa Chauca,2025-09-25,149,3,soleado,ninguno
+Pje. Playa Chauca,2025-09-26,147,2,soleado,ninguno
+Pje. Playa Chauca,2025-09-27,102,2,nublado,ninguno
+Pje. Playa Chauca,2025-09-28,162,4,soleado,festivo
+Pje. Playa Chauca,2025-09-29,143,2,soleado,ninguno
+Pje. Playa Chauca,2025-09-30,99,3,soleado,ninguno
+Playa Las Pizarras,2025-09-01,172,3,soleado,ninguno
+Playa Las Pizarras,2025-09-02,163,3,soleado,ninguno
+Playa Las Pizarras,2025-09-03,110,3,soleado,feria
+Playa Las Pizarras,2025-09-04,197,3,soleado,ninguno
+Playa Las Pizarras,2025-09-05,169,2,soleado,ninguno
+Playa Las Pizarras,2025-09-06,198,4,soleado,ninguno
+Playa Las Pizarras,2025-09-07,93,2,nublado,ninguno
+Playa Las Pizarras,2025-09-08,154,2,nublado,feria
+Playa Las Pizarras,2025-09-09,195,2,nublado,ninguno
+Playa Las Pizarras,2025-09-10,147,2,nublado,ninguno
+Playa Las Pizarras,2025-09-11,125,2,soleado,festivo
+Playa Las Pizarras,2025-09-12,170,2,nublado,ninguno
+Playa Las Pizarras,2025-09-13,192,3,nublado,ninguno
+Playa Las Pizarras,2025-09-14,126,3,soleado,ninguno
+Playa Las Pizarras,2025-09-15,194,4,soleado,feria
+Playa Las Pizarras,2025-09-16,194,3,nublado,ninguno
+Playa Las Pizarras,2025-09-17,106,2,soleado,festivo
+Playa Las Pizarras,2025-09-18,92,3,soleado,ninguno
+Playa Las Pizarras,2025-09-19,175,4,soleado,feria
+Playa Las Pizarras,2025-09-20,197,4,soleado,ninguno
+Playa Las Pizarras,2025-09-21,190,3,nublado,ninguno
+Playa Las Pizarras,2025-09-22,184,3,soleado,ninguno
+Playa Las Pizarras,2025-09-23,109,3,soleado,feria
+Playa Las Pizarras,2025-09-24,142,2,soleado,feria
+Playa Las Pizarras,2025-09-25,136,3,soleado,festivo
+Playa Las Pizarras,2025-09-26,163,4,soleado,feria
+Playa Las Pizarras,2025-09-27,99,2,nublado,ninguno
+Playa Las Pizarras,2025-09-28,102,3,soleado,ninguno
+Playa Las Pizarras,2025-09-29,99,4,soleado,ninguno
+Playa Las Pizarras,2025-09-30,91,3,nublado,ninguno
+Los Alagarrobos,2025-09-01,181,4,nublado,ninguno
+Los Alagarrobos,2025-09-02,143,4,nublado,ninguno
+Los Alagarrobos,2025-09-03,163,4,soleado,ninguno
+Los Alagarrobos,2025-09-04,198,3,nublado,ninguno
+Los Alagarrobos,2025-09-05,111,3,soleado,ninguno
+Los Alagarrobos,2025-09-06,81,4,nublado,feria
+Los Alagarrobos,2025-09-07,198,2,nublado,feria
+Los Alagarrobos,2025-09-08,115,2,soleado,festivo
+Los Alagarrobos,2025-09-09,119,2,nublado,feria
+Los Alagarrobos,2025-09-10,180,4,soleado,festivo
+Los Alagarrobos,2025-09-11,148,4,soleado,feria
+Los Alagarrobos,2025-09-12,125,4,nublado,ninguno
+Los Alagarrobos,2025-09-13,162,2,soleado,ninguno
+Los Alagarrobos,2025-09-14,169,3,nublado,ninguno
+Los Alagarrobos,2025-09-15,119,3,soleado,ninguno
+Los Alagarrobos,2025-09-16,143,2,nublado,ninguno
+Los Alagarrobos,2025-09-17,106,3,nublado,ninguno
+Los Alagarrobos,2025-09-18,178,4,soleado,ninguno
+Los Alagarrobos,2025-09-19,101,3,nublado,ninguno
+Los Alagarrobos,2025-09-20,193,3,soleado,feria
+Los Alagarrobos,2025-09-21,197,2,soleado,ninguno
+Los Alagarrobos,2025-09-22,174,4,soleado,feria
+Los Alagarrobos,2025-09-23,108,4,soleado,ninguno
+Los Alagarrobos,2025-09-24,90,2,soleado,ninguno
+Los Alagarrobos,2025-09-25,188,3,nublado,feria
+Los Alagarrobos,2025-09-26,153,4,soleado,feria
+Los Alagarrobos,2025-09-27,83,2,soleado,feria
+Los Alagarrobos,2025-09-28,144,3,nublado,ninguno
+Los Alagarrobos,2025-09-29,149,4,nublado,ninguno
+Los Alagarrobos,2025-09-30,161,2,soleado,festivo
+La Chamiza,2025-09-01,82,2,soleado,feria
+La Chamiza,2025-09-02,135,4,soleado,ninguno
+La Chamiza,2025-09-03,147,2,soleado,ninguno
+La Chamiza,2025-09-04,148,3,soleado,ninguno
+La Chamiza,2025-09-05,153,2,nublado,ninguno
+La Chamiza,2025-09-06,89,2,nublado,feria
+La Chamiza,2025-09-07,175,3,nublado,ninguno
+La Chamiza,2025-09-08,117,3,nublado,ninguno
+La Chamiza,2025-09-09,148,4,nublado,ninguno
+La Chamiza,2025-09-10,81,3,nublado,ninguno
+La Chamiza,2025-09-11,197,2,nublado,ninguno
+La Chamiza,2025-09-12,141,3,nublado,ninguno
+La Chamiza,2025-09-13,179,4,nublado,ninguno
+La Chamiza,2025-09-14,142,3,soleado,feria
+La Chamiza,2025-09-15,156,4,soleado,ninguno
+La Chamiza,2025-09-16,105,2,nublado,feria
+La Chamiza,2025-09-17,114,4,nublado,ninguno
+La Chamiza,2025-09-18,194,2,soleado,festivo
+La Chamiza,2025-09-19,97,2,nublado,ninguno
+La Chamiza,2025-09-20,152,3,nublado,ninguno
+La Chamiza,2025-09-21,123,3,nublado,ninguno
+La Chamiza,2025-09-22,117,2,nublado,ninguno
+La Chamiza,2025-09-23,101,3,nublado,festivo
+La Chamiza,2025-09-24,83,4,nublado,ninguno
+La Chamiza,2025-09-25,185,2,nublado,ninguno
+La Chamiza,2025-09-26,130,3,nublado,festivo
+La Chamiza,2025-09-27,159,2,nublado,ninguno
+La Chamiza,2025-09-28,151,4,nublado,ninguno
+La Chamiza,2025-09-29,85,4,soleado,ninguno
+La Chamiza,2025-09-30,102,3,nublado,ninguno
+Nueva Cuatro,2025-09-01,95,3,nublado,ninguno
+Nueva Cuatro,2025-09-02,144,2,soleado,ninguno
+Nueva Cuatro,2025-09-03,89,3,nublado,ninguno
+Nueva Cuatro,2025-09-04,197,4,soleado,ninguno
+Nueva Cuatro,2025-09-05,144,2,soleado,ninguno
+Nueva Cuatro,2025-09-06,165,2,soleado,feria
+Nueva Cuatro,2025-09-07,154,4,soleado,ninguno
+Nueva Cuatro,2025-09-08,83,4,soleado,ninguno
+Nueva Cuatro,2025-09-09,80,4,nublado,feria
+Nueva Cuatro,2025-09-10,124,3,nublado,ninguno
+Nueva Cuatro,2025-09-11,113,4,nublado,ninguno
+Nueva Cuatro,2025-09-12,193,4,soleado,ninguno
+Nueva Cuatro,2025-09-13,95,2,soleado,ninguno
+Nueva Cuatro,2025-09-14,104,4,soleado,ninguno
+Nueva Cuatro,2025-09-15,147,2,soleado,feria
+Nueva Cuatro,2025-09-16,128,4,nublado,ninguno
+Nueva Cuatro,2025-09-17,121,3,soleado,ninguno
+Nueva Cuatro,2025-09-18,96,2,nublado,ninguno
+Nueva Cuatro,2025-09-19,189,3,soleado,ninguno
+Nueva Cuatro,2025-09-20,100,3,nublado,ninguno
+Nueva Cuatro,2025-09-21,149,4,nublado,ninguno
+Nueva Cuatro,2025-09-22,151,3,soleado,ninguno
+Nueva Cuatro,2025-09-23,175,3,nublado,feria
+Nueva Cuatro,2025-09-24,90,4,soleado,ninguno
+Nueva Cuatro,2025-09-25,156,2,nublado,ninguno
+Nueva Cuatro,2025-09-26,161,3,soleado,ninguno
+Nueva Cuatro,2025-09-27,140,4,soleado,feria
+Nueva Cuatro,2025-09-28,141,3,soleado,ninguno
+Nueva Cuatro,2025-09-29,192,2,soleado,feria
+Nueva Cuatro,2025-09-30,99,4,nublado,ninguno
+Lebu,2025-09-01,162,2,nublado,ninguno
+Lebu,2025-09-02,166,4,soleado,ninguno
+Lebu,2025-09-03,119,3,soleado,feria
+Lebu,2025-09-04,90,2,soleado,ninguno
+Lebu,2025-09-05,192,4,nublado,ninguno
+Lebu,2025-09-06,124,3,nublado,ninguno
+Lebu,2025-09-07,111,3,nublado,feria
+Lebu,2025-09-08,122,2,nublado,ninguno
+Lebu,2025-09-09,181,2,soleado,ninguno
+Lebu,2025-09-10,104,2,soleado,ninguno
+Lebu,2025-09-11,182,3,nublado,festivo
+Lebu,2025-09-12,93,3,soleado,ninguno
+Lebu,2025-09-13,113,3,nublado,ninguno
+Lebu,2025-09-14,149,2,nublado,feria
+Lebu,2025-09-15,145,3,soleado,feria
+Lebu,2025-09-16,91,2,nublado,festivo
+Lebu,2025-09-17,123,2,nublado,feria
+Lebu,2025-09-18,197,3,soleado,ninguno
+Lebu,2025-09-19,188,4,nublado,feria
+Lebu,2025-09-20,118,2,soleado,feria
+Lebu,2025-09-21,182,4,nublado,ninguno
+Lebu,2025-09-22,122,4,soleado,ninguno
+Lebu,2025-09-23,95,4,nublado,ninguno
+Lebu,2025-09-24,167,2,soleado,feria
+Lebu,2025-09-25,187,2,soleado,ninguno
+Lebu,2025-09-26,160,4,nublado,feria
+Lebu,2025-09-27,110,3,nublado,ninguno
+Lebu,2025-09-28,157,4,nublado,feria
+Lebu,2025-09-29,143,2,soleado,ninguno
+Lebu,2025-09-30,191,3,soleado,festivo
+Pje. Traiguen,2025-09-01,195,3,nublado,ninguno
+Pje. Traiguen,2025-09-02,175,4,nublado,ninguno
+Pje. Traiguen,2025-09-03,199,2,nublado,ninguno
+Pje. Traiguen,2025-09-04,137,2,soleado,ninguno
+Pje. Traiguen,2025-09-05,124,3,soleado,ninguno
+Pje. Traiguen,2025-09-06,184,4,soleado,ninguno
+Pje. Traiguen,2025-09-07,174,4,nublado,festivo
+Pje. Traiguen,2025-09-08,121,3,soleado,feria
+Pje. Traiguen,2025-09-09,95,3,nublado,ninguno
+Pje. Traiguen,2025-09-10,110,3,soleado,ninguno
+Pje. Traiguen,2025-09-11,84,2,soleado,ninguno
+Pje. Traiguen,2025-09-12,196,4,nublado,ninguno
+Pje. Traiguen,2025-09-13,97,4,soleado,feria
+Pje. Traiguen,2025-09-14,98,3,soleado,ninguno
+Pje. Traiguen,2025-09-15,181,2,nublado,ninguno
+Pje. Traiguen,2025-09-16,89,4,soleado,ninguno
+Pje. Traiguen,2025-09-17,176,2,nublado,ninguno
+Pje. Traiguen,2025-09-18,140,3,nublado,ninguno
+Pje. Traiguen,2025-09-19,136,4,nublado,ninguno
+Pje. Traiguen,2025-09-20,128,2,nublado,ninguno
+Pje. Traiguen,2025-09-21,139,2,soleado,ninguno
+Pje. Traiguen,2025-09-22,185,3,nublado,festivo
+Pje. Traiguen,2025-09-23,94,2,soleado,ninguno
+Pje. Traiguen,2025-09-24,144,4,nublado,ninguno
+Pje. Traiguen,2025-09-25,193,3,nublado,feria
+Pje. Traiguen,2025-09-26,177,2,soleado,ninguno
+Pje. Traiguen,2025-09-27,177,4,nublado,feria
+Pje. Traiguen,2025-09-28,104,2,nublado,feria
+Pje. Traiguen,2025-09-29,149,4,nublado,ninguno
+Pje. Traiguen,2025-09-30,116,4,nublado,feria
+Pje. Temuco,2025-09-01,149,3,soleado,ninguno
+Pje. Temuco,2025-09-02,191,4,soleado,feria
+Pje. Temuco,2025-09-03,104,2,nublado,ninguno
+Pje. Temuco,2025-09-04,179,4,soleado,ninguno
+Pje. Temuco,2025-09-05,119,3,nublado,ninguno
+Pje. Temuco,2025-09-06,171,2,soleado,festivo
+Pje. Temuco,2025-09-07,153,3,soleado,ninguno
+Pje. Temuco,2025-09-08,85,3,soleado,ninguno
+Pje. Temuco,2025-09-09,143,3,soleado,ninguno
+Pje. Temuco,2025-09-10,155,4,nublado,feria
+Pje. Temuco,2025-09-11,175,3,nublado,ninguno
+Pje. Temuco,2025-09-12,112,2,soleado,ninguno
+Pje. Temuco,2025-09-13,148,3,soleado,ninguno
+Pje. Temuco,2025-09-14,176,2,soleado,ninguno
+Pje. Temuco,2025-09-15,114,3,soleado,feria
+Pje. Temuco,2025-09-16,141,2,nublado,ninguno
+Pje. Temuco,2025-09-17,132,2,soleado,ninguno
+Pje. Temuco,2025-09-18,135,4,soleado,ninguno
+Pje. Temuco,2025-09-19,146,2,soleado,festivo
+Pje. Temuco,2025-09-20,174,3,soleado,ninguno
+Pje. Temuco,2025-09-21,188,4,soleado,feria
+Pje. Temuco,2025-09-22,100,2,soleado,ninguno
+Pje. Temuco,2025-09-23,131,2,nublado,ninguno
+Pje. Temuco,2025-09-24,165,2,soleado,feria
+Pje. Temuco,2025-09-25,105,4,nublado,ninguno
+Pje. Temuco,2025-09-26,124,2,nublado,ninguno
+Pje. Temuco,2025-09-27,169,4,soleado,ninguno
+Pje. Temuco,2025-09-28,181,3,soleado,ninguno
+Pje. Temuco,2025-09-29,188,4,soleado,feria
+Pje. Temuco,2025-09-30,126,4,nublado,feria
+Cerro Colorado,2025-09-01,179,2,nublado,ninguno
+Cerro Colorado,2025-09-02,161,4,nublado,ninguno
+Cerro Colorado,2025-09-03,111,4,soleado,festivo
+Cerro Colorado,2025-09-04,108,3,soleado,ninguno
+Cerro Colorado,2025-09-05,163,3,soleado,festivo
+Cerro Colorado,2025-09-06,132,3,nublado,festivo
+Cerro Colorado,2025-09-07,189,3,nublado,ninguno
+Cerro Colorado,2025-09-08,112,4,soleado,feria
+Cerro Colorado,2025-09-09,80,4,soleado,ninguno
+Cerro Colorado,2025-09-10,179,3,nublado,ninguno
+Cerro Colorado,2025-09-11,120,2,soleado,feria
+Cerro Colorado,2025-09-12,113,4,soleado,ninguno
+Cerro Colorado,2025-09-13,176,3,nublado,festivo
+Cerro Colorado,2025-09-14,94,4,soleado,ninguno
+Cerro Colorado,2025-09-15,141,3,nublado,ninguno
+Cerro Colorado,2025-09-16,155,4,nublado,ninguno
+Cerro Colorado,2025-09-17,153,3,soleado,feria
+Cerro Colorado,2025-09-18,90,4,nublado,ninguno
+Cerro Colorado,2025-09-19,173,2,soleado,ninguno
+Cerro Colorado,2025-09-20,155,2,nublado,ninguno
+Cerro Colorado,2025-09-21,199,2,nublado,ninguno
+Cerro Colorado,2025-09-22,144,4,nublado,ninguno
+Cerro Colorado,2025-09-23,102,2,soleado,feria
+Cerro Colorado,2025-09-24,192,3,nublado,feria
+Cerro Colorado,2025-09-25,159,2,soleado,ninguno
+Cerro Colorado,2025-09-26,81,4,nublado,ninguno
+Cerro Colorado,2025-09-27,140,4,soleado,ninguno
+Cerro Colorado,2025-09-28,80,2,nublado,feria
+Cerro Colorado,2025-09-29,150,3,soleado,ninguno
+Cerro Colorado,2025-09-30,81,4,nublado,ninguno
+C. Int Dos,2025-09-01,181,3,soleado,ninguno
+C. Int Dos,2025-09-02,148,2,nublado,ninguno
+C. Int Dos,2025-09-03,158,4,soleado,feria
+C. Int Dos,2025-09-04,132,4,nublado,ninguno
+C. Int Dos,2025-09-05,166,2,nublado,ninguno
+C. Int Dos,2025-09-06,190,4,soleado,festivo
+C. Int Dos,2025-09-07,126,4,soleado,ninguno
+C. Int Dos,2025-09-08,184,2,nublado,ninguno
+C. Int Dos,2025-09-09,137,2,soleado,feria
+C. Int Dos,2025-09-10,107,3,soleado,ninguno
+C. Int Dos,2025-09-11,108,2,soleado,feria
+C. Int Dos,2025-09-12,135,2,soleado,feria
+C. Int Dos,2025-09-13,147,3,nublado,festivo
+C. Int Dos,2025-09-14,131,3,soleado,ninguno
+C. Int Dos,2025-09-15,144,4,soleado,ninguno
+C. Int Dos,2025-09-16,116,2,nublado,ninguno
+C. Int Dos,2025-09-17,184,3,soleado,ninguno
+C. Int Dos,2025-09-18,143,4,soleado,festivo
+C. Int Dos,2025-09-19,176,2,nublado,ninguno
+C. Int Dos,2025-09-20,114,4,nublado,ninguno
+C. Int Dos,2025-09-21,119,3,nublado,ninguno
+C. Int Dos,2025-09-22,122,4,nublado,ninguno
+C. Int Dos,2025-09-23,129,3,soleado,ninguno
+C. Int Dos,2025-09-24,138,4,nublado,ninguno
+C. Int Dos,2025-09-25,159,2,nublado,feria
+C. Int Dos,2025-09-26,194,4,soleado,ninguno
+C. Int Dos,2025-09-27,108,3,nublado,ninguno
+C. Int Dos,2025-09-28,99,3,soleado,ninguno
+C. Int Dos,2025-09-29,92,2,soleado,ninguno
+C. Int Dos,2025-09-30,91,3,nublado,festivo
+C. Int Tres,2025-09-01,110,4,soleado,ninguno
+C. Int Tres,2025-09-02,112,3,soleado,ninguno
+C. Int Tres,2025-09-03,152,2,soleado,ninguno
+C. Int Tres,2025-09-04,192,3,soleado,festivo
+C. Int Tres,2025-09-05,166,4,nublado,ninguno
+C. Int Tres,2025-09-06,195,4,soleado,ninguno
+C. Int Tres,2025-09-07,178,3,nublado,ninguno
+C. Int Tres,2025-09-08,174,2,nublado,ninguno
+C. Int Tres,2025-09-09,166,3,nublado,ninguno
+C. Int Tres,2025-09-10,128,4,soleado,festivo
+C. Int Tres,2025-09-11,172,4,nublado,ninguno
+C. Int Tres,2025-09-12,165,2,nublado,feria
+C. Int Tres,2025-09-13,172,3,soleado,ninguno
+C. Int Tres,2025-09-14,142,3,soleado,feria
+C. Int Tres,2025-09-15,164,3,nublado,ninguno
+C. Int Tres,2025-09-16,107,2,nublado,ninguno
+C. Int Tres,2025-09-17,195,2,nublado,ninguno
+C. Int Tres,2025-09-18,115,2,soleado,ninguno
+C. Int Tres,2025-09-19,193,3,soleado,ninguno
+C. Int Tres,2025-09-20,143,4,soleado,ninguno
+C. Int Tres,2025-09-21,103,3,soleado,ninguno
+C. Int Tres,2025-09-22,186,2,nublado,ninguno
+C. Int Tres,2025-09-23,141,2,soleado,ninguno
+C. Int Tres,2025-09-24,147,4,nublado,ninguno
+C. Int Tres,2025-09-25,173,2,nublado,ninguno
+C. Int Tres,2025-09-26,88,2,nublado,ninguno
+C. Int Tres,2025-09-27,89,4,nublado,ninguno
+C. Int Tres,2025-09-28,125,4,soleado,ninguno
+C. Int Tres,2025-09-29,196,2,soleado,ninguno
+C. Int Tres,2025-09-30,144,3,soleado,ninguno
+C. Int Cuatro,2025-09-01,118,3,nublado,ninguno
+C. Int Cuatro,2025-09-02,139,4,nublado,ninguno
+C. Int Cuatro,2025-09-03,169,2,soleado,ninguno
+C. Int Cuatro,2025-09-04,148,2,soleado,festivo
+C. Int Cuatro,2025-09-05,147,4,nublado,ninguno
+C. Int Cuatro,2025-09-06,171,4,nublado,ninguno
+C. Int Cuatro,2025-09-07,101,4,soleado,festivo
+C. Int Cuatro,2025-09-08,151,2,soleado,ninguno
+C. Int Cuatro,2025-09-09,127,2,soleado,ninguno
+C. Int Cuatro,2025-09-10,142,2,nublado,ninguno
+C. Int Cuatro,2025-09-11,144,4,soleado,ninguno
+C. Int Cuatro,2025-09-12,172,4,nublado,ninguno
+C. Int Cuatro,2025-09-13,104,3,nublado,ninguno
+C. Int Cuatro,2025-09-14,92,4,soleado,festivo
+C. Int Cuatro,2025-09-15,112,3,nublado,ninguno
+C. Int Cuatro,2025-09-16,160,2,nublado,feria
+C. Int Cuatro,2025-09-17,149,3,soleado,ninguno
+C. Int Cuatro,2025-09-18,199,4,nublado,ninguno
+C. Int Cuatro,2025-09-19,197,3,soleado,ninguno
+C. Int Cuatro,2025-09-20,155,4,soleado,ninguno
+C. Int Cuatro,2025-09-21,197,3,nublado,ninguno
+C. Int Cuatro,2025-09-22,160,3,soleado,ninguno
+C. Int Cuatro,2025-09-23,106,4,nublado,ninguno
+C. Int Cuatro,2025-09-24,153,2,soleado,ninguno
+C. Int Cuatro,2025-09-25,156,3,soleado,ninguno
+C. Int Cuatro,2025-09-26,83,3,soleado,ninguno
+C. Int Cuatro,2025-09-27,115,2,nublado,ninguno
+C. Int Cuatro,2025-09-28,106,3,nublado,ninguno
+C. Int Cuatro,2025-09-29,119,2,nublado,ninguno
+C. Int Cuatro,2025-09-30,115,4,nublado,festivo
+Cerro Casiri,2025-09-01,147,4,soleado,ninguno
+Cerro Casiri,2025-09-02,193,3,soleado,ninguno
+Cerro Casiri,2025-09-03,176,3,nublado,ninguno
+Cerro Casiri,2025-09-04,84,4,nublado,ninguno
+Cerro Casiri,2025-09-05,94,2,soleado,ninguno
+Cerro Casiri,2025-09-06,194,3,soleado,ninguno
+Cerro Casiri,2025-09-07,122,2,soleado,ninguno
+Cerro Casiri,2025-09-08,188,3,soleado,ninguno
+Cerro Casiri,2025-09-09,176,3,soleado,festivo
+Cerro Casiri,2025-09-10,91,4,soleado,feria
+Cerro Casiri,2025-09-11,187,2,nublado,feria
+Cerro Casiri,2025-09-12,133,2,soleado,ninguno
+Cerro Casiri,2025-09-13,148,3,soleado,ninguno
+Cerro Casiri,2025-09-14,98,4,nublado,ninguno
+Cerro Casiri,2025-09-15,197,4,nublado,ninguno
+Cerro Casiri,2025-09-16,174,4,nublado,ninguno
+Cerro Casiri,2025-09-17,89,3,soleado,feria
+Cerro Casiri,2025-09-18,113,4,nublado,feria
+Cerro Casiri,2025-09-19,174,3,soleado,ninguno
+Cerro Casiri,2025-09-20,118,4,nublado,festivo
+Cerro Casiri,2025-09-21,166,3,nublado,ninguno
+Cerro Casiri,2025-09-22,127,2,soleado,ninguno
+Cerro Casiri,2025-09-23,95,3,soleado,festivo
+Cerro Casiri,2025-09-24,87,2,nublado,ninguno
+Cerro Casiri,2025-09-25,166,3,nublado,ninguno
+Cerro Casiri,2025-09-26,111,4,nublado,ninguno
+Cerro Casiri,2025-09-27,165,4,nublado,feria
+Cerro Casiri,2025-09-28,122,2,nublado,ninguno
+Cerro Casiri,2025-09-29,129,3,soleado,ninguno
+Cerro Casiri,2025-09-30,127,4,soleado,ninguno
+Coscaya,2025-09-01,87,4,nublado,feria
+Coscaya,2025-09-02,189,4,soleado,ninguno
+Coscaya,2025-09-03,192,4,nublado,feria
+Coscaya,2025-09-04,169,2,soleado,feria
+Coscaya,2025-09-05,196,2,nublado,feria
+Coscaya,2025-09-06,197,2,nublado,ninguno
+Coscaya,2025-09-07,162,2,nublado,ninguno
+Coscaya,2025-09-08,184,2,nublado,ninguno
+Coscaya,2025-09-09,189,3,nublado,ninguno
+Coscaya,2025-09-10,193,3,soleado,ninguno
+Coscaya,2025-09-11,183,4,nublado,ninguno
+Coscaya,2025-09-12,196,2,soleado,ninguno
+Coscaya,2025-09-13,168,2,soleado,ninguno
+Coscaya,2025-09-14,197,3,nublado,ninguno
+Coscaya,2025-09-15,144,2,soleado,ninguno
+Coscaya,2025-09-16,144,3,soleado,festivo
+Coscaya,2025-09-17,159,2,soleado,ninguno
+Coscaya,2025-09-18,174,4,nublado,ninguno
+Coscaya,2025-09-19,90,2,soleado,feria
+Coscaya,2025-09-20,133,2,nublado,ninguno
+Coscaya,2025-09-21,112,4,nublado,ninguno
+Coscaya,2025-09-22,157,2,nublado,festivo
+Coscaya,2025-09-23,185,4,nublado,ninguno
+Coscaya,2025-09-24,192,2,soleado,ninguno
+Coscaya,2025-09-25,166,2,nublado,feria
+Coscaya,2025-09-26,185,4,nublado,ninguno
+Coscaya,2025-09-27,143,3,soleado,ninguno
+Coscaya,2025-09-28,145,4,soleado,ninguno
+Coscaya,2025-09-29,129,4,soleado,feria
+Coscaya,2025-09-30,182,4,nublado,feria
+Sauna,2025-09-01,175,3,soleado,ninguno
+Sauna,2025-09-02,92,3,nublado,ninguno
+Sauna,2025-09-03,149,2,soleado,ninguno
+Sauna,2025-09-04,175,4,soleado,ninguno
+Sauna,2025-09-05,110,4,nublado,feria
+Sauna,2025-09-06,140,4,soleado,ninguno
+Sauna,2025-09-07,147,2,soleado,ninguno
+Sauna,2025-09-08,139,2,soleado,ninguno
+Sauna,2025-09-09,131,3,nublado,ninguno
+Sauna,2025-09-10,117,2,soleado,ninguno
+Sauna,2025-09-11,187,4,nublado,ninguno
+Sauna,2025-09-12,136,3,nublado,ninguno
+Sauna,2025-09-13,109,4,soleado,ninguno
+Sauna,2025-09-14,127,2,nublado,ninguno
+Sauna,2025-09-15,177,2,nublado,feria
+Sauna,2025-09-16,174,3,nublado,ninguno
+Sauna,2025-09-17,126,2,soleado,ninguno
+Sauna,2025-09-18,103,3,soleado,ninguno
+Sauna,2025-09-19,170,2,soleado,festivo
+Sauna,2025-09-20,152,2,nublado,feria
+Sauna,2025-09-21,110,2,soleado,ninguno
+Sauna,2025-09-22,110,3,nublado,festivo
+Sauna,2025-09-23,120,2,soleado,festivo
+Sauna,2025-09-24,190,2,soleado,ninguno
+Sauna,2025-09-25,100,3,soleado,ninguno
+Sauna,2025-09-26,107,2,nublado,ninguno
+Sauna,2025-09-27,145,4,soleado,ninguno
+Sauna,2025-09-28,108,2,nublado,ninguno
+Sauna,2025-09-29,199,4,soleado,ninguno
+Sauna,2025-09-30,175,3,soleado,ninguno
+Ontario,2025-09-01,197,2,nublado,ninguno
+Ontario,2025-09-02,149,3,nublado,festivo
+Ontario,2025-09-03,160,3,nublado,ninguno
+Ontario,2025-09-04,192,3,nublado,ninguno
+Ontario,2025-09-05,99,2,soleado,ninguno
+Ontario,2025-09-06,81,2,soleado,ninguno
+Ontario,2025-09-07,95,2,nublado,feria
+Ontario,2025-09-08,154,2,soleado,ninguno
+Ontario,2025-09-09,194,4,soleado,ninguno
+Ontario,2025-09-10,172,3,soleado,festivo
+Ontario,2025-09-11,188,2,soleado,ninguno
+Ontario,2025-09-12,138,3,nublado,ninguno
+Ontario,2025-09-13,99,3,nublado,ninguno
+Ontario,2025-09-14,95,4,soleado,ninguno
+Ontario,2025-09-15,182,3,soleado,ninguno
+Ontario,2025-09-16,94,3,soleado,feria
+Ontario,2025-09-17,85,4,nublado,ninguno
+Ontario,2025-09-18,177,4,soleado,ninguno
+Ontario,2025-09-19,102,2,soleado,feria
+Ontario,2025-09-20,96,4,nublado,ninguno
+Ontario,2025-09-21,188,3,nublado,festivo
+Ontario,2025-09-22,92,4,nublado,ninguno
+Ontario,2025-09-23,106,3,soleado,ninguno
+Ontario,2025-09-24,88,4,nublado,ninguno
+Ontario,2025-09-25,199,2,soleado,feria
+Ontario,2025-09-26,162,2,nublado,ninguno
+Ontario,2025-09-27,157,3,soleado,ninguno
+Ontario,2025-09-28,102,4,nublado,ninguno
+Ontario,2025-09-29,105,3,nublado,ninguno
+Ontario,2025-09-30,134,2,nublado,feria
+Patara,2025-09-01,131,2,soleado,ninguno
+Patara,2025-09-02,181,3,nublado,feria
+Patara,2025-09-03,154,2,nublado,ninguno
+Patara,2025-09-04,125,2,nublado,ninguno
+Patara,2025-09-05,183,2,soleado,ninguno
+Patara,2025-09-06,171,2,soleado,feria
+Patara,2025-09-07,107,2,nublado,ninguno
+Patara,2025-09-08,140,2,soleado,ninguno
+Patara,2025-09-09,92,4,soleado,ninguno
+Patara,2025-09-10,88,3,soleado,ninguno
+Patara,2025-09-11,178,3,nublado,ninguno
+Patara,2025-09-12,143,2,soleado,ninguno
+Patara,2025-09-13,119,4,soleado,ninguno
+Patara,2025-09-14,178,4,soleado,feria
+Patara,2025-09-15,86,4,nublado,ninguno
+Patara,2025-09-16,90,3,soleado,ninguno
+Patara,2025-09-17,90,2,soleado,feria
+Patara,2025-09-18,118,4,nublado,ninguno
+Patara,2025-09-19,174,2,soleado,feria
+Patara,2025-09-20,157,4,nublado,feria
+Patara,2025-09-21,102,3,nublado,ninguno
+Patara,2025-09-22,93,2,soleado,feria
+Patara,2025-09-23,141,4,soleado,ninguno
+Patara,2025-09-24,193,3,soleado,ninguno
+Patara,2025-09-25,192,3,nublado,ninguno
+Patara,2025-09-26,101,3,nublado,ninguno
+Patara,2025-09-27,80,4,soleado,feria
+Patara,2025-09-28,96,3,soleado,ninguno
+Patara,2025-09-29,93,3,nublado,ninguno
+Patara,2025-09-30,113,3,nublado,ninguno
+Cerro Yabricoya,2025-09-01,179,4,nublado,feria
+Cerro Yabricoya,2025-09-02,163,4,soleado,ninguno
+Cerro Yabricoya,2025-09-03,121,4,nublado,ninguno
+Cerro Yabricoya,2025-09-04,139,4,soleado,ninguno
+Cerro Yabricoya,2025-09-05,172,2,nublado,ninguno
+Cerro Yabricoya,2025-09-06,160,4,nublado,ninguno
+Cerro Yabricoya,2025-09-07,119,2,soleado,festivo
+Cerro Yabricoya,2025-09-08,152,2,nublado,ninguno
+Cerro Yabricoya,2025-09-09,195,2,soleado,ninguno
+Cerro Yabricoya,2025-09-10,115,3,soleado,ninguno
+Cerro Yabricoya,2025-09-11,172,2,soleado,ninguno
+Cerro Yabricoya,2025-09-12,113,4,nublado,ninguno
+Cerro Yabricoya,2025-09-13,95,3,nublado,ninguno
+Cerro Yabricoya,2025-09-14,160,2,nublado,feria
+Cerro Yabricoya,2025-09-15,177,4,soleado,ninguno
+Cerro Yabricoya,2025-09-16,131,3,nublado,ninguno
+Cerro Yabricoya,2025-09-17,175,2,soleado,feria
+Cerro Yabricoya,2025-09-18,186,2,nublado,ninguno
+Cerro Yabricoya,2025-09-19,109,4,soleado,feria
+Cerro Yabricoya,2025-09-20,126,4,soleado,ninguno
+Cerro Yabricoya,2025-09-21,149,2,nublado,ninguno
+Cerro Yabricoya,2025-09-22,154,2,nublado,ninguno
+Cerro Yabricoya,2025-09-23,121,4,soleado,festivo
+Cerro Yabricoya,2025-09-24,191,4,nublado,ninguno
+Cerro Yabricoya,2025-09-25,175,4,nublado,festivo
+Cerro Yabricoya,2025-09-26,183,3,soleado,feria
+Cerro Yabricoya,2025-09-27,100,4,nublado,ninguno
+Cerro Yabricoya,2025-09-28,159,2,nublado,ninguno
+Cerro Yabricoya,2025-09-29,102,4,soleado,feria
+Cerro Yabricoya,2025-09-30,136,2,soleado,ninguno
+Chiza,2025-09-01,164,4,soleado,ninguno
+Chiza,2025-09-02,174,3,soleado,feria
+Chiza,2025-09-03,133,2,nublado,ninguno
+Chiza,2025-09-04,131,3,nublado,ninguno
+Chiza,2025-09-05,163,4,soleado,ninguno
+Chiza,2025-09-06,155,3,soleado,ninguno
+Chiza,2025-09-07,82,3,nublado,ninguno
+Chiza,2025-09-08,126,2,soleado,ninguno
+Chiza,2025-09-09,176,4,soleado,ninguno
+Chiza,2025-09-10,150,2,soleado,festivo
+Chiza,2025-09-11,143,4,nublado,festivo
+Chiza,2025-09-12,91,4,soleado,ninguno
+Chiza,2025-09-13,105,4,nublado,festivo
+Chiza,2025-09-14,184,4,nublado,ninguno
+Chiza,2025-09-15,193,3,soleado,ninguno
+Chiza,2025-09-16,94,2,soleado,feria
+Chiza,2025-09-17,138,4,nublado,ninguno
+Chiza,2025-09-18,98,3,nublado,ninguno
+Chiza,2025-09-19,109,4,nublado,ninguno
+Chiza,2025-09-20,85,4,nublado,feria
+Chiza,2025-09-21,196,2,nublado,ninguno
+Chiza,2025-09-22,197,2,soleado,festivo
+Chiza,2025-09-23,85,2,soleado,ninguno
+Chiza,2025-09-24,168,3,soleado,ninguno
+Chiza,2025-09-25,191,4,soleado,ninguno
+Chiza,2025-09-26,109,3,nublado,ninguno
+Chiza,2025-09-27,165,4,nublado,ninguno
+Chiza,2025-09-28,87,4,soleado,ninguno
+Chiza,2025-09-29,198,3,soleado,ninguno
+Chiza,2025-09-30,135,3,nublado,ninguno
+Chauca,2025-09-01,163,4,nublado,ninguno
+Chauca,2025-09-02,143,4,nublado,feria
+Chauca,2025-09-03,186,2,nublado,ninguno
+Chauca,2025-09-04,85,4,nublado,festivo
+Chauca,2025-09-05,193,2,nublado,ninguno
+Chauca,2025-09-06,98,4,nublado,ninguno
+Chauca,2025-09-07,169,4,soleado,ninguno
+Chauca,2025-09-08,116,4,soleado,feria
+Chauca,2025-09-09,160,2,nublado,feria
+Chauca,2025-09-10,124,3,soleado,ninguno
+Chauca,2025-09-11,82,2,soleado,feria
+Chauca,2025-09-12,166,3,soleado,ninguno
+Chauca,2025-09-13,173,2,nublado,ninguno
+Chauca,2025-09-14,136,4,nublado,ninguno
+Chauca,2025-09-15,171,3,nublado,ninguno
+Chauca,2025-09-16,152,2,nublado,feria
+Chauca,2025-09-17,85,4,nublado,ninguno
+Chauca,2025-09-18,150,3,soleado,ninguno
+Chauca,2025-09-19,97,4,nublado,ninguno
+Chauca,2025-09-20,196,3,soleado,ninguno
+Chauca,2025-09-21,133,4,nublado,ninguno
+Chauca,2025-09-22,190,4,nublado,ninguno
+Chauca,2025-09-23,120,4,nublado,festivo
+Chauca,2025-09-24,154,4,nublado,ninguno
+Chauca,2025-09-25,185,3,soleado,ninguno
+Chauca,2025-09-26,162,3,soleado,ninguno
+Chauca,2025-09-27,84,3,nublado,ninguno
+Chauca,2025-09-28,136,4,nublado,feria
+Chauca,2025-09-29,131,2,soleado,feria
+Chauca,2025-09-30,139,2,soleado,ninguno
+Calaunsa,2025-09-01,96,2,soleado,ninguno
+Calaunsa,2025-09-02,154,2,soleado,ninguno
+Calaunsa,2025-09-03,82,4,soleado,ninguno
+Calaunsa,2025-09-04,93,4,nublado,ninguno
+Calaunsa,2025-09-05,118,2,soleado,ninguno
+Calaunsa,2025-09-06,177,3,nublado,ninguno
+Calaunsa,2025-09-07,124,2,soleado,ninguno
+Calaunsa,2025-09-08,142,2,soleado,ninguno
+Calaunsa,2025-09-09,168,3,soleado,feria
+Calaunsa,2025-09-10,132,2,soleado,ninguno
+Calaunsa,2025-09-11,111,3,soleado,ninguno
+Calaunsa,2025-09-12,104,4,soleado,ninguno
+Calaunsa,2025-09-13,151,3,nublado,feria
+Calaunsa,2025-09-14,178,3,nublado,feria
+Calaunsa,2025-09-15,156,3,soleado,feria
+Calaunsa,2025-09-16,135,4,soleado,feria
+Calaunsa,2025-09-17,148,4,soleado,ninguno
+Calaunsa,2025-09-18,96,4,soleado,ninguno
+Calaunsa,2025-09-19,155,4,soleado,ninguno
+Calaunsa,2025-09-20,154,3,nublado,ninguno
+Calaunsa,2025-09-21,183,3,soleado,ninguno
+Calaunsa,2025-09-22,102,2,nublado,ninguno
+Calaunsa,2025-09-23,132,2,soleado,ninguno
+Calaunsa,2025-09-24,121,4,soleado,ninguno
+Calaunsa,2025-09-25,171,4,nublado,ninguno
+Calaunsa,2025-09-26,148,3,soleado,ninguno
+Calaunsa,2025-09-27,177,3,nublado,ninguno
+Calaunsa,2025-09-28,140,4,nublado,ninguno
+Calaunsa,2025-09-29,83,2,soleado,ninguno
+Calaunsa,2025-09-30,147,4,soleado,ninguno
+Napa,2025-09-01,90,3,soleado,feria
+Napa,2025-09-02,187,2,soleado,ninguno
+Napa,2025-09-03,90,2,soleado,ninguno
+Napa,2025-09-04,152,4,nublado,ninguno
+Napa,2025-09-05,107,2,nublado,ninguno
+Napa,2025-09-06,184,2,nublado,ninguno
+Napa,2025-09-07,148,2,soleado,ninguno
+Napa,2025-09-08,117,2,soleado,feria
+Napa,2025-09-09,125,3,nublado,festivo
+Napa,2025-09-10,84,3,nublado,festivo
+Napa,2025-09-11,182,3,soleado,ninguno
+Napa,2025-09-12,85,2,nublado,ninguno
+Napa,2025-09-13,125,2,soleado,feria
+Napa,2025-09-14,112,4,nublado,feria
+Napa,2025-09-15,101,3,soleado,feria
+Napa,2025-09-16,159,3,nublado,festivo
+Napa,2025-09-17,199,4,nublado,ninguno
+Napa,2025-09-18,180,3,nublado,feria
+Napa,2025-09-19,135,2,nublado,ninguno
+Napa,2025-09-20,181,3,soleado,ninguno
+Napa,2025-09-21,102,4,nublado,feria
+Napa,2025-09-22,85,3,soleado,ninguno
+Napa,2025-09-23,84,2,nublado,feria
+Napa,2025-09-24,89,3,soleado,ninguno
+Napa,2025-09-25,89,2,nublado,feria
+Napa,2025-09-26,160,3,soleado,feria
+Napa,2025-09-27,84,3,nublado,ninguno
+Napa,2025-09-28,184,2,nublado,festivo
+Napa,2025-09-29,186,3,nublado,feria
+Napa,2025-09-30,182,4,soleado,ninguno
+Humberto Lizardi Flores,2025-09-01,152,3,nublado,ninguno
+Humberto Lizardi Flores,2025-09-02,131,2,soleado,feria
+Humberto Lizardi Flores,2025-09-03,177,3,soleado,ninguno
+Humberto Lizardi Flores,2025-09-04,197,4,nublado,ninguno
+Humberto Lizardi Flores,2025-09-05,115,4,nublado,festivo
+Humberto Lizardi Flores,2025-09-06,118,3,nublado,feria
+Humberto Lizardi Flores,2025-09-07,132,2,soleado,feria
+Humberto Lizardi Flores,2025-09-08,190,2,nublado,ninguno
+Humberto Lizardi Flores,2025-09-09,185,4,soleado,ninguno
+Humberto Lizardi Flores,2025-09-10,185,4,nublado,ninguno
+Humberto Lizardi Flores,2025-09-11,96,4,nublado,ninguno
+Humberto Lizardi Flores,2025-09-12,150,4,nublado,ninguno
+Humberto Lizardi Flores,2025-09-13,141,3,soleado,ninguno
+Humberto Lizardi Flores,2025-09-14,97,2,nublado,feria
+Humberto Lizardi Flores,2025-09-15,89,3,soleado,festivo
+Humberto Lizardi Flores,2025-09-16,150,4,soleado,feria
+Humberto Lizardi Flores,2025-09-17,88,2,soleado,ninguno
+Humberto Lizardi Flores,2025-09-18,96,3,nublado,feria
+Humberto Lizardi Flores,2025-09-19,177,4,nublado,ninguno
+Humberto Lizardi Flores,2025-09-20,105,2,nublado,festivo
+Humberto Lizardi Flores,2025-09-21,117,3,soleado,feria
+Humberto Lizardi Flores,2025-09-22,127,2,nublado,ninguno
+Humberto Lizardi Flores,2025-09-23,97,2,nublado,feria
+Humberto Lizardi Flores,2025-09-24,164,3,nublado,ninguno
+Humberto Lizardi Flores,2025-09-25,160,4,nublado,ninguno
+Humberto Lizardi Flores,2025-09-26,91,4,nublado,ninguno
+Humberto Lizardi Flores,2025-09-27,115,3,nublado,ninguno
+Humberto Lizardi Flores,2025-09-28,141,2,soleado,feria
+Humberto Lizardi Flores,2025-09-29,134,3,soleado,ninguno
+Humberto Lizardi Flores,2025-09-30,82,2,soleado,festivo
+Los Mineros,2025-09-01,141,3,nublado,feria
+Los Mineros,2025-09-02,119,2,nublado,ninguno
+Los Mineros,2025-09-03,164,4,nublado,ninguno
+Los Mineros,2025-09-04,91,4,nublado,ninguno
+Los Mineros,2025-09-05,123,4,nublado,ninguno
+Los Mineros,2025-09-06,175,4,nublado,ninguno
+Los Mineros,2025-09-07,151,3,nublado,ninguno
+Los Mineros,2025-09-08,131,2,soleado,ninguno
+Los Mineros,2025-09-09,148,2,soleado,ninguno
+Los Mineros,2025-09-10,134,2,soleado,ninguno
+Los Mineros,2025-09-11,101,2,soleado,ninguno
+Los Mineros,2025-09-12,93,3,soleado,ninguno
+Los Mineros,2025-09-13,173,2,nublado,ninguno
+Los Mineros,2025-09-14,170,3,nublado,ninguno
+Los Mineros,2025-09-15,140,2,soleado,ninguno
+Los Mineros,2025-09-16,198,3,soleado,feria
+Los Mineros,2025-09-17,109,4,soleado,ninguno
+Los Mineros,2025-09-18,143,2,nublado,ninguno
+Los Mineros,2025-09-19,108,3,nublado,ninguno
+Los Mineros,2025-09-20,158,4,soleado,festivo
+Los Mineros,2025-09-21,151,4,soleado,ninguno
+Los Mineros,2025-09-22,92,2,soleado,festivo
+Los Mineros,2025-09-23,193,4,soleado,ninguno
+Los Mineros,2025-09-24,190,4,soleado,festivo
+Los Mineros,2025-09-25,141,2,nublado,feria
+Los Mineros,2025-09-26,188,2,nublado,ninguno
+Los Mineros,2025-09-27,152,2,nublado,feria
+Los Mineros,2025-09-28,183,2,nublado,ninguno
+Los Mineros,2025-09-29,178,4,nublado,festivo
+Los Mineros,2025-09-30,100,2,soleado,ninguno
+Fanerita,2025-09-01,117,3,soleado,festivo
+Fanerita,2025-09-02,152,3,soleado,ninguno
+Fanerita,2025-09-03,104,3,soleado,ninguno
+Fanerita,2025-09-04,113,3,soleado,ninguno
+Fanerita,2025-09-05,137,4,soleado,ninguno
+Fanerita,2025-09-06,91,2,nublado,ninguno
+Fanerita,2025-09-07,94,3,soleado,ninguno
+Fanerita,2025-09-08,86,2,nublado,ninguno
+Fanerita,2025-09-09,81,2,soleado,ninguno
+Fanerita,2025-09-10,129,3,soleado,ninguno
+Fanerita,2025-09-11,87,2,soleado,ninguno
+Fanerita,2025-09-12,187,3,nublado,ninguno
+Fanerita,2025-09-13,124,3,nublado,festivo
+Fanerita,2025-09-14,194,4,nublado,festivo
+Fanerita,2025-09-15,132,3,nublado,ninguno
+Fanerita,2025-09-16,81,2,soleado,ninguno
+Fanerita,2025-09-17,167,3,soleado,ninguno
+Fanerita,2025-09-18,144,2,soleado,ninguno
+Fanerita,2025-09-19,122,4,soleado,ninguno
+Fanerita,2025-09-20,145,2,nublado,ninguno
+Fanerita,2025-09-21,112,3,soleado,ninguno
+Fanerita,2025-09-22,123,3,soleado,feria
+Fanerita,2025-09-23,195,2,nublado,ninguno
+Fanerita,2025-09-24,101,2,soleado,ninguno
+Fanerita,2025-09-25,133,4,nublado,ninguno
+Fanerita,2025-09-26,114,2,nublado,ninguno
+Fanerita,2025-09-27,128,3,nublado,festivo
+Fanerita,2025-09-28,83,3,nublado,ninguno
+Fanerita,2025-09-29,178,2,soleado,ninguno
+Fanerita,2025-09-30,139,4,soleado,ninguno
+Calcopirita,2025-09-01,191,4,nublado,ninguno
+Calcopirita,2025-09-02,103,4,nublado,ninguno
+Calcopirita,2025-09-03,140,2,soleado,ninguno
+Calcopirita,2025-09-04,138,4,nublado,ninguno
+Calcopirita,2025-09-05,148,2,nublado,ninguno
+Calcopirita,2025-09-06,114,4,soleado,ninguno
+Calcopirita,2025-09-07,168,4,nublado,ninguno
+Calcopirita,2025-09-08,188,2,nublado,ninguno
+Calcopirita,2025-09-09,127,2,nublado,ninguno
+Calcopirita,2025-09-10,126,4,soleado,feria
+Calcopirita,2025-09-11,99,4,nublado,ninguno
+Calcopirita,2025-09-12,155,2,soleado,ninguno
+Calcopirita,2025-09-13,91,2,nublado,ninguno
+Calcopirita,2025-09-14,171,2,nublado,festivo
+Calcopirita,2025-09-15,197,2,soleado,ninguno
+Calcopirita,2025-09-16,89,3,soleado,ninguno
+Calcopirita,2025-09-17,89,4,soleado,ninguno
+Calcopirita,2025-09-18,177,3,soleado,ninguno
+Calcopirita,2025-09-19,103,3,nublado,feria
+Calcopirita,2025-09-20,161,2,nublado,ninguno
+Calcopirita,2025-09-21,145,2,soleado,feria
+Calcopirita,2025-09-22,88,2,nublado,ninguno
+Calcopirita,2025-09-23,178,4,soleado,feria
+Calcopirita,2025-09-24,189,4,soleado,ninguno
+Calcopirita,2025-09-25,178,4,soleado,ninguno
+Calcopirita,2025-09-26,162,2,nublado,feria
+Calcopirita,2025-09-27,137,2,soleado,feria
+Calcopirita,2025-09-28,119,4,soleado,ninguno
+Calcopirita,2025-09-29,92,2,nublado,ninguno
+Calcopirita,2025-09-30,187,2,soleado,ninguno
+Crisocola,2025-09-01,112,3,nublado,feria
+Crisocola,2025-09-02,137,2,soleado,ninguno
+Crisocola,2025-09-03,169,3,nublado,ninguno
+Crisocola,2025-09-04,128,4,nublado,ninguno
+Crisocola,2025-09-05,112,2,soleado,feria
+Crisocola,2025-09-06,154,3,nublado,ninguno
+Crisocola,2025-09-07,98,2,soleado,ninguno
+Crisocola,2025-09-08,89,3,soleado,ninguno
+Crisocola,2025-09-09,128,2,nublado,ninguno
+Crisocola,2025-09-10,82,3,soleado,ninguno
+Crisocola,2025-09-11,91,3,nublado,festivo
+Crisocola,2025-09-12,188,4,nublado,ninguno
+Crisocola,2025-09-13,151,3,soleado,ninguno
+Crisocola,2025-09-14,97,2,nublado,festivo
+Crisocola,2025-09-15,103,3,nublado,ninguno
+Crisocola,2025-09-16,108,2,nublado,feria
+Crisocola,2025-09-17,80,2,nublado,ninguno
+Crisocola,2025-09-18,81,2,nublado,ninguno
+Crisocola,2025-09-19,184,2,nublado,festivo
+Crisocola,2025-09-20,150,2,soleado,feria
+Crisocola,2025-09-21,145,4,soleado,ninguno
+Crisocola,2025-09-22,137,2,nublado,ninguno
+Crisocola,2025-09-23,116,4,soleado,ninguno
+Crisocola,2025-09-24,88,2,soleado,ninguno
+Crisocola,2025-09-25,164,4,nublado,ninguno
+Crisocola,2025-09-26,124,4,soleado,ninguno
+Crisocola,2025-09-27,186,4,soleado,feria
+Crisocola,2025-09-28,109,3,soleado,ninguno
+Crisocola,2025-09-29,140,4,soleado,ninguno
+Crisocola,2025-09-30,99,3,nublado,ninguno
+Fanerita,2025-09-01,192,3,soleado,festivo
+Fanerita,2025-09-02,184,4,nublado,ninguno
+Fanerita,2025-09-03,123,4,nublado,feria
+Fanerita,2025-09-04,133,4,nublado,ninguno
+Fanerita,2025-09-05,181,3,nublado,festivo
+Fanerita,2025-09-06,158,4,nublado,ninguno
+Fanerita,2025-09-07,146,2,nublado,ninguno
+Fanerita,2025-09-08,178,2,nublado,festivo
+Fanerita,2025-09-09,94,4,nublado,ninguno
+Fanerita,2025-09-10,191,4,soleado,ninguno
+Fanerita,2025-09-11,147,3,nublado,ninguno
+Fanerita,2025-09-12,113,4,nublado,ninguno
+Fanerita,2025-09-13,97,3,soleado,feria
+Fanerita,2025-09-14,97,3,nublado,ninguno
+Fanerita,2025-09-15,160,2,soleado,festivo
+Fanerita,2025-09-16,143,4,soleado,ninguno
+Fanerita,2025-09-17,138,2,nublado,ninguno
+Fanerita,2025-09-18,109,3,soleado,ninguno
+Fanerita,2025-09-19,101,4,nublado,ninguno
+Fanerita,2025-09-20,190,4,nublado,ninguno
+Fanerita,2025-09-21,115,3,nublado,ninguno
+Fanerita,2025-09-22,176,2,nublado,feria
+Fanerita,2025-09-23,177,4,soleado,ninguno
+Fanerita,2025-09-24,80,4,soleado,feria
+Fanerita,2025-09-25,86,4,nublado,ninguno
+Fanerita,2025-09-26,195,2,soleado,ninguno
+Fanerita,2025-09-27,152,3,nublado,ninguno
+Fanerita,2025-09-28,171,3,soleado,ninguno
+Fanerita,2025-09-29,196,3,soleado,festivo
+Fanerita,2025-09-30,199,3,soleado,ninguno
+Sulfuros,2025-09-01,110,3,nublado,festivo
+Sulfuros,2025-09-02,134,3,nublado,ninguno
+Sulfuros,2025-09-03,92,2,soleado,feria
+Sulfuros,2025-09-04,91,2,nublado,ninguno
+Sulfuros,2025-09-05,170,2,nublado,ninguno
+Sulfuros,2025-09-06,84,3,soleado,ninguno
+Sulfuros,2025-09-07,148,3,nublado,ninguno
+Sulfuros,2025-09-08,83,2,nublado,festivo
+Sulfuros,2025-09-09,88,3,soleado,ninguno
+Sulfuros,2025-09-10,100,4,soleado,ninguno
+Sulfuros,2025-09-11,197,4,nublado,feria
+Sulfuros,2025-09-12,119,3,nublado,ninguno
+Sulfuros,2025-09-13,107,4,nublado,ninguno
+Sulfuros,2025-09-14,142,2,nublado,ninguno
+Sulfuros,2025-09-15,103,2,nublado,festivo
+Sulfuros,2025-09-16,175,3,soleado,feria
+Sulfuros,2025-09-17,175,4,soleado,ninguno
+Sulfuros,2025-09-18,121,2,nublado,ninguno
+Sulfuros,2025-09-19,110,4,nublado,ninguno
+Sulfuros,2025-09-20,96,4,nublado,ninguno
+Sulfuros,2025-09-21,187,3,soleado,ninguno
+Sulfuros,2025-09-22,195,2,soleado,ninguno
+Sulfuros,2025-09-23,148,3,soleado,feria
+Sulfuros,2025-09-24,175,2,soleado,ninguno
+Sulfuros,2025-09-25,172,2,nublado,ninguno
+Sulfuros,2025-09-26,161,4,nublado,feria
+Sulfuros,2025-09-27,157,3,soleado,ninguno
+Sulfuros,2025-09-28,106,3,nublado,ninguno
+Sulfuros,2025-09-29,145,3,nublado,ninguno
+Sulfuros,2025-09-30,90,3,soleado,ninguno
+Cuarzo,2025-09-01,195,3,nublado,ninguno
+Cuarzo,2025-09-02,96,2,soleado,ninguno
+Cuarzo,2025-09-03,93,2,soleado,ninguno
+Cuarzo,2025-09-04,103,2,nublado,ninguno
+Cuarzo,2025-09-05,99,4,soleado,ninguno
+Cuarzo,2025-09-06,188,4,nublado,feria
+Cuarzo,2025-09-07,125,2,nublado,ninguno
+Cuarzo,2025-09-08,181,4,nublado,ninguno
+Cuarzo,2025-09-09,112,2,nublado,ninguno
+Cuarzo,2025-09-10,90,4,nublado,ninguno
+Cuarzo,2025-09-11,189,3,nublado,ninguno
+Cuarzo,2025-09-12,114,2,soleado,ninguno
+Cuarzo,2025-09-13,181,3,nublado,ninguno
+Cuarzo,2025-09-14,114,2,soleado,festivo
+Cuarzo,2025-09-15,145,4,nublado,ninguno
+Cuarzo,2025-09-16,110,4,soleado,feria
+Cuarzo,2025-09-17,166,3,nublado,ninguno
+Cuarzo,2025-09-18,84,4,soleado,ninguno
+Cuarzo,2025-09-19,163,2,nublado,festivo
+Cuarzo,2025-09-20,158,4,soleado,ninguno
+Cuarzo,2025-09-21,199,3,soleado,ninguno
+Cuarzo,2025-09-22,170,4,soleado,ninguno
+Cuarzo,2025-09-23,124,3,soleado,festivo
+Cuarzo,2025-09-24,196,2,nublado,ninguno
+Cuarzo,2025-09-25,89,4,nublado,ninguno
+Cuarzo,2025-09-26,168,3,nublado,ninguno
+Cuarzo,2025-09-27,136,2,nublado,ninguno
+Cuarzo,2025-09-28,183,4,nublado,ninguno
+Cuarzo,2025-09-29,172,2,nublado,festivo
+Cuarzo,2025-09-30,156,3,soleado,festivo
+Filones,2025-09-01,125,3,nublado,ninguno
+Filones,2025-09-02,169,3,nublado,ninguno
+Filones,2025-09-03,169,3,soleado,ninguno
+Filones,2025-09-04,173,4,soleado,ninguno
+Filones,2025-09-05,100,2,nublado,ninguno
+Filones,2025-09-06,141,4,soleado,ninguno
+Filones,2025-09-07,81,4,nublado,ninguno
+Filones,2025-09-08,172,2,soleado,ninguno
+Filones,2025-09-09,186,4,soleado,ninguno
+Filones,2025-09-10,126,2,soleado,ninguno
+Filones,2025-09-11,169,3,soleado,feria
+Filones,2025-09-12,169,3,soleado,ninguno
+Filones,2025-09-13,132,2,nublado,ninguno
+Filones,2025-09-14,152,4,soleado,ninguno
+Filones,2025-09-15,131,3,nublado,ninguno
+Filones,2025-09-16,183,2,nublado,ninguno
+Filones,2025-09-17,117,2,soleado,ninguno
+Filones,2025-09-18,170,3,soleado,feria
+Filones,2025-09-19,91,2,soleado,ninguno
+Filones,2025-09-20,168,3,nublado,ninguno
+Filones,2025-09-21,157,3,nublado,ninguno
+Filones,2025-09-22,107,2,soleado,ninguno
+Filones,2025-09-23,94,4,soleado,ninguno
+Filones,2025-09-24,146,3,nublado,ninguno
+Filones,2025-09-25,135,2,soleado,feria
+Filones,2025-09-26,123,3,nublado,ninguno
+Filones,2025-09-27,164,3,soleado,feria
+Filones,2025-09-28,160,3,nublado,ninguno
+Filones,2025-09-29,175,3,nublado,feria
+Filones,2025-09-30,186,3,soleado,ninguno
+Pje. Granodiorita,2025-09-01,101,4,soleado,feria
+Pje. Granodiorita,2025-09-02,89,4,soleado,ninguno
+Pje. Granodiorita,2025-09-03,154,2,soleado,ninguno
+Pje. Granodiorita,2025-09-04,147,2,nublado,feria
+Pje. Granodiorita,2025-09-05,99,3,soleado,ninguno
+Pje. Granodiorita,2025-09-06,173,2,nublado,ninguno
+Pje. Granodiorita,2025-09-07,158,4,nublado,ninguno
+Pje. Granodiorita,2025-09-08,97,4,nublado,festivo
+Pje. Granodiorita,2025-09-09,189,2,nublado,feria
+Pje. Granodiorita,2025-09-10,109,3,nublado,festivo
+Pje. Granodiorita,2025-09-11,144,2,nublado,ninguno
+Pje. Granodiorita,2025-09-12,174,2,soleado,ninguno
+Pje. Granodiorita,2025-09-13,151,4,nublado,ninguno
+Pje. Granodiorita,2025-09-14,82,3,soleado,ninguno
+Pje. Granodiorita,2025-09-15,163,4,soleado,festivo
+Pje. Granodiorita,2025-09-16,87,4,soleado,feria
+Pje. Granodiorita,2025-09-17,143,4,soleado,ninguno
+Pje. Granodiorita,2025-09-18,156,2,nublado,ninguno
+Pje. Granodiorita,2025-09-19,143,3,soleado,feria
+Pje. Granodiorita,2025-09-20,184,2,nublado,ninguno
+Pje. Granodiorita,2025-09-21,146,2,nublado,festivo
+Pje. Granodiorita,2025-09-22,140,3,nublado,feria
+Pje. Granodiorita,2025-09-23,110,2,soleado,ninguno
+Pje. Granodiorita,2025-09-24,141,2,soleado,ninguno
+Pje. Granodiorita,2025-09-25,98,2,soleado,festivo
+Pje. Granodiorita,2025-09-26,140,2,soleado,feria
+Pje. Granodiorita,2025-09-27,83,4,nublado,festivo
+Pje. Granodiorita,2025-09-28,118,4,nublado,ninguno
+Pje. Granodiorita,2025-09-29,121,3,nublado,ninguno
+Pje. Granodiorita,2025-09-30,86,4,nublado,ninguno
+Azurita,2025-09-01,199,4,nublado,ninguno
+Azurita,2025-09-02,101,2,nublado,ninguno
+Azurita,2025-09-03,99,2,soleado,ninguno
+Azurita,2025-09-04,82,2,nublado,festivo
+Azurita,2025-09-05,160,4,soleado,ninguno
+Azurita,2025-09-06,177,3,soleado,ninguno
+Azurita,2025-09-07,168,2,soleado,feria
+Azurita,2025-09-08,102,2,soleado,ninguno
+Azurita,2025-09-09,106,2,soleado,ninguno
+Azurita,2025-09-10,94,2,soleado,ninguno
+Azurita,2025-09-11,90,2,soleado,ninguno
+Azurita,2025-09-12,138,4,nublado,feria
+Azurita,2025-09-13,115,2,nublado,feria
+Azurita,2025-09-14,194,2,nublado,feria
+Azurita,2025-09-15,89,3,nublado,feria
+Azurita,2025-09-16,119,2,soleado,ninguno
+Azurita,2025-09-17,135,3,nublado,festivo
+Azurita,2025-09-18,125,4,soleado,feria
+Azurita,2025-09-19,84,2,soleado,feria
+Azurita,2025-09-20,174,2,nublado,ninguno
+Azurita,2025-09-21,192,2,soleado,feria
+Azurita,2025-09-22,166,2,nublado,festivo
+Azurita,2025-09-23,161,4,soleado,ninguno
+Azurita,2025-09-24,122,2,nublado,ninguno
+Azurita,2025-09-25,161,3,nublado,ninguno
+Azurita,2025-09-26,137,4,nublado,ninguno
+Azurita,2025-09-27,114,4,nublado,ninguno
+Azurita,2025-09-28,166,2,nublado,ninguno
+Azurita,2025-09-29,123,2,soleado,ninguno
+Azurita,2025-09-30,148,4,nublado,festivo
+Pirita,2025-09-01,195,2,soleado,ninguno
+Pirita,2025-09-02,154,4,nublado,ninguno
+Pirita,2025-09-03,150,3,soleado,festivo
+Pirita,2025-09-04,158,4,soleado,ninguno
+Pirita,2025-09-05,98,4,soleado,ninguno
+Pirita,2025-09-06,180,2,nublado,ninguno
+Pirita,2025-09-07,110,3,soleado,ninguno
+Pirita,2025-09-08,129,3,nublado,ninguno
+Pirita,2025-09-09,152,3,soleado,ninguno
+Pirita,2025-09-10,147,3,nublado,ninguno
+Pirita,2025-09-11,114,3,soleado,ninguno
+Pirita,2025-09-12,186,4,nublado,ninguno
+Pirita,2025-09-13,153,4,soleado,ninguno
+Pirita,2025-09-14,199,2,soleado,ninguno
+Pirita,2025-09-15,99,3,nublado,ninguno
+Pirita,2025-09-16,176,2,nublado,ninguno
+Pirita,2025-09-17,169,2,soleado,ninguno
+Pirita,2025-09-18,178,3,nublado,ninguno
+Pirita,2025-09-19,154,4,nublado,ninguno
+Pirita,2025-09-20,153,2,nublado,ninguno
+Pirita,2025-09-21,153,3,soleado,festivo
+Pirita,2025-09-22,190,3,nublado,ninguno
+Pirita,2025-09-23,167,3,soleado,ninguno
+Pirita,2025-09-24,123,3,soleado,ninguno
+Pirita,2025-09-25,142,3,soleado,feria
+Pirita,2025-09-26,116,2,nublado,feria
+Pirita,2025-09-27,141,3,soleado,ninguno
+Pirita,2025-09-28,154,4,nublado,ninguno
+Pirita,2025-09-29,135,3,soleado,festivo
+Pirita,2025-09-30,165,4,soleado,ninguno
+Feldespato,2025-09-01,189,2,nublado,ninguno
+Feldespato,2025-09-02,181,2,soleado,ninguno
+Feldespato,2025-09-03,129,4,soleado,ninguno
+Feldespato,2025-09-04,164,4,soleado,ninguno
+Feldespato,2025-09-05,128,2,soleado,ninguno
+Feldespato,2025-09-06,151,4,nublado,ninguno
+Feldespato,2025-09-07,88,2,soleado,festivo
+Feldespato,2025-09-08,173,2,nublado,feria
+Feldespato,2025-09-09,117,4,soleado,ninguno
+Feldespato,2025-09-10,94,4,nublado,ninguno
+Feldespato,2025-09-11,183,4,nublado,feria
+Feldespato,2025-09-12,87,4,soleado,festivo
+Feldespato,2025-09-13,104,3,nublado,ninguno
+Feldespato,2025-09-14,90,4,nublado,feria
+Feldespato,2025-09-15,139,4,nublado,ninguno
+Feldespato,2025-09-16,144,2,soleado,festivo
+Feldespato,2025-09-17,98,4,nublado,ninguno
+Feldespato,2025-09-18,163,4,soleado,ninguno
+Feldespato,2025-09-19,131,4,soleado,ninguno
+Feldespato,2025-09-20,145,2,nublado,ninguno
+Feldespato,2025-09-21,185,4,nublado,ninguno
+Feldespato,2025-09-22,80,3,soleado,ninguno
+Feldespato,2025-09-23,122,2,soleado,ninguno
+Feldespato,2025-09-24,176,4,soleado,ninguno
+Feldespato,2025-09-25,162,2,nublado,ninguno
+Feldespato,2025-09-26,173,2,nublado,feria
+Feldespato,2025-09-27,187,4,soleado,festivo
+Feldespato,2025-09-28,185,3,nublado,ninguno
+Feldespato,2025-09-29,170,3,soleado,ninguno
+Feldespato,2025-09-30,193,2,soleado,ninguno
+Apilita,2025-09-01,188,3,soleado,ninguno
+Apilita,2025-09-02,188,2,nublado,ninguno
+Apilita,2025-09-03,81,3,nublado,feria
+Apilita,2025-09-04,96,4,nublado,ninguno
+Apilita,2025-09-05,148,2,nublado,festivo
+Apilita,2025-09-06,117,4,soleado,feria
+Apilita,2025-09-07,170,3,soleado,ninguno
+Apilita,2025-09-08,192,4,soleado,ninguno
+Apilita,2025-09-09,128,2,nublado,festivo
+Apilita,2025-09-10,120,4,nublado,ninguno
+Apilita,2025-09-11,154,4,soleado,feria
+Apilita,2025-09-12,158,4,soleado,ninguno
+Apilita,2025-09-13,121,2,nublado,ninguno
+Apilita,2025-09-14,93,4,soleado,ninguno
+Apilita,2025-09-15,115,4,nublado,ninguno
+Apilita,2025-09-16,134,4,soleado,ninguno
+Apilita,2025-09-17,153,4,nublado,feria
+Apilita,2025-09-18,170,2,soleado,festivo
+Apilita,2025-09-19,132,3,soleado,ninguno
+Apilita,2025-09-20,160,3,nublado,feria
+Apilita,2025-09-21,109,4,nublado,feria
+Apilita,2025-09-22,173,2,soleado,ninguno
+Apilita,2025-09-23,101,4,nublado,ninguno
+Apilita,2025-09-24,130,3,nublado,ninguno
+Apilita,2025-09-25,182,3,nublado,feria
+Apilita,2025-09-26,137,2,nublado,ninguno
+Apilita,2025-09-27,191,3,nublado,ninguno
+Apilita,2025-09-28,90,4,soleado,ninguno
+Apilita,2025-09-29,189,2,soleado,ninguno
+Apilita,2025-09-30,182,3,nublado,feria
+Matendisita,2025-09-01,123,3,nublado,ninguno
+Matendisita,2025-09-02,115,4,soleado,feria
+Matendisita,2025-09-03,163,4,soleado,ninguno
+Matendisita,2025-09-04,132,4,soleado,ninguno
+Matendisita,2025-09-05,152,3,nublado,ninguno
+Matendisita,2025-09-06,138,4,nublado,feria
+Matendisita,2025-09-07,144,4,nublado,festivo
+Matendisita,2025-09-08,90,3,soleado,ninguno
+Matendisita,2025-09-09,104,3,nublado,ninguno
+Matendisita,2025-09-10,194,3,soleado,ninguno
+Matendisita,2025-09-11,194,4,nublado,feria
+Matendisita,2025-09-12,178,2,nublado,ninguno
+Matendisita,2025-09-13,185,4,soleado,ninguno
+Matendisita,2025-09-14,115,3,soleado,feria
+Matendisita,2025-09-15,113,3,nublado,ninguno
+Matendisita,2025-09-16,135,2,nublado,ninguno
+Matendisita,2025-09-17,119,4,soleado,ninguno
+Matendisita,2025-09-18,199,2,nublado,ninguno
+Matendisita,2025-09-19,99,4,soleado,festivo
+Matendisita,2025-09-20,154,2,nublado,feria
+Matendisita,2025-09-21,132,2,nublado,ninguno
+Matendisita,2025-09-22,100,4,nublado,feria
+Matendisita,2025-09-23,128,3,nublado,ninguno
+Matendisita,2025-09-24,119,2,nublado,ninguno
+Matendisita,2025-09-25,135,3,nublado,ninguno
+Matendisita,2025-09-26,169,2,soleado,ninguno
+Matendisita,2025-09-27,171,2,nublado,feria
+Matendisita,2025-09-28,183,3,nublado,ninguno
+Matendisita,2025-09-29,168,3,nublado,ninguno
+Matendisita,2025-09-30,115,3,nublado,ninguno
+Malaquita,2025-09-01,128,3,soleado,ninguno
+Malaquita,2025-09-02,179,2,soleado,ninguno
+Malaquita,2025-09-03,138,2,soleado,festivo
+Malaquita,2025-09-04,189,2,nublado,ninguno
+Malaquita,2025-09-05,190,4,nublado,ninguno
+Malaquita,2025-09-06,182,4,soleado,festivo
+Malaquita,2025-09-07,112,4,nublado,ninguno
+Malaquita,2025-09-08,195,3,nublado,ninguno
+Malaquita,2025-09-09,195,2,nublado,feria
+Malaquita,2025-09-10,160,3,soleado,ninguno
+Malaquita,2025-09-11,80,2,nublado,ninguno
+Malaquita,2025-09-12,115,4,soleado,ninguno
+Malaquita,2025-09-13,87,4,nublado,ninguno
+Malaquita,2025-09-14,186,3,soleado,ninguno
+Malaquita,2025-09-15,186,4,soleado,ninguno
+Malaquita,2025-09-16,86,4,soleado,ninguno
+Malaquita,2025-09-17,163,3,nublado,feria
+Malaquita,2025-09-18,115,4,nublado,ninguno
+Malaquita,2025-09-19,170,2,soleado,ninguno
+Malaquita,2025-09-20,192,4,soleado,ninguno
+Malaquita,2025-09-21,163,3,soleado,ninguno
+Malaquita,2025-09-22,161,2,nublado,feria
+Malaquita,2025-09-23,100,3,nublado,ninguno
+Malaquita,2025-09-24,132,3,nublado,ninguno
+Malaquita,2025-09-25,153,2,soleado,feria
+Malaquita,2025-09-26,108,2,soleado,ninguno
+Malaquita,2025-09-27,95,4,nublado,ninguno
+Malaquita,2025-09-28,174,3,nublado,ninguno
+Malaquita,2025-09-29,107,3,nublado,ninguno
+Malaquita,2025-09-30,183,4,soleado,feria
+Cinco Sur,2025-09-01,183,4,nublado,festivo
+Cinco Sur,2025-09-02,90,2,soleado,ninguno
+Cinco Sur,2025-09-03,169,4,soleado,feria
+Cinco Sur,2025-09-04,149,2,nublado,ninguno
+Cinco Sur,2025-09-05,127,3,nublado,ninguno
+Cinco Sur,2025-09-06,126,3,soleado,ninguno
+Cinco Sur,2025-09-07,87,4,nublado,ninguno
+Cinco Sur,2025-09-08,193,4,soleado,feria
+Cinco Sur,2025-09-09,165,2,soleado,ninguno
+Cinco Sur,2025-09-10,113,4,nublado,feria
+Cinco Sur,2025-09-11,164,3,nublado,ninguno
+Cinco Sur,2025-09-12,122,3,soleado,ninguno
+Cinco Sur,2025-09-13,179,3,soleado,ninguno
+Cinco Sur,2025-09-14,191,3,nublado,ninguno
+Cinco Sur,2025-09-15,150,2,soleado,ninguno
+Cinco Sur,2025-09-16,138,3,soleado,ninguno
+Cinco Sur,2025-09-17,84,4,soleado,ninguno
+Cinco Sur,2025-09-18,196,3,soleado,ninguno
+Cinco Sur,2025-09-19,130,3,soleado,feria
+Cinco Sur,2025-09-20,143,2,soleado,ninguno
+Cinco Sur,2025-09-21,122,2,nublado,festivo
+Cinco Sur,2025-09-22,141,3,soleado,ninguno
+Cinco Sur,2025-09-23,125,3,soleado,ninguno
+Cinco Sur,2025-09-24,121,2,nublado,ninguno
+Cinco Sur,2025-09-25,146,2,soleado,ninguno
+Cinco Sur,2025-09-26,124,2,nublado,ninguno
+Cinco Sur,2025-09-27,180,4,soleado,ninguno
+Cinco Sur,2025-09-28,97,3,nublado,ninguno
+Cinco Sur,2025-09-29,92,4,nublado,ninguno
+Cinco Sur,2025-09-30,168,2,nublado,ninguno
+Tres Marias,2025-09-01,184,4,nublado,feria
+Tres Marias,2025-09-02,96,2,soleado,festivo
+Tres Marias,2025-09-03,134,2,nublado,ninguno
+Tres Marias,2025-09-04,129,3,soleado,ninguno
+Tres Marias,2025-09-05,131,3,nublado,feria
+Tres Marias,2025-09-06,129,3,nublado,ninguno
+Tres Marias,2025-09-07,165,4,soleado,ninguno
+Tres Marias,2025-09-08,83,2,soleado,ninguno
+Tres Marias,2025-09-09,170,2,soleado,ninguno
+Tres Marias,2025-09-10,180,4,nublado,ninguno
+Tres Marias,2025-09-11,180,4,nublado,ninguno
+Tres Marias,2025-09-12,177,2,soleado,ninguno
+Tres Marias,2025-09-13,173,4,nublado,ninguno
+Tres Marias,2025-09-14,116,4,soleado,ninguno
+Tres Marias,2025-09-15,176,4,soleado,ninguno
+Tres Marias,2025-09-16,181,3,soleado,festivo
+Tres Marias,2025-09-17,141,2,soleado,ninguno
+Tres Marias,2025-09-18,115,3,soleado,ninguno
+Tres Marias,2025-09-19,112,3,nublado,ninguno
+Tres Marias,2025-09-20,173,2,nublado,ninguno
+Tres Marias,2025-09-21,127,4,nublado,feria
+Tres Marias,2025-09-22,192,2,soleado,ninguno
+Tres Marias,2025-09-23,184,4,nublado,feria
+Tres Marias,2025-09-24,140,3,soleado,festivo
+Tres Marias,2025-09-25,106,3,soleado,ninguno
+Tres Marias,2025-09-26,118,4,nublado,ninguno
+Tres Marias,2025-09-27,130,3,nublado,ninguno
+Tres Marias,2025-09-28,163,2,nublado,ninguno
+Tres Marias,2025-09-29,119,4,soleado,ninguno
+Tres Marias,2025-09-30,115,3,nublado,ninguno
+Avenida Proyectada,2025-09-01,152,4,soleado,ninguno
+Avenida Proyectada,2025-09-02,195,2,nublado,ninguno
+Avenida Proyectada,2025-09-03,139,2,soleado,festivo
+Avenida Proyectada,2025-09-04,198,4,nublado,ninguno
+Avenida Proyectada,2025-09-05,173,3,soleado,ninguno
+Avenida Proyectada,2025-09-06,179,2,soleado,ninguno
+Avenida Proyectada,2025-09-07,161,3,nublado,ninguno
+Avenida Proyectada,2025-09-08,107,3,nublado,feria
+Avenida Proyectada,2025-09-09,186,2,soleado,ninguno
+Avenida Proyectada,2025-09-10,94,3,soleado,feria
+Avenida Proyectada,2025-09-11,129,4,soleado,feria
+Avenida Proyectada,2025-09-12,94,2,nublado,feria
+Avenida Proyectada,2025-09-13,173,2,soleado,ninguno
+Avenida Proyectada,2025-09-14,180,2,soleado,ninguno
+Avenida Proyectada,2025-09-15,87,4,soleado,feria
+Avenida Proyectada,2025-09-16,84,3,nublado,ninguno
+Avenida Proyectada,2025-09-17,169,4,soleado,ninguno
+Avenida Proyectada,2025-09-18,95,4,nublado,feria
+Avenida Proyectada,2025-09-19,154,2,nublado,feria
+Avenida Proyectada,2025-09-20,106,3,nublado,ninguno
+Avenida Proyectada,2025-09-21,129,4,nublado,festivo
+Avenida Proyectada,2025-09-22,99,4,soleado,festivo
+Avenida Proyectada,2025-09-23,175,3,soleado,ninguno
+Avenida Proyectada,2025-09-24,96,4,nublado,festivo
+Avenida Proyectada,2025-09-25,165,3,nublado,ninguno
+Avenida Proyectada,2025-09-26,162,4,nublado,ninguno
+Avenida Proyectada,2025-09-27,120,2,soleado,ninguno
+Avenida Proyectada,2025-09-28,155,2,nublado,festivo
+Avenida Proyectada,2025-09-29,90,3,soleado,ninguno
+Avenida Proyectada,2025-09-30,181,3,nublado,ninguno
+Avenida Dos Oriente,2025-09-01,89,3,nublado,festivo
+Avenida Dos Oriente,2025-09-02,136,3,nublado,feria
+Avenida Dos Oriente,2025-09-03,163,2,soleado,festivo
+Avenida Dos Oriente,2025-09-04,184,4,nublado,ninguno
+Avenida Dos Oriente,2025-09-05,91,2,soleado,feria
+Avenida Dos Oriente,2025-09-06,120,3,soleado,ninguno
+Avenida Dos Oriente,2025-09-07,147,2,nublado,feria
+Avenida Dos Oriente,2025-09-08,118,3,soleado,ninguno
+Avenida Dos Oriente,2025-09-09,161,3,soleado,ninguno
+Avenida Dos Oriente,2025-09-10,95,2,soleado,ninguno
+Avenida Dos Oriente,2025-09-11,86,2,soleado,ninguno
+Avenida Dos Oriente,2025-09-12,112,3,nublado,ninguno
+Avenida Dos Oriente,2025-09-13,118,2,nublado,feria
+Avenida Dos Oriente,2025-09-14,179,2,soleado,ninguno
+Avenida Dos Oriente,2025-09-15,100,4,nublado,ninguno
+Avenida Dos Oriente,2025-09-16,196,3,nublado,ninguno
+Avenida Dos Oriente,2025-09-17,154,2,soleado,ninguno
+Avenida Dos Oriente,2025-09-18,167,3,soleado,ninguno
+Avenida Dos Oriente,2025-09-19,109,3,soleado,ninguno
+Avenida Dos Oriente,2025-09-20,129,2,soleado,ninguno
+Avenida Dos Oriente,2025-09-21,155,2,soleado,ninguno
+Avenida Dos Oriente,2025-09-22,188,2,nublado,feria
+Avenida Dos Oriente,2025-09-23,126,2,soleado,ninguno
+Avenida Dos Oriente,2025-09-24,153,4,nublado,feria
+Avenida Dos Oriente,2025-09-25,177,3,nublado,ninguno
+Avenida Dos Oriente,2025-09-26,168,2,soleado,ninguno
+Avenida Dos Oriente,2025-09-27,86,3,soleado,ninguno
+Avenida Dos Oriente,2025-09-28,134,2,nublado,feria
+Avenida Dos Oriente,2025-09-29,181,2,soleado,ninguno
+Avenida Dos Oriente,2025-09-30,81,4,soleado,ninguno
+Mar Tirreno,2025-09-01,197,3,nublado,ninguno
+Mar Tirreno,2025-09-02,103,2,soleado,ninguno
+Mar Tirreno,2025-09-03,139,4,nublado,ninguno
+Mar Tirreno,2025-09-04,95,3,nublado,ninguno
+Mar Tirreno,2025-09-05,158,2,nublado,ninguno
+Mar Tirreno,2025-09-06,94,2,nublado,ninguno
+Mar Tirreno,2025-09-07,93,2,nublado,ninguno
+Mar Tirreno,2025-09-08,178,3,nublado,ninguno
+Mar Tirreno,2025-09-09,178,3,nublado,ninguno
+Mar Tirreno,2025-09-10,150,2,soleado,festivo
+Mar Tirreno,2025-09-11,132,4,soleado,feria
+Mar Tirreno,2025-09-12,179,4,nublado,ninguno
+Mar Tirreno,2025-09-13,185,3,nublado,ninguno
+Mar Tirreno,2025-09-14,91,2,nublado,ninguno
+Mar Tirreno,2025-09-15,150,3,soleado,ninguno
+Mar Tirreno,2025-09-16,80,4,soleado,ninguno
+Mar Tirreno,2025-09-17,140,2,nublado,ninguno
+Mar Tirreno,2025-09-18,116,4,nublado,ninguno
+Mar Tirreno,2025-09-19,175,4,soleado,ninguno
+Mar Tirreno,2025-09-20,151,2,soleado,feria
+Mar Tirreno,2025-09-21,195,4,soleado,ninguno
+Mar Tirreno,2025-09-22,125,2,soleado,ninguno
+Mar Tirreno,2025-09-23,183,4,nublado,ninguno
+Mar Tirreno,2025-09-24,106,2,nublado,ninguno
+Mar Tirreno,2025-09-25,102,3,soleado,ninguno
+Mar Tirreno,2025-09-26,196,4,soleado,ninguno
+Mar Tirreno,2025-09-27,132,3,nublado,ninguno
+Mar Tirreno,2025-09-28,120,2,soleado,feria
+Mar Tirreno,2025-09-29,163,2,nublado,feria
+Mar Tirreno,2025-09-30,128,3,nublado,feria
+Mar Mediterráneo,2025-09-01,81,2,nublado,festivo
+Mar Mediterráneo,2025-09-02,95,4,soleado,festivo
+Mar Mediterráneo,2025-09-03,117,2,nublado,ninguno
+Mar Mediterráneo,2025-09-04,133,2,nublado,ninguno
+Mar Mediterráneo,2025-09-05,109,3,nublado,ninguno
+Mar Mediterráneo,2025-09-06,166,2,nublado,festivo
+Mar Mediterráneo,2025-09-07,91,2,soleado,ninguno
+Mar Mediterráneo,2025-09-08,83,4,soleado,ninguno
+Mar Mediterráneo,2025-09-09,183,2,nublado,feria
+Mar Mediterráneo,2025-09-10,122,4,soleado,ninguno
+Mar Mediterráneo,2025-09-11,182,3,soleado,feria
+Mar Mediterráneo,2025-09-12,117,4,soleado,ninguno
+Mar Mediterráneo,2025-09-13,132,4,nublado,ninguno
+Mar Mediterráneo,2025-09-14,126,2,soleado,ninguno
+Mar Mediterráneo,2025-09-15,197,3,soleado,feria
+Mar Mediterráneo,2025-09-16,170,3,nublado,festivo
+Mar Mediterráneo,2025-09-17,144,2,soleado,festivo
+Mar Mediterráneo,2025-09-18,119,4,soleado,ninguno
+Mar Mediterráneo,2025-09-19,153,2,nublado,ninguno
+Mar Mediterráneo,2025-09-20,197,4,nublado,ninguno
+Mar Mediterráneo,2025-09-21,129,2,soleado,ninguno
+Mar Mediterráneo,2025-09-22,139,4,nublado,ninguno
+Mar Mediterráneo,2025-09-23,113,2,nublado,ninguno
+Mar Mediterráneo,2025-09-24,128,4,soleado,ninguno
+Mar Mediterráneo,2025-09-25,82,4,soleado,ninguno
+Mar Mediterráneo,2025-09-26,193,2,soleado,ninguno
+Mar Mediterráneo,2025-09-27,134,3,nublado,feria
+Mar Mediterráneo,2025-09-28,199,4,nublado,ninguno
+Mar Mediterráneo,2025-09-29,87,4,nublado,ninguno
+Mar Mediterráneo,2025-09-30,165,2,nublado,ninguno
+Mar Caspio,2025-09-01,184,2,nublado,ninguno
+Mar Caspio,2025-09-02,88,4,nublado,ninguno
+Mar Caspio,2025-09-03,159,2,nublado,ninguno
+Mar Caspio,2025-09-04,173,3,nublado,ninguno
+Mar Caspio,2025-09-05,98,3,soleado,ninguno
+Mar Caspio,2025-09-06,169,4,soleado,festivo
+Mar Caspio,2025-09-07,185,2,soleado,feria
+Mar Caspio,2025-09-08,131,2,soleado,festivo
+Mar Caspio,2025-09-09,111,2,soleado,ninguno
+Mar Caspio,2025-09-10,121,2,nublado,ninguno
+Mar Caspio,2025-09-11,129,2,soleado,feria
+Mar Caspio,2025-09-12,178,2,nublado,ninguno
+Mar Caspio,2025-09-13,149,3,soleado,ninguno
+Mar Caspio,2025-09-14,125,2,nublado,festivo
+Mar Caspio,2025-09-15,84,2,soleado,ninguno
+Mar Caspio,2025-09-16,82,3,soleado,ninguno
+Mar Caspio,2025-09-17,139,3,nublado,festivo
+Mar Caspio,2025-09-18,190,2,nublado,ninguno
+Mar Caspio,2025-09-19,175,3,soleado,feria
+Mar Caspio,2025-09-20,168,3,soleado,ninguno
+Mar Caspio,2025-09-21,196,3,nublado,ninguno
+Mar Caspio,2025-09-22,110,3,soleado,ninguno
+Mar Caspio,2025-09-23,84,3,soleado,ninguno
+Mar Caspio,2025-09-24,109,2,nublado,ninguno
+Mar Caspio,2025-09-25,155,3,nublado,feria
+Mar Caspio,2025-09-26,182,2,nublado,ninguno
+Mar Caspio,2025-09-27,175,2,nublado,ninguno
+Mar Caspio,2025-09-28,96,2,nublado,ninguno
+Mar Caspio,2025-09-29,137,2,soleado,ninguno
+Mar Caspio,2025-09-30,180,2,soleado,ninguno
+Mar Adriático,2025-09-01,124,2,soleado,ninguno
+Mar Adriático,2025-09-02,159,4,nublado,ninguno
+Mar Adriático,2025-09-03,145,2,soleado,ninguno
+Mar Adriático,2025-09-04,82,2,nublado,ninguno
+Mar Adriático,2025-09-05,179,2,nublado,feria
+Mar Adriático,2025-09-06,113,4,nublado,feria
+Mar Adriático,2025-09-07,146,4,nublado,ninguno
+Mar Adriático,2025-09-08,119,3,soleado,festivo
+Mar Adriático,2025-09-09,196,3,soleado,festivo
+Mar Adriático,2025-09-10,106,2,nublado,ninguno
+Mar Adriático,2025-09-11,191,4,nublado,ninguno
+Mar Adriático,2025-09-12,132,2,nublado,ninguno
+Mar Adriático,2025-09-13,166,3,soleado,ninguno
+Mar Adriático,2025-09-14,137,2,soleado,ninguno
+Mar Adriático,2025-09-15,195,2,nublado,ninguno
+Mar Adriático,2025-09-16,138,4,soleado,feria
+Mar Adriático,2025-09-17,150,4,nublado,ninguno
+Mar Adriático,2025-09-18,96,3,nublado,ninguno
+Mar Adriático,2025-09-19,104,2,soleado,ninguno
+Mar Adriático,2025-09-20,84,2,nublado,ninguno
+Mar Adriático,2025-09-21,165,4,nublado,feria
+Mar Adriático,2025-09-22,144,3,nublado,feria
+Mar Adriático,2025-09-23,131,2,nublado,feria
+Mar Adriático,2025-09-24,95,3,soleado,feria
+Mar Adriático,2025-09-25,187,4,soleado,ninguno
+Mar Adriático,2025-09-26,196,4,soleado,ninguno
+Mar Adriático,2025-09-27,137,3,nublado,ninguno
+Mar Adriático,2025-09-28,134,4,nublado,ninguno
+Mar Adriático,2025-09-29,110,3,soleado,ninguno
+Mar Adriático,2025-09-30,188,3,soleado,ninguno
+Mar Egeo,2025-09-01,149,4,soleado,ninguno
+Mar Egeo,2025-09-02,177,3,soleado,feria
+Mar Egeo,2025-09-03,100,3,nublado,festivo
+Mar Egeo,2025-09-04,103,4,nublado,feria
+Mar Egeo,2025-09-05,133,3,soleado,ninguno
+Mar Egeo,2025-09-06,129,4,soleado,ninguno
+Mar Egeo,2025-09-07,110,4,nublado,ninguno
+Mar Egeo,2025-09-08,118,4,nublado,ninguno
+Mar Egeo,2025-09-09,189,3,nublado,feria
+Mar Egeo,2025-09-10,174,4,nublado,festivo
+Mar Egeo,2025-09-11,158,4,soleado,feria
+Mar Egeo,2025-09-12,163,3,nublado,festivo
+Mar Egeo,2025-09-13,183,4,nublado,ninguno
+Mar Egeo,2025-09-14,80,3,nublado,ninguno
+Mar Egeo,2025-09-15,151,2,nublado,ninguno
+Mar Egeo,2025-09-16,196,2,nublado,feria
+Mar Egeo,2025-09-17,106,3,nublado,ninguno
+Mar Egeo,2025-09-18,185,4,soleado,feria
+Mar Egeo,2025-09-19,157,4,nublado,ninguno
+Mar Egeo,2025-09-20,179,2,soleado,feria
+Mar Egeo,2025-09-21,94,3,soleado,ninguno
+Mar Egeo,2025-09-22,167,2,nublado,ninguno
+Mar Egeo,2025-09-23,123,4,soleado,ninguno
+Mar Egeo,2025-09-24,117,4,nublado,ninguno
+Mar Egeo,2025-09-25,105,3,nublado,ninguno
+Mar Egeo,2025-09-26,87,4,soleado,ninguno
+Mar Egeo,2025-09-27,188,3,soleado,feria
+Mar Egeo,2025-09-28,104,4,nublado,ninguno
+Mar Egeo,2025-09-29,120,2,soleado,ninguno
+Mar Egeo,2025-09-30,180,2,nublado,festivo
+Mar Del Nte.,2025-09-01,175,3,soleado,feria
+Mar Del Nte.,2025-09-02,155,2,soleado,festivo
+Mar Del Nte.,2025-09-03,84,3,soleado,ninguno
+Mar Del Nte.,2025-09-04,197,3,nublado,festivo
+Mar Del Nte.,2025-09-05,152,3,nublado,ninguno
+Mar Del Nte.,2025-09-06,156,4,soleado,ninguno
+Mar Del Nte.,2025-09-07,182,4,soleado,ninguno
+Mar Del Nte.,2025-09-08,136,3,nublado,ninguno
+Mar Del Nte.,2025-09-09,113,2,nublado,feria
+Mar Del Nte.,2025-09-10,96,3,soleado,feria
+Mar Del Nte.,2025-09-11,92,3,soleado,ninguno
+Mar Del Nte.,2025-09-12,169,4,nublado,feria
+Mar Del Nte.,2025-09-13,97,4,soleado,ninguno
+Mar Del Nte.,2025-09-14,139,2,nublado,feria
+Mar Del Nte.,2025-09-15,104,3,soleado,ninguno
+Mar Del Nte.,2025-09-16,117,2,nublado,ninguno
+Mar Del Nte.,2025-09-17,172,2,soleado,festivo
+Mar Del Nte.,2025-09-18,191,2,soleado,ninguno
+Mar Del Nte.,2025-09-19,184,2,soleado,ninguno
+Mar Del Nte.,2025-09-20,89,2,soleado,ninguno
+Mar Del Nte.,2025-09-21,140,2,nublado,ninguno
+Mar Del Nte.,2025-09-22,91,4,nublado,ninguno
+Mar Del Nte.,2025-09-23,103,4,nublado,feria
+Mar Del Nte.,2025-09-24,119,2,nublado,ninguno
+Mar Del Nte.,2025-09-25,112,4,soleado,ninguno
+Mar Del Nte.,2025-09-26,83,2,nublado,ninguno
+Mar Del Nte.,2025-09-27,111,2,soleado,feria
+Mar Del Nte.,2025-09-28,108,3,soleado,ninguno
+Mar Del Nte.,2025-09-29,141,3,soleado,festivo
+Mar Del Nte.,2025-09-30,191,4,nublado,ninguno
+Av. Reina Mar,2025-09-01,129,3,nublado,feria
+Av. Reina Mar,2025-09-02,80,2,nublado,ninguno
+Av. Reina Mar,2025-09-03,94,2,soleado,ninguno
+Av. Reina Mar,2025-09-04,160,2,nublado,ninguno
+Av. Reina Mar,2025-09-05,129,3,soleado,ninguno
+Av. Reina Mar,2025-09-06,114,4,nublado,feria
+Av. Reina Mar,2025-09-07,90,3,nublado,ninguno
+Av. Reina Mar,2025-09-08,100,4,nublado,ninguno
+Av. Reina Mar,2025-09-09,190,3,nublado,ninguno
+Av. Reina Mar,2025-09-10,188,4,nublado,feria
+Av. Reina Mar,2025-09-11,101,2,nublado,ninguno
+Av. Reina Mar,2025-09-12,133,2,nublado,ninguno
+Av. Reina Mar,2025-09-13,191,4,soleado,festivo
+Av. Reina Mar,2025-09-14,131,3,nublado,ninguno
+Av. Reina Mar,2025-09-15,120,2,soleado,ninguno
+Av. Reina Mar,2025-09-16,93,3,nublado,ninguno
+Av. Reina Mar,2025-09-17,100,4,soleado,ninguno
+Av. Reina Mar,2025-09-18,95,3,soleado,ninguno
+Av. Reina Mar,2025-09-19,164,4,nublado,festivo
+Av. Reina Mar,2025-09-20,114,3,soleado,ninguno
+Av. Reina Mar,2025-09-21,159,2,soleado,ninguno
+Av. Reina Mar,2025-09-22,115,2,soleado,festivo
+Av. Reina Mar,2025-09-23,179,3,nublado,ninguno
+Av. Reina Mar,2025-09-24,197,4,soleado,ninguno
+Av. Reina Mar,2025-09-25,174,4,nublado,festivo
+Av. Reina Mar,2025-09-26,147,2,soleado,ninguno
+Av. Reina Mar,2025-09-27,152,3,nublado,ninguno
+Av. Reina Mar,2025-09-28,141,2,nublado,ninguno
+Av. Reina Mar,2025-09-29,168,4,nublado,feria
+Av. Reina Mar,2025-09-30,163,3,soleado,feria
+Jardines Del Desierto,2025-09-01,111,4,soleado,ninguno
+Jardines Del Desierto,2025-09-02,148,4,nublado,ninguno
+Jardines Del Desierto,2025-09-03,113,3,soleado,feria
+Jardines Del Desierto,2025-09-04,87,4,nublado,ninguno
+Jardines Del Desierto,2025-09-05,112,4,soleado,ninguno
+Jardines Del Desierto,2025-09-06,181,4,nublado,ninguno
+Jardines Del Desierto,2025-09-07,86,2,nublado,ninguno
+Jardines Del Desierto,2025-09-08,151,4,nublado,ninguno
+Jardines Del Desierto,2025-09-09,83,4,nublado,festivo
+Jardines Del Desierto,2025-09-10,138,4,soleado,ninguno
+Jardines Del Desierto,2025-09-11,84,3,nublado,festivo
+Jardines Del Desierto,2025-09-12,161,3,nublado,ninguno
+Jardines Del Desierto,2025-09-13,119,3,nublado,ninguno
+Jardines Del Desierto,2025-09-14,107,3,nublado,ninguno
+Jardines Del Desierto,2025-09-15,135,2,nublado,ninguno
+Jardines Del Desierto,2025-09-16,128,4,soleado,ninguno
+Jardines Del Desierto,2025-09-17,173,4,nublado,ninguno
+Jardines Del Desierto,2025-09-18,80,4,nublado,ninguno
+Jardines Del Desierto,2025-09-19,152,3,nublado,feria
+Jardines Del Desierto,2025-09-20,107,2,soleado,ninguno
+Jardines Del Desierto,2025-09-21,97,2,nublado,feria
+Jardines Del Desierto,2025-09-22,101,2,nublado,ninguno
+Jardines Del Desierto,2025-09-23,103,4,soleado,feria
+Jardines Del Desierto,2025-09-24,156,3,soleado,festivo
+Jardines Del Desierto,2025-09-25,114,4,soleado,ninguno
+Jardines Del Desierto,2025-09-26,158,4,soleado,ninguno
+Jardines Del Desierto,2025-09-27,179,2,soleado,ninguno
+Jardines Del Desierto,2025-09-28,94,3,soleado,feria
+Jardines Del Desierto,2025-09-29,113,4,nublado,ninguno
+Jardines Del Desierto,2025-09-30,184,3,soleado,ninguno

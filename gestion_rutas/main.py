@@ -9,3 +9,4 @@ app.include_router(rutas.router)
 @app.get("/")
 def read_root():
     return {"mensaje": "🚀 API de gestión de rutas funcionando!"}
+
