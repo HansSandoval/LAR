@@ -1,6 +1,6 @@
 # Módulo VRP - Vehicle Routing Problem
 
-Planificador de rutas con optimización de heurísticas constructivas y búsqueda local para problemas de recolección de residuos con restricciones de capacidad.
+Planificador de rutas con optimización 2-opt para problemas de recolección de residuos con restricciones de capacidad.
 
 ## 🏗️ Arquitectura
 
@@ -10,11 +10,11 @@ Planificador de rutas con optimización de heurísticas constructivas y búsqued
 └────────────────────────────┘
          ↓
 ┌────────────────────────────┐
-│   planificador.py          │  ← Pipeline: validación → NN → 2-opt
+│   planificador.py          │  ← Pipeline: validación → construcción inicial → 2-opt
 └────────────────────────────┘
          ↓
 ┌────────────────────────────┐
-│   optimizacion.py          │  ← Búsqueda local: 2-opt, Or-opt
+│   optimizacion.py          │  ← Búsqueda local: 2-opt
 └────────────────────────────┘
          ↓
 ┌────────────────────────────┐
@@ -98,16 +98,15 @@ curl -X POST "http://localhost:8000/rutas/planificar" \
 
 ## 🎯 Características
 
-### Heurística Constructiva
-- **Nearest Neighbor (NN)**: Construcción inicial rápida
-- Tiempo: O(n²)
-- Calidad: 70-80% del óptimo
+### Construcción de Ruta Inicial
+- Distribución secuencial de nodos respetando capacidad
+- Tiempo: O(n)
 
 ### Búsqueda Local
-- **2-opt**: Intercambio de aristas (por defecto)
-- **Or-opt**: Desplazamiento de segmentos (disponible)
-- Mejora típica: 5-20%
+- **2-opt**: Intercambio de aristas para optimización
+- Mejora típica: hasta 30%
 - Tiempo: segundos para <200 nodos
+````
 
 ### Restricciones
 - ✅ Capacidad por vehículo
@@ -162,9 +161,8 @@ curl -X POST "http://localhost:8000/rutas/planificar" \
 
 ## ✅ Estado
 
-- ✅ Nearest Neighbor
+- ✅ Construcción de ruta inicial
 - ✅ 2-opt (búsqueda local)
-- ✅ Or-opt (disponible)
 - ✅ API FastAPI integrada
 - ✅ Tests completos
 - 🔄 Ventanas de tiempo (TODO)
@@ -173,12 +171,8 @@ curl -X POST "http://localhost:8000/rutas/planificar" \
 ## 🧪 Tests Disponibles
 
 ```bash
-# Test básico del planificador
-python vrp/test_vrp.py
-
-# Test de 2-opt con comparativas ⭐
+# Test de 2-opt con comparativas
 python vrp/test_2opt.py
-
 # Test del endpoint API
 python test_api.py
 ```

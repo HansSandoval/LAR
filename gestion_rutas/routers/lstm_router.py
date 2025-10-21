@@ -4,7 +4,7 @@ Router para endpoints de predicción LSTM
 
 from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
-from service.lstm_service import LSTMPredictionService
+from ..service.lstm_service import LSTMPredictionService
 import logging
 
 logger = logging.getLogger(__name__)

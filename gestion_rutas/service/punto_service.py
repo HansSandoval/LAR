@@ -5,8 +5,8 @@ Service Layer para Puntos de Entrega
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
-from models.base import Punto
-from schemas.schemas import PuntoCreate, PuntoUpdate
+from ..models.base import Punto
+from ..schemas.schemas import PuntoCreate, PuntoUpdate
 import logging
 
 logger = logging.getLogger(__name__)

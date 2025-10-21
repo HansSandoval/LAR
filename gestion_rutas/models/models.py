@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, Date, Time, DateTime, ForeignKey, Boolean, JSON
 from sqlalchemy.orm import declarative_base, relationship
-from geoalchemy2 import Geometry
 
 Base = declarative_base()
 
@@ -11,7 +10,7 @@ class Zona(Base):
     tipo = Column(String)
     area_km2 = Column(Float)
     poblacion = Column(Integer)
-    coordenadas_limite = Column(Geometry('POLYGON'))
+    coordenadas_limite = Column(String)  # JSON string con coordenadas
     prioridad = Column(Integer)
     puntos = relationship('PuntoRecoleccion', back_populates='zona')
     rutas = relationship('RutaPlanificada', back_populates='zona')
@@ -29,7 +28,6 @@ class PuntoRecoleccion(Base):
     capacidad_kg = Column(Float)
     estado = Column(String)
     zona = relationship('Zona', back_populates='puntos')
-    rutas_ejecutadas = relationship('RutaEjecutada', back_populates='punto_recoleccion')
 
 class Camion(Base):
     __tablename__ = 'camion'
@@ -83,7 +81,6 @@ class RutaEjecutada(Base):
     telemetria_json = Column(JSON)
     ruta_planificada = relationship('RutaPlanificada', back_populates='rutas_ejecutadas')
     camion = relationship('Camion', back_populates='rutas_ejecutadas')
-    punto_recoleccion = relationship('PuntoRecoleccion', back_populates='rutas_ejecutadas')
     incidencias = relationship('Incidencia', back_populates='ruta_ejecutada')
 
 class Incidencia(Base):
@@ -112,6 +109,13 @@ class PrediccionDemanda(Base):
     error_rmse = Column(Float)
     error_mape = Column(Float)
     zona = relationship('Zona', back_populates='predicciones')
+
+class Operador(Base):
+    __tablename__ = 'operador'
+    id_operador = Column(Integer, primary_key=True)
+    nombre = Column(String, nullable=False)
+    cedula = Column(String, unique=True, nullable=False)
+    especialidad = Column(String)
 
 class PuntoDisposicion(Base):
     __tablename__ = 'punto_disposicion'

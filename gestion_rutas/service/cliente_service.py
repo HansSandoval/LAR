@@ -5,8 +5,8 @@ Service Layer para Clientes
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
-from models.base import Cliente
-from schemas.schemas import ClienteCreate, ClienteUpdate
+from ..models.base import Cliente
+from ..schemas.schemas import ClienteCreate, ClienteUpdate
 import logging
 
 logger = logging.getLogger(__name__)

@@ -7,7 +7,7 @@ Exporta:
 """
 
 from .schemas import VRPInput, VRPOutput, NodeCoordinate
-from .planificador import planificar_vrp_api, nearest_neighbor_vrp
+from .planificador import planificar_vrp_api
 from .optimizacion import optimiza_rutas_2opt, or_opt_single
 
 __all__ = [
@@ -15,7 +15,6 @@ __all__ = [
     'VRPOutput',
     'NodeCoordinate',
     'planificar_vrp_api',
-    'nearest_neighbor_vrp',
     'optimiza_rutas_2opt',
     'or_opt_single',
 ]

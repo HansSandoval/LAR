@@ -7,8 +7,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 from typing import List, Optional, Dict, Any
 from datetime import date, datetime
-from models.base import Ruta, Entrega, Vehiculo, Punto, EstadoRuta, EstadoEntrega
-from schemas.schemas import RutaCreate, RutaUpdate
+from ..models.base import Ruta, Entrega, Vehiculo, Punto, EstadoRuta, EstadoEntrega
+from ..schemas.schemas import RutaCreate, RutaUpdate
+from .routing_service import RoutingService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -225,3 +226,63 @@ class RutaService:
                 Ruta.fecha_planificacion <= fecha_limite
             )
         ).all()
+
+    @staticmethod
+    def calcular_ruta_con_calles(db: Session, ruta_id: int) -> Dict[str, Any]:
+        """
+        Calcular ruta mostrando las calles exactas usando OSRM
+        
+        Args:
+            db: Sesión de base de datos
+            ruta_id: ID de la ruta
+            
+        Returns:
+            Dict con información de la ruta y geometría de calles
+        """
+        try:
+            ruta = RutaService.obtener_ruta(db, ruta_id)
+            if not ruta:
+                return {"error": "Ruta no encontrada"}
+            
+            entregas = RutaService.obtener_entregas_ruta(db, ruta_id)
+            if not entregas:
+                return {"error": "No hay entregas en la ruta"}
+            
+            # Obtener puntos en orden
+            puntos = []
+            for entrega in entregas:
+                punto = db.query(Punto).filter(Punto.id == entrega.id_punto).first()
+                if punto:
+                    puntos.append(punto)
+            
+            if len(puntos) < 2:
+                return {"error": "Se necesitan al menos 2 puntos para calcular ruta"}
+            
+            # Obtener ruta optimizada con calles
+            ruta_info = RoutingService.obtener_ruta_optimizada(puntos)
+            
+            if not ruta_info:
+                return {"error": "No se pudo calcular la ruta con OSRM"}
+            
+            return {
+                "ruta_id": ruta_id,
+                "nombre": ruta.nombre,
+                "puntos_totales": len(puntos),
+                "distancia_km": ruta_info["distancia_km"],
+                "duracion_minutos": ruta_info["duracion_minutos"],
+                "geometry": ruta_info["geometry"],
+                "orden_optimizado": ruta_info["orden_optimizado"],
+                "puntos": [
+                    {
+                        "id": p.id,
+                        "latitud": p.latitud,
+                        "longitud": p.longitud,
+                        "nombre": p.nombre,
+                        "descripcion": p.descripcion
+                    } 
+                    for p in puntos
+                ]
+            }
+        except Exception as e:
+            logger.error(f"Error al calcular ruta con calles: {str(e)}")
+            return {"error": str(e)}

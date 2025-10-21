@@ -56,23 +56,26 @@ pip list
 
 ### 3. Configuración de Base de Datos
 
-**Crear archivo `.env` en `gestion_rutas/`:**
+**Crear o actualizar archivo `.env` en raíz del proyecto:**
 ```
-ENVIRONMENT=development
-# DATABASE_URL=postgresql+psycopg2://user:password@localhost:5432/gestion_rutas
+ENVIRONMENT=production
 
-# O dejar vacío para usar SQLite por defecto (recomendado desarrollo)
+# PostgreSQL Configuration
+DB_USER=postgres
+DB_PASSWORD=hanskawaii1
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=gestion_rutas
 ```
 
 ### 4. Inicializar Base de Datos
 
 ```bash
+cd gestion_rutas
 python init_db.py
 ```
 
-Esto creará:
-- Todas las tablas en `gestion_rutas.db` (SQLite)
-- Datos de prueba iniciales
+Esto creará todas las tablas en PostgreSQL.
 
 ## ▶️ Ejecutar la API
 
@@ -192,8 +195,9 @@ pip install nombre_paquete
 
 ### Error: Database connection failed
 ```bash
-# Solución: Verificar .env y credenciales PostgreSQL
-# O usar SQLite por defecto (dejar DATABASE_URL vacío)
+# Solución: Verificar que PostgreSQL esté corriendo
+# Verificar .env y credenciales PostgreSQL
+psql -U postgres  # Verificar conexión
 ```
 
 ### Error: Port already in use

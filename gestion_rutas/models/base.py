@@ -6,7 +6,7 @@ Define todas las tablas principales para el sistema de gestión de rutas
 from datetime import datetime, date
 from sqlalchemy import Column, Integer, String, Float, Date, Time, DateTime, ForeignKey, Boolean, JSON, Enum
 from sqlalchemy.orm import relationship
-from database.db import Base
+from ..database.db import Base
 import enum
 
 
@@ -203,7 +203,7 @@ class Ruta(Base):
     desviacion_tiempo = Column(Float)  # Diferencia en minutos
     
     # Algoritmo VRP usado
-    algoritmo_vrp = Column(String(100))  # Ej: nearest_neighbor, nearest_neighbor_2opt
+    algoritmo_vrp = Column(String(100))  # Ej: 2opt
     version_algoritmo = Column(String(50))  # Ej: v1.0
     
     # Metadata
@@ -248,26 +248,27 @@ class HistoricoRuta(Base):
 # ============================================================================
 # MODELO: PREDICCIÓN DE DEMANDA (para LSTM)
 # ============================================================================
-
-class PrediccionDemanda(Base):
-    """Modelo para almacenar predicciones del LSTM"""
-    __tablename__ = "predicciones_demanda"
-
-    id = Column(Integer, primary_key=True, index=True)
-    
-    # Punto que se predice
-    fecha_prediccion = Column(Date, nullable=False)
-    cantidad_entregas_predichas = Column(Integer)
-    peso_total_predicho_kg = Column(Float)
-    
-    # Precisión del modelo
-    confianza = Column(Float)  # 0.0 a 1.0
-    error_mape = Column(Float)  # Error porcentual absoluto medio
-    
-    # Metadata del modelo
-    version_modelo = Column(String(50))  # Versión del LSTM usado
-    fecha_generacion = Column(DateTime, default=datetime.utcnow)
-    datos_extra = Column(JSON)
+# COMENTADO: Duplicado con models.py - PrediccionDemanda está definida allí
+# 
+# class PrediccionDemanda(Base):
+#     """Modelo para almacenar predicciones del LSTM"""
+#     __tablename__ = "predicciones_demanda"
+#
+#     id = Column(Integer, primary_key=True, index=True)
+#     
+#     # Punto que se predice
+#     fecha_prediccion = Column(Date, nullable=False)
+#     cantidad_entregas_predichas = Column(Integer)
+#     peso_total_predicho_kg = Column(Float)
+#     
+#     # Precisión del modelo
+#     confianza = Column(Float)  # 0.0 a 1.0
+#     error_mape = Column(Float)  # Error porcentual absoluto medio
+#     
+#     # Metadata del modelo
+#     version_modelo = Column(String(50))  # Versión del LSTM usado
+#     fecha_generacion = Column(DateTime, default=datetime.utcnow)
+#     datos_extra = Column(JSON)
 
     def __repr__(self):
         return f"<PrediccionDemanda(id={self.id}, fecha={self.fecha_prediccion}, confianza={self.confianza})>"

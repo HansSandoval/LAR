@@ -1,29 +1,27 @@
-# 📋 RESUMEN TÉCNICO: Implementación de 2-opt en Planificador VRP
+# 📋 RESUMEN TÉCNICO: Planificador VRP con 2-opt
 
 ## 🎯 Objetivo
 
-Implementar búsqueda local **2-opt** para mejorar la calidad de rutas generadas por heurística de vecino más cercano, cumpliendo los requisitos del documento "2.3 Plataformas, datos y articulación con VRP".
+Implementar un planificador VRP que utiliza **búsqueda local 2-opt** para optimizar rutas de recolección de residuos con restricciones de capacidad.
 
 ---
 
-## ✅ Entregables
+## ✅ Componentes
 
 ### 1. Módulo de Optimización (`optimizacion.py`)
 - **Función `delta_2opt()`**: Calcula ganancia de intercambiar aristas
 - **Función `aplica_2opt()`**: Aplica movimiento 2-opt mejorante
 - **Función `optimiza_rutas_2opt()`**: Wrapper principal para múltiples rutas
-- **Función `or_opt_single()`**: Alternativa rápida de desplazamiento de segmentos
-- **Función `valida_capacidad_ruta()`**: Verifica restricción de capacidad
 
-### 2. Integración en Pipeline (`planificador.py`)
+### 2. Pipeline del Planificador (`planificador.py`)
 ```
 Entrada (VRPInput)
     ↓
 Validación + Matriz de distancias
     ↓
-Nearest Neighbor (construcción rápida)
+Construcción de ruta inicial
     ↓
-2-opt (mejora iterativa) ← NUEVO
+2-opt (búsqueda local - mejora iterativa)
     ↓
 Salida (VRPOutput)
 ```

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 from typing import List, Optional, Dict, Any
 from datetime import date, datetime
-from models.models import RutaPlanificada, RutaEjecutada, Zona, Turno, Camion
+from ..models.models import RutaPlanificada, RutaEjecutada, Zona, Turno, Camion
 import logging
 
 logger = logging.getLogger(__name__)

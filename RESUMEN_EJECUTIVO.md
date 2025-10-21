@@ -5,10 +5,10 @@
 ### Fase 1: Base de Datos ✅
 ```
 ✓ SQLAlchemy ORM configurado
-✓ Soporte SQLite + PostgreSQL
-✓ 10 modelos de datos creados
+✓ PostgreSQL configurado
+✓ 12 modelos de datos creados
 ✓ Relaciones configuradas
-✓ Migraciones base
+✓ Tablas inicializadas
 ```
 
 ### Fase 2: Service Layer ✅

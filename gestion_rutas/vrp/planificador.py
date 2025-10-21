@@ -1,16 +1,16 @@
 """planificador.py
 
-Planificador VRP con optimización local.
+Planificador VRP con optimización local 2-opt.
 
 Pipeline:
 1. Validación de entrada (Pydantic)
 2. Construcción de matriz de distancias
-3. Heurística constructiva: vecino más cercano
+3. Construcción de ruta inicial (simple orden secuencial)
 4. Búsqueda local: 2-opt (mejora iterativa de rutas)
 5. Conversión a IDs y devolución de resultado
 
 Contiene:
-- Heurística constructiva (nearest neighbor)
+- Construcción de ruta inicial
 - Búsqueda local (2-opt)
 - Gestión de capacidad y restricciones
 """
@@ -57,64 +57,54 @@ def validate_and_prepare(input_data: VRPInput) -> Dict:
     }
 
 
-def nearest_neighbor_vrp(dist_matrix: List[List[float]], demands: List[float], vehicle_count: int, capacity: float) -> Dict:
-    """Heurística vecino más cercano que trabaja sobre índices.
-
-    Entrada:
-    - dist_matrix: matriz nxn
-    - demands: lista de demandas (len n)
-    - vehicle_count: número de vehículos
-    - capacity: capacidad por vehículo
-
-    Retorna dict con 'routes' (listas de índices), 'unassigned' y 'total_distance'
+def build_initial_routes(n_nodes: int, demands: List[float], vehicle_count: int, capacity: float) -> Dict:
+    """Construye rutas iniciales distribuyendo nodos secuencialmente entre vehículos.
+    
+    Respeta capacidad y devuelve rutas iniciales para posterior optimización 2-opt.
     """
-    n = len(dist_matrix)
-    if n == 0:
+    if n_nodes == 0:
         return {'routes': [], 'unassigned': [], 'total_distance': 0.0}
-
-    visited = [False] * n
-    visited[0] = True  # depósito
+    
     routes: List[List[int]] = []
-    total_distance = 0.0
+    unassigned: List[int] = []
+    assigned = [False] * n_nodes
+    assigned[0] = True  # depósito siempre asignado
+    
+    vehicle_idx = 0
+    for node_idx in range(1, n_nodes):
+        if vehicle_idx >= vehicle_count:
+            unassigned.append(node_idx)
+            continue
+            
+        if not routes or sum(demands[i] for i in routes[-1]) + demands[node_idx] > capacity:
+            # Nueva ruta si capacidad se excede
+            if vehicle_idx > 0 and routes[-1]:
+                routes[-1].append(0)  # retorno al depósito
+            if vehicle_idx < vehicle_count:
+                routes.append([0])  # nuevo inicio
+                vehicle_idx += 1
+            else:
+                unassigned.append(node_idx)
+                continue
+        
+        routes[-1].append(node_idx)
+        assigned[node_idx] = True
+    
+    # Cerrar rutas con retorno al depósito
+    for route in routes:
+        if route[-1] != 0:
+            route.append(0)
+    
+    return {'routes': routes, 'unassigned': unassigned, 'total_distance': 0.0}
 
-    for _ in range(vehicle_count):
-        route = [0]
-        load_remaining = capacity
-        current = 0
 
-        while True:
-            nearest = None
-            nearest_d = float('inf')
-            for j in range(1, n):
-                if not visited[j] and demands[j] <= load_remaining:
-                    d = dist_matrix[current][j]
-                    if d < nearest_d:
-                        nearest_d = d
-                        nearest = j
-            if nearest is None:
-                break
-            visited[nearest] = True
-            route.append(nearest)
-            load_remaining -= demands[nearest]
-            total_distance += nearest_d
-            current = nearest
-
-        total_distance += dist_matrix[current][0]
-        route.append(0)
-        routes.append(route)
-
-    unassigned = [i for i in range(1, n) if not visited[i]]
-    return {'routes': routes, 'unassigned': unassigned, 'total_distance': total_distance}
-
-
-def planificar_vrp_api(input_model: VRPInput, aplicar_2opt: bool = True, timeout_2opt: float = 30.0) -> VRPOutput:
+def planificar_vrp_api(input_model: VRPInput, timeout_2opt: float = 30.0) -> VRPOutput:
     """Wrapper que recibe el Pydantic model y devuelve el Pydantic output.
 
-    Pipeline: Nearest Neighbor → 2-opt (opcional)
+    Pipeline: Construcción inicial → 2-opt
     
     Parámetros:
     - input_model: VRPInput con candidatos y restricciones
-    - aplicar_2opt: si True, aplica búsqueda local 2-opt
     - timeout_2opt: tiempo máximo en segundos para 2-opt
 
     Retorna VRPOutput con rutas optimizadas.
@@ -126,20 +116,17 @@ def planificar_vrp_api(input_model: VRPInput, aplicar_2opt: bool = True, timeout
     capacity = prep['capacity']
     demands = [float(n.demand or 0.0) for n in nodes]
 
-    # Paso 1: Heurística constructiva (Nearest Neighbor)
-    result = nearest_neighbor_vrp(dist_matrix, demands, vehicle_count, capacity)
+    # Paso 1: Construcción de ruta inicial
+    result = build_initial_routes(len(dist_matrix), demands, vehicle_count, capacity)
     routes = result['routes']
-    distancia_nn = result['total_distance']
     
     # Paso 2: Búsqueda local (2-opt)
-    if aplicar_2opt and len(routes) > 0:
+    if len(routes) > 0:
         opt_result = optimiza_rutas_2opt(routes, dist_matrix, timeout=timeout_2opt)
         routes = opt_result['routes']
         distancia_final = opt_result['distancia_final']
-        mejora = opt_result['mejora_pct']
     else:
-        distancia_final = distancia_nn
-        mejora = 0.0
+        distancia_final = 0.0
 
     # Conversión a IDs
     def idx_to_id(idx: int):

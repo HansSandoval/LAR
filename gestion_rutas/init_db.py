@@ -5,8 +5,8 @@ Crea todas las tablas y datos de prueba
 
 import logging
 from datetime import date, datetime, time
-from database.db import SessionLocal, init_db
-from models.models import (
+from .database.db import SessionLocal, init_db
+from .models.models import (
     Zona, PuntoRecoleccion, Camion, Turno, 
     RutaPlanificada, RutaEjecutada, Incidencia, 
     PrediccionDemanda, Usuario, PeriodoTemporal

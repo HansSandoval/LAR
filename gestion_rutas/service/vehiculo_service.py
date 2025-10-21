@@ -5,8 +5,8 @@ Service Layer para Vehículos
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, date
-from models.base import Vehiculo, EstadoVehiculo
-from schemas.schemas import VehiculoCreate, VehiculoUpdate
+from ..models.base import Vehiculo, EstadoVehiculo
+from ..schemas.schemas import VehiculoCreate, VehiculoUpdate
 import logging
 
 logger = logging.getLogger(__name__)

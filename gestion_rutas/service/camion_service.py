@@ -5,7 +5,7 @@ Service Layer para Camiones (Vehículos)
 from sqlalchemy.orm import Session
 from typing import List, Optional, Dict, Any
 from datetime import datetime, date
-from models.models import Camion, RutaEjecutada
+from ..models.models import Camion, RutaEjecutada
 import logging
 
 logger = logging.getLogger(__name__)

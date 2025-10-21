@@ -4,7 +4,7 @@ Service Layer para Zonas y Puntos de Recolección
 
 from sqlalchemy.orm import Session
 from typing import List, Optional, Dict, Any
-from models.models import Zona, PuntoRecoleccion, RutaPlanificada
+from ..models.models import Zona, PuntoRecoleccion, RutaPlanificada
 import logging
 import math
 

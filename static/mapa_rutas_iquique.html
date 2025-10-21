@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Rutas VRP - Sector Sur Iquique</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .info { padding: 6px 8px; font-size: 14px; background: white; 
+                box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; }
+        .legend { line-height: 18px; color: #555; padding: 10px; }
+        .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; }
+        .control-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            width: 280px;
+        }
+        .control-panel h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        .control-panel input, .control-panel button {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .control-panel button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        .control-panel button:hover {
+            background-color: #45a049;
+        }
+        .status-message {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            display: none;
+        }
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="control-panel">
+        <h3>📍 Cargador de Rutas con Calles</h3>
+        <input type="number" id="rutaId" placeholder="Ingresa ID de ruta" min="1" value="2">
+        <button onclick="cargarRutaConCalles()">🚗 Cargar Ruta con Calles</button>
+        <div id="statusMessage" class="status-message"></div>
+    </div>
+    
+    <script>
+        // Crear mapa centrado en Sector Sur Iquique
+        const map = L.map('map').setView([-20.2683, -70.1475], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Variables globales para manejo de capas
+        let gruposRutas = {};
+        let gruposPuntos = {};
+
+        // ZONA DE COBERTURA (círculo verde 5km)
+        L.circle([-20.2683, -70.1475], {
+            color: 'green',
+            fill: false,
+            weight: 2,
+            opacity: 0.5,
+            radius: 5000
+        }).bindPopup('Zona Sur Iquique - Radio 5km').addTo(map);
+
+        // PUNTOS DE RECOLECCIÓN (74 puntos azules)
+        const puntosRecoleccion = [
+            {lat: -20.2399, lon: -70.1254, nombre: "Av. Ramon Perez Opazo con Av. La Tirana", cap: 87},
+            {lat: -20.2844, lon: -70.1746, nombre: "Padre Hurtado con Av. La Tirana", cap: 82},
+            {lat: -20.2512, lon: -70.1401, nombre: "Padre Hurtado con Tamarugal", cap: 91},
+            {lat: -20.3092, lon: -70.0950, nombre: "Padre Hurtado con Los Chunchos", cap: 78},
+            {lat: -20.3035, lon: -70.1836, nombre: "Padre Hurtado con Av. Cinco", cap: 85},
+            {lat: -20.2650, lon: -70.1120, nombre: "Punto Sur 6", cap: 89},
+            {lat: -20.2720, lon: -70.1340, nombre: "Punto Sur 7", cap: 86},
+            {lat: -20.2580, lon: -70.1580, nombre: "Punto Sur 8", cap: 88},
+            {lat: -20.2900, lon: -70.1200, nombre: "Punto Sur 9", cap: 84},
+            {lat: -20.2450, lon: -70.1680, nombre: "Punto Sur 10", cap: 90},
+            {lat: -20.2380, lon: -70.1320, nombre: "Punto 11", cap: 85},
+            {lat: -20.2750, lon: -70.1450, nombre: "Punto 12", cap: 87},
+            {lat: -20.2620, lon: -70.1190, nombre: "Punto 13", cap: 83},
+            {lat: -20.2890, lon: -70.1550, nombre: "Punto 14", cap: 89},
+            {lat: -20.2540, lon: -70.1090, nombre: "Punto 15", cap: 86},
+        ];
+
+        puntosRecoleccion.forEach(punto => {
+            L.circleMarker([punto.lat, punto.lon], {
+                radius: 5,
+                fillColor: '#87CEEB',
+                color: '#0066cc',
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.7
+            }).bindPopup(`<b>${punto.nombre}</b><br>Capacidad: ${punto.cap}kg`).addTo(map);
+        });
+
+        // PUNTOS DE DISPOSICIÓN (3 puntos rojos)
+        const puntosDisposicion = [
+            {lat: -20.28, lon: -70.12, nombre: "Vertedero Municipal", cap: 100},
+            {lat: -20.25, lon: -70.15, nombre: "Centro de Acopio Sur Iquique", cap: 50},
+            {lat: -20.252, lon: -70.148, nombre: "Punto Reciclaje Av. Cinco", cap: 15}
+        ];
+
+        puntosDisposicion.forEach(disp => {
+            L.marker([disp.lat, disp.lon], {
+                icon: L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                })
+            }).bindPopup(`<b>${disp.nombre}</b><br>Tipo: Disposición<br>Capacidad: ${disp.cap} ton`).addTo(map);
+        });
+
+        // Función para mostrar mensajes de estado
+        function mostrarMensaje(mensaje, tipo) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = mensaje;
+            statusDiv.className = 'status-message status-' + tipo;
+            setTimeout(() => {
+                statusDiv.className = 'status-message';
+            }, 5000);
+        }
+
+        // Función para cargar ruta con calles desde la API
+        async function cargarRutaConCalles() {
+            const rutaId = document.getElementById('rutaId').value;
+            
+            if (!rutaId) {
+                mostrarMensaje('❌ Por favor ingresa un ID de ruta', 'error');
+                return;
+            }
+
+            mostrarMensaje('⏳ Cargando ruta ' + rutaId + '...', 'success');
+
+            try {
+                const response = await fetch(`http://localhost:8000/rutas/${rutaId}/con-calles`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.error) {
+                        mostrarMensaje('⚠️ ' + data.error, 'error');
+                        return;
+                    }
+
+                    // Limpiar ruta anterior si existe
+                    if (gruposRutas[rutaId]) {
+                        gruposRutas[rutaId].ruta.remove();
+                        gruposRutas[rutaId].puntos.forEach(punto => punto.remove());
+                    }
+
+                    // Dibujar la ruta (calles exactas)
+                    if (data.geometry && data.geometry.coordinates) {
+                        const geojson = {
+                            type: 'LineString',
+                            coordinates: data.geometry.coordinates
+                        };
+
+                        const rutaPolyline = L.geoJSON(geojson, {
+                            style: {
+                                color: '#FF6B00',
+                                weight: 5,
+                                opacity: 0.9,
+                                lineCap: 'round',
+                                lineJoin: 'round'
+                            }
+                        }).bindPopup(
+                            `<b>${data.nombre}</b><br>` +
+                            `Distancia: ${data.distancia_km} km<br>` +
+                            `Duración: ${data.duracion_minutos} min`
+                        ).addTo(map);
+
+                        gruposRutas[rutaId] = { ruta: rutaPolyline, puntos: [] };
+
+                        // Dibujar marcadores en los puntos
+                        data.puntos.forEach((punto, idx) => {
+                            const esInicio = idx === 0;
+                            const esUltimo = idx === data.puntos.length - 1;
+                            
+                            const marker = L.circleMarker(
+                                [punto.latitud, punto.longitud],
+                                {
+                                    radius: esInicio || esUltimo ? 12 : 8,
+                                    fillColor: esInicio ? '#00FF00' : esUltimo ? '#FF0000' : '#FF9800',
+                                    color: '#000',
+                                    weight: 2,
+                                    opacity: 1,
+                                    fillOpacity: 0.8
+                                }
+                            ).bindPopup(
+                                `<b>#${idx + 1}</b><br>` +
+                                `${punto.nombre}<br>` +
+                                `[${punto.latitud.toFixed(4)}, ${punto.longitud.toFixed(4)}]`
+                            ).addTo(map);
+
+                            gruposRutas[rutaId].puntos.push(marker);
+                        });
+
+                        // Ajustar vista al mapa con la ruta
+                        const bounds = rutaPolyline.getBounds();
+                        map.fitBounds(bounds, { padding: [50, 50] });
+
+                        mostrarMensaje(
+                            `✅ Ruta ${rutaId} cargada: ${data.distancia_km} km, ${data.duracion_minutos} min`,
+                            'success'
+                        );
+                    } else {
+                        mostrarMensaje('⚠️ No se pudo obtener la geometría de la ruta', 'error');
+                    }
+                } else {
+                    mostrarMensaje('❌ Error: ' + (data.error || 'Error desconocido'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error de conexión con la API', 'error');
+            }
+        }
+
+        // LEYENDA
+        const legend = L.control({position: 'bottomright'});
+        legend.onAdd = function (map) {
+            const div = L.DomUtil.create('div', 'info legend');
+            div.innerHTML = `
+                <div style="background-color: white; padding: 10px; border-radius: 5px; border: 2px solid #ccc;">
+                    <b style="font-size: 14px; display: block; margin-bottom: 8px;">MAPA RUTAS VRP</b>
+                    <hr style="margin: 5px 0">
+                    <span style="color: #0066cc; font-size: 16px;">●</span> Puntos Recolección<br>
+                    <span style="color: red; font-size: 16px;">📍</span> Puntos Disposición<br>
+                    <span style="color: green;">⭕</span> Zona Cobertura (5km)<br>
+                    <hr style="margin: 5px 0">
+                    <b>Rutas con Calles:</b><br>
+                    <span style="color: #FF6B00; font-weight: bold;">━━</span> Ruta Cargada<br>
+                    <span style="color: #00FF00; font-size: 16px;">●</span> Punto Inicio<br>
+                    <span style="color: #FF0000; font-size: 16px;">●</span> Punto Final<br>
+                    <hr style="margin: 5px 0">
+                    <small><b>Sistema:</b> OSRM<br><b>Sector:</b> Sur Iquique</small>
+                </div>
+            `;
+            return div;
+        };
+        legend.addTo(map);
+
+        // Cargar ruta por defecto al iniciar
+        window.addEventListener('load', () => {
+            setTimeout(() => cargarRutaConCalles(), 1000);
+        });
+    </script>
+</body>
+</html>

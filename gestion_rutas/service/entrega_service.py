@@ -5,8 +5,8 @@ Service Layer para Entregas
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, date
-from models.base import Entrega, EstadoEntrega
-from schemas.schemas import EntregaCreate, EntregaUpdate
+from ..models.base import Entrega, EstadoEntrega
+from ..schemas.schemas import EntregaCreate, EntregaUpdate
 import logging
 
 logger = logging.getLogger(__name__)
