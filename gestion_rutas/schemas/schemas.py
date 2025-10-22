@@ -391,13 +391,12 @@ class PuntoRecoleccionResponse(PuntoRecoleccionBase):
 
 class CamionBase(BaseModel):
     """Base schema para Camion"""
-    numero_interno: str = Field(..., min_length=1, max_length=50)
-    placa: Optional[str] = Field(None, max_length=20)
-    tipo: Optional[str] = Field(None, max_length=50)
+    patente: Optional[str] = Field(None, max_length=20)
     capacidad_kg: float = Field(..., gt=0)
-    estado: Optional[str] = Field("disponible", max_length=50)
-    año_compra: Optional[int] = None
-    ubicacion_actual: Optional[str] = None
+    consumo_km_l: Optional[float] = Field(None, ge=0)
+    tipo_combustible: Optional[str] = Field(None, max_length=50)
+    estado_operativo: Optional[str] = Field(None, max_length=50)
+    gps_id: Optional[str] = Field(None, max_length=50)
 
 
 class CamionCreate(CamionBase):
@@ -407,13 +406,12 @@ class CamionCreate(CamionBase):
 
 class CamionUpdate(BaseModel):
     """Schema para actualizar Camion"""
-    numero_interno: Optional[str] = None
-    placa: Optional[str] = None
-    tipo: Optional[str] = None
+    patente: Optional[str] = None
     capacidad_kg: Optional[float] = None
-    estado: Optional[str] = None
-    año_compra: Optional[int] = None
-    ubicacion_actual: Optional[str] = None
+    consumo_km_l: Optional[float] = None
+    tipo_combustible: Optional[str] = None
+    estado_operativo: Optional[str] = None
+    gps_id: Optional[str] = None
 
 
 class CamionResponse(CamionBase):
@@ -686,7 +684,7 @@ class PuntoDisposicionUpdate(BaseModel):
 
 class PuntoDisposicionResponse(PuntoDisposicionBase):
     """Schema para respuesta de PuntoDisposicion"""
-    id_disposicion: int
+    id_punto_disp: int
 
     class Config:
         from_attributes = True
