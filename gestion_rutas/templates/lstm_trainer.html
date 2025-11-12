@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrenador LSTM - Predicción de Residuos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .content {
+            padding: 40px;
+        }
+        .upload-section {
+            background: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+        }
+        .upload-section:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+        .upload-section.dragging {
+            border-color: #667eea;
+            background: #e6f2ff;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .file-label {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: transform 0.2s;
+        }
+        .file-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .file-info {
+            margin-top: 20px;
+            font-size: 1em;
+            color: #2d3748;
+        }
+        .params-section {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .param-group {
+            margin-bottom: 20px;
+        }
+        .param-group label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .param-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        .param-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .train-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .train-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        .train-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .progress-section {
+            display: none;
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        .progress-section.active {
+            display: block;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #e2e8f0;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .results-section {
+            display: none;
+            margin-top: 30px;
+        }
+        .results-section.active {
+            display: block;
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+        .metric-card h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        .metric-label {
+            color: #718096;
+            font-size: 0.95em;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .quality-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .quality-excellent { background: #c6f6d5; color: #22543d; }
+        .quality-good { background: #bee3f8; color: #2c5282; }
+        .quality-fair { background: #feebc8; color: #7c2d12; }
+        .quality-poor { background: #fed7d7; color: #742a2a; }
+        .graph-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .graph-container img {
+            max-width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Entrenador LSTM</h1>
+            <p>Predicción de Generación de Residuos para Optimización de Rutas</p>
+        </div>
+        
+        <div class="content">
+            <!-- Upload Section -->
+            <div class="upload-section" id="uploadSection">
+                <h2 style="margin-bottom: 20px; color: #2d3748;">Subir Archivo CSV</h2>
+                <input type="file" id="csvFile" accept=".csv" />
+                <label for="csvFile" class="file-label">Seleccionar CSV</label>
+                <div class="file-info" id="fileInfo">No hay archivo seleccionado</div>
+            </div>
+
+            <!-- Parameters Section -->
+            <div class="params-section">
+                <h2 style="margin-bottom: 20px; color: #2d3748;">Parámetros de Entrenamiento</h2>
+                <div class="param-group">
+                    <label for="epochs">Épocas de Entrenamiento:</label>
+                    <input type="number" id="epochs" value="100" min="50" max="500" step="10" />
+                    <small style="color: #718096; display: block; margin-top: 5px;">Recomendado: 100-200 épocas (más épocas pueden causar sobreajuste)</small>
+                </div>
+            </div>
+
+            <!-- Train Button -->
+            <button class="train-button" id="trainButton" disabled>
+                Iniciar Entrenamiento
+            </button>
+
+            <!-- Progress Section -->
+            <div class="progress-section" id="progressSection">
+                <div class="spinner"></div>
+                <h3 style="color: #2d3748; margin-top: 20px;">Entrenando modelo...</h3>
+                <p style="color: #718096; margin-top: 10px;">Esto puede tomar unos minutos</p>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection">
+                <h2 style="margin-bottom: 20px; color: #2d3748;">Resultados del Entrenamiento</h2>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3>Calidad del Modelo</h3>
+                        <div class="metric-value" id="qualityScore" style="font-size: 3em;">-</div>
+                        <div class="metric-label">Puntaje 0-100</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>R² Score</h3>
+                        <div class="metric-value" id="r2Value">-</div>
+                        <div class="metric-label">Exactitud del modelo</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>RMSE</h3>
+                        <div class="metric-value" id="rmseValue">-</div>
+                        <div class="metric-label">Error promedio</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>MAE</h3>
+                        <div class="metric-value" id="maeValue">-</div>
+                        <div class="metric-label">Desviación abs.</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>MAPE %</h3>
+                        <div class="metric-value" id="mapeValue">-</div>
+                        <div class="metric-label">Error porcentual</div>
+                    </div>
+                </div>
+
+                <div id="qualityBadge" style="text-align: center; margin-bottom: 20px;"></div>
+
+                <!-- Download Section -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <a id="downloadGraph" href="#" download="grafico_predicciones.png" 
+                       style="display: inline-block; padding: 12px 30px; background: #667eea; color: white; 
+                              text-decoration: none; border-radius: 10px; margin: 0 10px; font-weight: 600;">
+                        Descargar Gráfico
+                    </a>
+                    <a id="downloadModel" href="#" download="modelo.keras" 
+                       style="display: inline-block; padding: 12px 30px; background: #764ba2; color: white; 
+                              text-decoration: none; border-radius: 10px; margin: 0 10px; font-weight: 600;">
+                        Descargar Modelo Keras
+                    </a>
+                </div>
+
+                <div class="graph-container" id="graphContainer">
+                    <h3 style="margin-bottom: 20px; color: #2d3748;">Predicciones vs Valores Reales</h3>
+                    <img id="graphImage" src="" alt="Gráfico de predicciones" style="cursor: pointer;" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const csvFile = document.getElementById('csvFile');
+        const fileInfo = document.getElementById('fileInfo');
+        const trainButton = document.getElementById('trainButton');
+        const uploadSection = document.getElementById('uploadSection');
+        const progressSection = document.getElementById('progressSection');
+        const resultsSection = document.getElementById('resultsSection');
+
+        // File selection
+        csvFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileInfo.textContent = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                fileInfo.style.color = '#22543d';
+                trainButton.disabled = false;
+            }
+        });
+
+        // Drag and drop
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.classList.add('dragging');
+        });
+
+        uploadSection.addEventListener('dragleave', () => {
+            uploadSection.classList.remove('dragging');
+        });
+
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('dragging');
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.csv')) {
+                csvFile.files = e.dataTransfer.files;
+                fileInfo.textContent = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                fileInfo.style.color = '#22543d';
+                trainButton.disabled = false;
+            }
+        });
+
+        // Train button
+        trainButton.addEventListener('click', async () => {
+            const file = csvFile.files[0];
+            const epochs = document.getElementById('epochs').value;
+
+            if (!file) return;
+
+            // Show progress
+            progressSection.classList.add('active');
+            resultsSection.classList.remove('active');
+            trainButton.disabled = true;
+
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`/lstm/train?epochs=${epochs}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                // Hide progress
+                progressSection.classList.remove('active');
+                trainButton.disabled = false;
+
+                if (result.success) {
+                    // Show results
+                    displayResults(result.metrics);
+                    resultsSection.classList.add('active');
+                } else {
+                    alert('Error: ' + (result.detail || 'Error desconocido'));
+                }
+            } catch (error) {
+                progressSection.classList.remove('active');
+                trainButton.disabled = false;
+                alert('Error al entrenar: ' + error.message);
+            }
+        });
+
+        function displayResults(metrics) {
+            // Calculate quality score 0-100
+            let qualityScore = 0;
+            if (metrics.r2 >= 0) {
+                qualityScore = Math.round(metrics.r2 * 100);
+            } else {
+                qualityScore = 0;
+            }
+            
+            document.getElementById('qualityScore').textContent = qualityScore;
+            document.getElementById('r2Value').textContent = metrics.r2.toFixed(4);
+            document.getElementById('rmseValue').textContent = metrics.rmse.toFixed(2);
+            document.getElementById('maeValue').textContent = metrics.mae.toFixed(2);
+            document.getElementById('mapeValue').textContent = metrics.mape.toFixed(2);
+
+            // Quality badge based on score
+            let quality, className;
+            if (qualityScore >= 70) {
+                quality = `EXCELENTE (${qualityScore}/100)`;
+                className = 'quality-excellent';
+            } else if (qualityScore >= 50) {
+                quality = `BUENO (${qualityScore}/100)`;
+                className = 'quality-good';
+            } else if (qualityScore >= 30) {
+                quality = `ACEPTABLE (${qualityScore}/100)`;
+                className = 'quality-fair';
+            } else {
+                quality = `REQUIERE MEJORA (${qualityScore}/100)`;
+                className = 'quality-poor';
+            }
+
+            document.getElementById('qualityBadge').innerHTML = 
+                `<span class="quality-badge ${className}">${quality}</span>`;
+
+            // Set up download links
+            const graphUrl = '/lstm-temp/grafico.png?' + new Date().getTime();
+            const modelUrl = '/lstm-temp/modelo.keras?' + new Date().getTime();
+            
+            document.getElementById('downloadGraph').href = graphUrl;
+            document.getElementById('downloadModel').href = modelUrl;
+            
+            // Load graph
+            const graphImg = document.getElementById('graphImage');
+            graphImg.src = graphUrl;
+            graphImg.onclick = () => window.open(graphUrl, '_blank');
+        }
+    </script>
+</body>
+</html>
