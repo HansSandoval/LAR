@@ -3,6 +3,8 @@
 from . import ruta
 from . import lstm_router
 from . import mapa_router
+from . import mapa_predicciones_router
+from . import mas_router
 from . import zona_router
 from . import punto_router
 from . import camion_router
@@ -19,6 +21,8 @@ __all__ = [
     'ruta',
     'lstm_router',
     'mapa_router',
+    'mapa_predicciones_router',
+    'mas_router',
     'zona_router',
     'punto_router',
     'camion_router',

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from .routers import (
-    ruta, lstm_router, mapa_router,
+    ruta, lstm_router, mapa_router, mapa_predicciones_router, mas_router,
     zona_router, punto_router, camion_router, ruta_planificada_router,
     turno_router, ruta_ejecutada_router, incidencia_router,
     prediccion_demanda_router, usuario_router, punto_disposicion_router,
@@ -46,6 +46,8 @@ app.include_router(periodo_temporal_router.router)
 app.include_router(ruta.router)
 app.include_router(lstm_router.router)
 app.include_router(mapa_router.router)
+app.include_router(mapa_predicciones_router.router)
+app.include_router(mas_router.router)
 
 # Montar archivos estáticos
 static_dir = Path(__file__).parent.parent / "static"
@@ -54,6 +56,12 @@ if static_dir.exists():
     logger.info(f"Archivos estáticos montados desde: {static_dir}")
 else:
     logger.warning(f"Directorio estático no encontrado: {static_dir}")
+
+# Montar directorio temporal de LSTM para gráficos
+lstm_temp_dir = Path(__file__).parent / "lstm" / "lstm_temp"
+lstm_temp_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/lstm-temp", StaticFiles(directory=str(lstm_temp_dir)), name="lstm-temp")
+logger.info(f"Directorio temporal LSTM montado: {lstm_temp_dir}")
 
 @app.get("/")
 def read_root():
@@ -73,6 +81,9 @@ def read_root():
             "periodos_temporales": "/periodos-temporales",
             "rutas": "/rutas",
             "lstm": "/lstm",
+            "mapa_rutas": "/mapa/rutas",
+            "mapa_predicciones_lstm": "/mapa/predicciones",
+            "predicciones_json": "/mapa/predicciones/json",
             "documentación": "/docs"
         }
     }

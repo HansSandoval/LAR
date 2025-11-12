@@ -2,17 +2,37 @@
 Router para endpoints de predicción LSTM
 """
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, File, UploadFile, Request
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.templating import Jinja2Templates
 from typing import Optional
+from datetime import datetime, timedelta
 from ..service.lstm_service import LSTMPredictionService
+from ..service.prediccion_mapa_service import PrediccionMapaService
 import logging
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
-    prefix="/lstm",
+    prefix="/api/lstm",
     tags=["LSTM - Predicción de Demanda"]
 )
+
+# Templates
+templates = Jinja2Templates(directory=str(Path(__file__).parent.parent / "templates"))
+
+
+@router.get("/test", response_class=HTMLResponse, include_in_schema=False)
+async def test_page():
+    """Endpoint de prueba simple"""
+    return HTMLResponse(content="<h1>El servidor funciona correctamente!</h1>")
+
+
+@router.get("/trainer", response_class=HTMLResponse, include_in_schema=False)
+async def lstm_trainer_page(request: Request):
+    """Página web para entrenar el modelo LSTM"""
+    return templates.TemplateResponse("lstm_trainer.html", {"request": request})
 
 
 @router.get(
@@ -86,6 +106,62 @@ def obtener_reporte_validacion():
         return {"success": True, "data": reporte}
     except Exception as e:
         logger.error(f"Error al obtener reporte: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get(
+    "/predicciones-fecha",
+    summary="Obtener predicciones LSTM para una fecha específica",
+    description="Retorna todos los puntos de recolección con predicciones para la fecha indicada"
+)
+def obtener_predicciones_fecha(
+    fecha: Optional[str] = Query(None, description="Fecha predicción (YYYY-MM-DD). Default: mañana")
+):
+    """
+    Obtener predicciones LSTM con coordenadas geográficas para una fecha
+    
+    Retorna lista de puntos con:
+    - ID del punto
+    - Nombre del punto
+    - Coordenadas (latitud, longitud)
+    - Predicción de demanda en kg
+    - Fecha de la predicción
+    - Método usado (LSTM o sintético)
+    """
+    try:
+        # Parsear fecha
+        if fecha:
+            try:
+                fecha_prediccion = datetime.strptime(fecha, '%Y-%m-%d')
+            except ValueError:
+                raise HTTPException(status_code=400, detail="Formato de fecha inválido. Usar YYYY-MM-DD")
+        else:
+            fecha_prediccion = datetime.now() + timedelta(days=1)
+        
+        # Generar predicciones usando el servicio de mapa
+        servicio = PrediccionMapaService()
+        predicciones = servicio.generar_predicciones_completas(fecha_prediccion)
+        
+        if not predicciones or len(predicciones) == 0:
+            # Si no hay predicciones LSTM, retornar error descriptivo
+            logger.warning("No se pudieron cargar predicciones LSTM")
+            raise HTTPException(
+                status_code=503,
+                detail="No hay predicciones disponibles. Verifica que existan datos históricos."
+            )
+        
+        return {
+            "success": True,
+            "fecha": fecha_prediccion.strftime('%Y-%m-%d'),
+            "total_puntos": len(predicciones),
+            "predicciones": predicciones,
+            "total_kg_estimado": sum(p['prediccion_kg'] for p in predicciones)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error al obtener predicciones por fecha: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -197,3 +273,74 @@ def health_check_lstm():
             "error": str(e),
             "mensaje": "Error al verificar modelo LSTM"
         }
+
+
+@router.post(
+    "/train",
+    summary="Entrenar modelo LSTM con CSV",
+    description="Entrena el modelo LSTM con datos CSV de residuos"
+)
+async def train_lstm(file: UploadFile = File(...), epochs: int = Query(200, ge=10, le=1000)):
+    """
+    Entrena el modelo LSTM con un archivo CSV
+    
+    Parámetros:
+    - file: Archivo CSV con columnas 'fecha' y 'residuos_kg'
+    - epochs: Número de épocas de entrenamiento (10-1000, default 200)
+    
+    Retorna:
+    - Métricas de evaluación (R², RMSE, MAE, MAPE)
+    - Rutas a archivos generados (modelo, gráfico, reporte)
+    """
+    try:
+        from ..lstm.lstm_api_service_v5 import LSTMTrainer
+        from pathlib import Path
+        
+        # Leer contenido del CSV
+        content = await file.read()
+        
+        # Directorio temporal para archivos LSTM
+        temp_dir = Path(__file__).parent.parent / "lstm" / "lstm_temp"
+        temp_dir.mkdir(exist_ok=True)
+        
+        # Crear trainer con directorio temporal
+        trainer = LSTMTrainer(content, temp_dir=str(temp_dir))
+        
+        # Preprocesar
+        trainer.preprocess()
+        
+        # Construir modelo
+        trainer.build_model()
+        
+        # Entrenar
+        trainer.train(epochs=epochs)
+        
+        # Evaluar
+        trainer.evaluate()
+        
+        # Predecir futuro
+        trainer.predict_future(days_ahead=30)
+        
+        # Generar gráfico
+        graph_path = trainer.generate_graph()
+        
+        # Guardar modelo
+        model_path = trainer.save_model()
+        
+        # Guardar reporte
+        report_path = trainer.save_report()
+        
+        return {
+            "success": True,
+            "metrics": trainer.metrics,
+            "files": {
+                "model": str(model_path),
+                "graph": str(graph_path),
+                "report": str(report_path)
+            },
+            "message": "Modelo entrenado exitosamente"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error al entrenar modelo: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
