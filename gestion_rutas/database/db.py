@@ -7,17 +7,26 @@ from ..models.models import Base
 # Cargar variables de entorno
 load_dotenv()
 
-# Configuración de PostgreSQL
-DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "hanskawaii1")
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME", "gestion_rutas")
+# PostgreSQL 17 - Configuración para Iquique
+POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+POSTGRES_DB = os.getenv("POSTGRES_DB", "gestion_rutas")
 
-DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+# URL de conexión PostgreSQL
+DATABASE_URL = f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}?client_encoding=utf8"
 
-# Crear engine de PostgreSQL
-engine = create_engine(DATABASE_URL, echo=False)
+print(f"[DB] Usando PostgreSQL: {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}")
+
+# Crear engine de PostgreSQL con manejo de encoding UTF-8
+engine = create_engine(
+    DATABASE_URL, 
+    echo=False, 
+    pool_pre_ping=True, 
+    pool_size=10,
+    connect_args={'application_name': 'gestion_rutas', 'options': '-c client_encoding=utf8'}
+)
 
 # Session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

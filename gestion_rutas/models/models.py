@@ -119,7 +119,7 @@ class Operador(Base):
 
 class PuntoDisposicion(Base):
     __tablename__ = 'punto_disposicion'
-    id_disposicion = Column(Integer, primary_key=True)
+    id_punto_disp = Column(Integer, primary_key=True)
     nombre = Column(String)
     tipo = Column(String)
     latitud = Column(Float)
