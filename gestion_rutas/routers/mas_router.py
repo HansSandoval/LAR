@@ -54,6 +54,7 @@ class EstadoCamion(BaseModel):
     nombre: str
     posicion: Dict[str, float]  # {lat, lon}
     ruta: List[Dict[str, float]]  # Lista de posiciones visitadas
+    ruta_geometria: Optional[List[List[float]]] = None  # Geometría completa OSRM [[lat,lon],...]
     clientes_servidos: List[int]
     carga_actual: float  # kg
     capacidad_total: float  # kg
@@ -104,30 +105,32 @@ COLORES_CAMIONES = [
 
 def cargar_predicciones_lstm_csv(num_clientes: int = 50) -> List[float]:
     """
-    Carga predicciones LSTM desde el CSV generado.
-    Si no existe, usa valores sintéticos.
+    Carga predicciones LSTM usando el servicio de predicciones.
+    Usa el mismo servicio que el endpoint /api/lstm/predicciones-fecha
     """
     try:
-        csv_path = Path(__file__).parent.parent / "lstm" / "predicciones_lstm.csv"
-        if csv_path.exists():
-            import pandas as pd
-            df = pd.read_csv(csv_path)
-            
-            # Obtener predicciones para hoy (última fecha disponible)
-            if 'Fecha' in df.columns:
-                df['Fecha'] = pd.to_datetime(df['Fecha'])
-                df_hoy = df[df['Fecha'] == df['Fecha'].max()]
-                
-                if len(df_hoy) >= num_clientes:
-                    predicciones = df_hoy['Residuos_kg'].head(num_clientes).tolist()
-                    logger.info(f"✅ Cargadas {len(predicciones)} predicciones LSTM desde CSV")
-                    return predicciones
+        from gestion_rutas.service.prediccion_mapa_service import PrediccionMapaService
+        from datetime import datetime, timedelta
         
-        logger.warning("⚠️ CSV no disponible, usando valores sintéticos")
+        logger.info(f"📊 Generando predicciones LSTM para {num_clientes} puntos...")
+        servicio = PrediccionMapaService()
+        fecha_prediccion = datetime.now() + timedelta(days=1)
+        predicciones_completas = servicio.generar_predicciones_completas(fecha_prediccion)
+        
+        if predicciones_completas and len(predicciones_completas) > 0:
+            # Extraer solo los valores de predicción en kg
+            predicciones = [pred['prediccion_kg'] for pred in predicciones_completas[:num_clientes]]
+            logger.info(f"✅ {len(predicciones)} predicciones LSTM generadas correctamente")
+            return predicciones
+        else:
+            logger.warning("⚠️ No se pudieron generar predicciones LSTM")
     except Exception as e:
-        logger.error(f"❌ Error cargando predicciones LSTM: {e}")
+        logger.error(f"❌ Error generando predicciones LSTM: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
     
-    # Valores sintéticos si no hay CSV
+    # Valores sintéticos si falla
+    logger.warning("⚠️ Usando valores sintéticos como fallback")
     return [random.uniform(50, 150) for _ in range(num_clientes)]
 
 
@@ -138,29 +141,56 @@ def obtener_coordenadas_sector_sur(num_clientes: int = 50) -> List[Dict[str, flo
     """
     try:
         csv_path = Path(__file__).parent.parent / "lstm" / "datos_residuos_iquique.csv"
+        logger.info(f"🔍 Buscando CSV en: {csv_path}")
+        logger.info(f"📁 Archivo existe: {csv_path.exists()}")
+        
         if csv_path.exists():
             import pandas as pd
             df = pd.read_csv(csv_path)
+            logger.info(f"📊 CSV cargado: {len(df)} registros totales")
+            logger.info(f"📋 Columnas: {df.columns.tolist()[:5]}...")
             
-            if 'Latitud' in df.columns and 'Longitud' in df.columns:
+            # ✅ COLUMNAS CORRECTAS: latitud_punto_recoleccion, longitud_punto_recoleccion, punto_recoleccion
+            if 'latitud_punto_recoleccion' in df.columns and 'longitud_punto_recoleccion' in df.columns:
                 # Obtener coordenadas únicas
-                coords_unicas = df[['Latitud', 'Longitud', 'Punto']].drop_duplicates()
+                coords_unicas = df[['latitud_punto_recoleccion', 'longitud_punto_recoleccion', 'punto_recoleccion']].drop_duplicates()
+                logger.info(f"🎯 Coordenadas únicas encontradas: {len(coords_unicas)}")
                 
-                if len(coords_unicas) >= num_clientes:
+                # Filtrar coordenadas válidas (rango amplio de Iquique)
+                coords_validas = coords_unicas[
+                    (coords_unicas['latitud_punto_recoleccion'].notna()) &
+                    (coords_unicas['longitud_punto_recoleccion'].notna()) &
+                    (coords_unicas['latitud_punto_recoleccion'].between(-20.35, -20.15)) &
+                    (coords_unicas['longitud_punto_recoleccion'].between(-70.25, -70.05))
+                ]
+                logger.info(f"✅ Coordenadas válidas después de filtrar: {len(coords_validas)}")
+                
+                if len(coords_validas) > 0:
+                    # Tomar hasta num_clientes coordenadas
+                    cant_usar = min(len(coords_validas), num_clientes)
                     coordenadas = []
-                    for _, row in coords_unicas.head(num_clientes).iterrows():
+                    for _, row in coords_validas.head(cant_usar).iterrows():
                         coordenadas.append({
-                            'lat': float(row['Latitud']),
-                            'lon': float(row['Longitud']),
-                            'nombre': str(row['Punto'])
+                            'lat': float(row['latitud_punto_recoleccion']),
+                            'lon': float(row['longitud_punto_recoleccion']),
+                            'nombre': str(row['punto_recoleccion'])
                         })
                     
-                    logger.info(f"✅ Cargadas {len(coordenadas)} coordenadas reales desde CSV")
+                    logger.info(f"✅ Cargadas {len(coordenadas)} coordenadas REALES desde CSV")
+                    logger.info(f"📍 Ejemplo: {coordenadas[0]}")
                     return coordenadas
+                else:
+                    logger.warning(f"⚠️ No hay coordenadas válidas después del filtro")
+            else:
+                logger.warning(f"⚠️ Columnas incorrectas. Disponibles: {df.columns.tolist()}")
+        else:
+            logger.warning(f"⚠️ Archivo CSV no existe en: {csv_path}")
         
         logger.warning("⚠️ CSV no disponible, usando coordenadas sintéticas")
     except Exception as e:
         logger.error(f"❌ Error cargando coordenadas: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
     
     # Coordenadas sintéticas del Sector Sur (dentro de Iquique, no en el océano)
     base_lat, base_lon = -20.2666, -70.1300
@@ -264,7 +294,7 @@ async def iniciar_simulacion(config: ConfiguracionMAS):
             clientes=clientes_dict,
             depot_lat=depot_lat,
             depot_lon=depot_lon,
-            usar_routing_real=True,  # ✅ ACTIVAR ROUTING POR CALLES REALES CON OSRM
+            usar_routing_real=True,  # ✅ ACTIVADO - rutas por calles reales OSRM
             penalizacion_distancia=0.1,
             recompensa_servicio=10.0,
             max_steps=500,
@@ -336,6 +366,7 @@ async def obtener_estado_simulacion(sim_id: str):
             if hasattr(camion, 'ruta_geometria') and camion.ruta_geometria:
                 # Convertir de [lon, lat] a [lat, lon] para Leaflet
                 ruta_geometria = [[coord[1], coord[0]] for coord in camion.ruta_geometria]
+                logger.info(f"Camión {i}: Enviando geometría OSRM con {len(ruta_geometria)} puntos")
             
             # Waypoints (puntos de destino planificados)
             for cliente_id in camion.ruta_actual:
@@ -360,6 +391,7 @@ async def obtener_estado_simulacion(sim_id: str):
                 nombre=f"Camión {i+1}",
                 posicion=posicion_actual,
                 ruta=ruta_coords,  # Waypoints (destinos)
+                ruta_geometria=ruta_geometria if ruta_geometria else None,  # Geometría OSRM
                 clientes_servidos=camion.ruta_actual.copy(),
                 carga_actual=camion.carga_actual_kg,
                 capacidad_total=camion.capacidad_kg,

@@ -15,8 +15,67 @@ from gymnasium import spaces
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 import logging
+import requests
 
 logger = logging.getLogger(__name__)
+
+# ==================== OSRM SERVICE INTERNO ====================
+class OSRMService:
+    """Servicio OSRM simplificado integrado para evitar problemas de imports"""
+    
+    OSRM_URL = "http://router.project-osrm.org/route/v1/driving"
+    _route_cache: Dict[str, Dict] = {}
+    
+    @staticmethod
+    def obtener_ruta(lat1: float, lon1: float, lat2: float, lon2: float) -> Optional[Dict]:
+        """
+        Obtener ruta real por calles entre dos puntos usando OSRM.
+        
+        Returns:
+            Dict con:
+                - geometry: Lista de coordenadas [[lat, lon], ...] (convertidas para Leaflet)
+                - distancia_km: Distancia real en kilómetros
+                - duracion_minutos: Tiempo estimado en minutos
+        """
+        try:
+            coords = f"{lon1},{lat1};{lon2},{lat2}"
+            cache_key = f"{lat1:.6f},{lon1:.6f}-{lat2:.6f},{lon2:.6f}"
+            
+            # Verificar caché
+            if cache_key in OSRMService._route_cache:
+                return OSRMService._route_cache[cache_key]
+            
+            params = {
+                "geometries": "geojson",
+                "overview": "full"
+            }
+            
+            response = requests.get(
+                f"{OSRMService.OSRM_URL}/{coords}", 
+                params=params, 
+                timeout=5
+            )
+            data = response.json()
+            
+            if data.get("code") == "Ok" and data.get("routes"):
+                ruta = data["routes"][0]
+                # Convertir geometría de [lon, lat] a [lat, lon] para Leaflet
+                geometry_leaflet = [[coord[1], coord[0]] for coord in ruta["geometry"]["coordinates"]]
+                
+                result = {
+                    "geometry": geometry_leaflet,
+                    "distancia_km": round(ruta["distance"] / 1000, 2),
+                    "duracion_minutos": round(ruta["duration"] / 60, 2)
+                }
+                
+                # Guardar en caché
+                OSRMService._route_cache[cache_key] = result
+                return result
+            
+            return None
+        except Exception as e:
+            logger.warning(f"Error OSRM: {e}")
+            return None
 
 
 @dataclass
@@ -277,20 +336,29 @@ class DVRPTWEnv(gym.Env):
                 self.depot_lat, self.depot_lon
             )
             
-            # Obtener geometría de ruta si está disponible
+                # Obtener geometría de ruta si está disponible
             if self.usar_routing_real:
+                logger.info(f"🗺️ Intentando obtener ruta OSRM de ({camion.latitud}, {camion.longitud}) al depot ({self.depot_lat}, {self.depot_lon})")
                 ruta_info = self._obtener_ruta_completa(
                     camion.latitud, camion.longitud,
                     self.depot_lat, self.depot_lon
                 )
                 if ruta_info and 'geometry' in ruta_info:
-                    camion.ruta_geometria = ruta_info['geometry']
-                    logger.debug(f"Ruta al depot: {len(camion.ruta_geometria)} puntos")
+                    # ACUMULAR geometría en lugar de sobrescribir
+                    if not hasattr(camion, 'ruta_geometria') or not camion.ruta_geometria:
+                        camion.ruta_geometria = []
+                    camion.ruta_geometria.extend(ruta_info['geometry'])
+                    logger.info(f"✅ Geometría OSRM obtenida: {len(ruta_info['geometry'])} puntos (total acumulado: {len(camion.ruta_geometria)})")
+                else:
+                    logger.warning(f"⚠️ OSRM falló para ruta al depot")
             
             camion.latitud = self.depot_lat
             camion.longitud = self.depot_lon
             camion.distancia_recorrida_km += distancia
             camion.carga_actual_kg = 0.0  # Descargar
+            
+            # Limpiar geometría acumulada para el próximo ciclo
+            camion.ruta_geometria = []
             
             reward -= distancia * self.penalizacion_distancia
             info['evento'] = 'retorno_depot'
@@ -324,8 +392,11 @@ class DVRPTWEnv(gym.Env):
                         cliente.latitud, cliente.longitud
                     )
                     if ruta_info and 'geometry' in ruta_info:
-                        camion.ruta_geometria = ruta_info['geometry']
-                        logger.debug(f"Ruta a cliente {cliente_id}: {len(camion.ruta_geometria)} puntos")
+                        # ACUMULAR geometría en lugar de sobrescribir
+                        if not hasattr(camion, 'ruta_geometria') or not camion.ruta_geometria:
+                            camion.ruta_geometria = []
+                        camion.ruta_geometria.extend(ruta_info['geometry'])
+                        logger.debug(f"Ruta a cliente {cliente_id}: {len(ruta_info['geometry'])} puntos (total: {len(camion.ruta_geometria)})")
                 
                 # Mover camión
                 camion.latitud = cliente.latitud
@@ -385,20 +456,8 @@ class DVRPTWEnv(gym.Env):
                 if cache_key in self._routing_cache:
                     return self._routing_cache[cache_key]['distancia_km']
                 
-                # Importar routing service (lazy import para no afectar otros usos)
-                import sys
-                import os
-                sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-                
-                from service.routing_service import RoutingService
-                from models.base import Punto
-                
-                # Crear puntos temporales
-                origen = Punto(id=0, nombre="temp", latitud=lat1, longitud=lon1)
-                destino = Punto(id=1, nombre="temp", latitud=lat2, longitud=lon2)
-                
-                # Obtener ruta real por OSRM
-                ruta = RoutingService.obtener_ruta_entre_puntos(origen, destino)
+                # Usar servicio OSRM interno
+                ruta = OSRMService.obtener_ruta(lat1, lon1, lat2, lon2)
                 
                 if ruta:
                     # Guardar en caché
@@ -444,20 +503,8 @@ class DVRPTWEnv(gym.Env):
             if cache_key in self._routing_cache:
                 return self._routing_cache[cache_key]
             
-            # Importar routing service
-            import sys
-            import os
-            sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-            
-            from service.routing_service import RoutingService
-            from models.base import Punto
-            
-            # Crear puntos temporales
-            origen = Punto(id=0, nombre="temp", latitud=lat1, longitud=lon1)
-            destino = Punto(id=1, nombre="temp", latitud=lat2, longitud=lon2)
-            
-            # Obtener ruta completa por OSRM
-            ruta = RoutingService.obtener_ruta_entre_puntos(origen, destino)
+            # Usar servicio OSRM interno
+            ruta = OSRMService.obtener_ruta(lat1, lon1, lat2, lon2)
             
             if ruta:
                 # Guardar en caché

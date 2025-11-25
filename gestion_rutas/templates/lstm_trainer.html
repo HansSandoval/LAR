@@ -208,6 +208,51 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
+        .explanation-box {
+            background: #edf2f7;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .explanation-box h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .explanation-box p {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .explanation-box ul {
+            margin: 10px 0 10px 20px;
+            color: #4a5568;
+        }
+        .explanation-box ul li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        .metric-tooltip {
+            position: relative;
+            cursor: help;
+            display: inline-block;
+        }
+        .metric-tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2d3748;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            white-space: nowrap;
+            font-size: 0.9em;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
@@ -252,52 +297,80 @@
             <div class="results-section" id="resultsSection">
                 <h2 style="margin-bottom: 20px; color: #2d3748;">Resultados del Entrenamiento</h2>
                 
+                <!-- Explicación de Calidad -->
+                <div class="explanation-box">
+                    <h3>¿Cómo interpretar los resultados?</h3>
+                    <p><strong>Un modelo LSTM es considerado BUENO cuando:</strong></p>
+                    <ul>
+                        <li><strong>R² Score ≥ 0.70:</strong> El modelo explica el 70% o más de la variabilidad de los datos</li>
+                        <li><strong>MAPE < 15%:</strong> El error porcentual promedio es menor al 15%</li>
+                        <li><strong>RMSE bajo:</strong> El error absoluto es pequeño en relación a los valores típicos</li>
+                        <li><strong>Gráfico alineado:</strong> Las predicciones siguen de cerca la línea de valores reales</li>
+                    </ul>
+                </div>
+                
                 <div class="metrics-grid">
                     <div class="metric-card">
-                        <h3>Calidad del Modelo</h3>
+                        <h3 class="metric-tooltip" data-tooltip="Puntaje general del modelo (0-100)">Calidad del Modelo</h3>
                         <div class="metric-value" id="qualityScore" style="font-size: 3em;">-</div>
                         <div class="metric-label">Puntaje 0-100</div>
                     </div>
                     <div class="metric-card">
-                        <h3>R² Score</h3>
+                        <h3 class="metric-tooltip" data-tooltip="Coeficiente de determinación: qué tan bien el modelo predice los datos">R² Score</h3>
                         <div class="metric-value" id="r2Value">-</div>
-                        <div class="metric-label">Exactitud del modelo</div>
+                        <div class="metric-label">0.00 - 1.00 (mejor cerca de 1)</div>
                     </div>
                     <div class="metric-card">
-                        <h3>RMSE</h3>
+                        <h3 class="metric-tooltip" data-tooltip="Raíz del error cuadrático medio: penaliza errores grandes">RMSE</h3>
                         <div class="metric-value" id="rmseValue">-</div>
-                        <div class="metric-label">Error promedio</div>
+                        <div class="metric-label">Kg (más bajo = mejor)</div>
                     </div>
                     <div class="metric-card">
-                        <h3>MAE</h3>
+                        <h3 class="metric-tooltip" data-tooltip="Error absoluto medio: promedio de diferencias">MAE</h3>
                         <div class="metric-value" id="maeValue">-</div>
-                        <div class="metric-label">Desviación abs.</div>
+                        <div class="metric-label">Kg (más bajo = mejor)</div>
                     </div>
                     <div class="metric-card">
-                        <h3>MAPE %</h3>
+                        <h3 class="metric-tooltip" data-tooltip="Error porcentual absoluto medio: error en términos relativos">MAPE %</h3>
                         <div class="metric-value" id="mapeValue">-</div>
-                        <div class="metric-label">Error porcentual</div>
+                        <div class="metric-label">% (más bajo = mejor)</div>
                     </div>
                 </div>
 
                 <div id="qualityBadge" style="text-align: center; margin-bottom: 20px;"></div>
+                
+                <!-- Explicación detallada de métricas -->
+                <div class="explanation-box">
+                    <h3>Explicación de Métricas</h3>
+                    <p><strong>R² (Coeficiente de Determinación):</strong> Mide qué porcentaje de la variabilidad de los datos es explicado por el modelo. Valores entre 0.70-0.85 son excelentes para series temporales.</p>
+                    
+                    <p><strong>RMSE (Root Mean Square Error):</strong> Penaliza más los errores grandes. Si tus residuos típicos son ~100 kg, un RMSE de 15-25 kg es muy bueno.</p>
+                    
+                    <p><strong>MAE (Mean Absolute Error):</strong> Promedio simple de los errores. Más fácil de interpretar que RMSE. Representa cuántos kg en promedio se desvía cada predicción.</p>
+                    
+                    <p><strong>MAPE (Mean Absolute Percentage Error):</strong> Error en términos porcentuales. Un MAPE < 10% es excelente, 10-20% es bueno, >20% necesita mejora.</p>
+                </div>
 
                 <!-- Download Section -->
                 <div style="text-align: center; margin-bottom: 30px;">
                     <a id="downloadGraph" href="#" download="grafico_predicciones.png" 
                        style="display: inline-block; padding: 12px 30px; background: #667eea; color: white; 
                               text-decoration: none; border-radius: 10px; margin: 0 10px; font-weight: 600;">
-                        Descargar Gráfico
+                        Descargar Gráfico PNG
                     </a>
                     <a id="downloadModel" href="#" download="modelo.keras" 
                        style="display: inline-block; padding: 12px 30px; background: #764ba2; color: white; 
                               text-decoration: none; border-radius: 10px; margin: 0 10px; font-weight: 600;">
-                        Descargar Modelo Keras
+                        Descargar Modelo .keras
                     </a>
                 </div>
 
                 <div class="graph-container" id="graphContainer">
                     <h3 style="margin-bottom: 20px; color: #2d3748;">Predicciones vs Valores Reales</h3>
+                    <p style="color: #718096; margin-bottom: 15px;">
+                        En este gráfico, la línea azul representa los valores reales y la línea naranja las predicciones del modelo.
+                        <strong>Mientras más cercanas estén las líneas, mejor es el modelo.</strong>
+                    </p>
                     <img id="graphImage" src="" alt="Gráfico de predicciones" style="cursor: pointer;" />
                 </div>
             </div>
@@ -362,7 +435,7 @@
             formData.append('file', file);
 
             try {
-                const response = await fetch(`/lstm/train?epochs=${epochs}`, {
+                const response = await fetch(`/api/lstm/train?epochs=${epochs}`, {
                     method: 'POST',
                     body: formData
                 });
@@ -388,7 +461,7 @@
         });
 
         function displayResults(metrics) {
-            // Calculate quality score 0-100
+            // Calculate quality score 0-100 based on R²
             let qualityScore = 0;
             if (metrics.r2 >= 0) {
                 qualityScore = Math.round(metrics.r2 * 100);
@@ -402,36 +475,46 @@
             document.getElementById('maeValue').textContent = metrics.mae.toFixed(2);
             document.getElementById('mapeValue').textContent = metrics.mape.toFixed(2);
 
-            // Quality badge based on score
-            let quality, className;
+            // Quality badge based on score with detailed interpretation
+            let quality, className, interpretation;
             if (qualityScore >= 70) {
                 quality = `EXCELENTE (${qualityScore}/100)`;
                 className = 'quality-excellent';
+                interpretation = 'El modelo tiene un rendimiento muy bueno y es confiable para producción.';
             } else if (qualityScore >= 50) {
                 quality = `BUENO (${qualityScore}/100)`;
                 className = 'quality-good';
+                interpretation = 'El modelo es útil pero podría mejorarse con más datos o ajustes.';
             } else if (qualityScore >= 30) {
                 quality = `ACEPTABLE (${qualityScore}/100)`;
                 className = 'quality-fair';
+                interpretation = 'El modelo funciona pero tiene margen de mejora significativo.';
             } else {
                 quality = `REQUIERE MEJORA (${qualityScore}/100)`;
                 className = 'quality-poor';
+                interpretation = 'El modelo necesita más entrenamiento, más datos o cambios en la arquitectura.';
             }
 
             document.getElementById('qualityBadge').innerHTML = 
-                `<span class="quality-badge ${className}">${quality}</span>`;
+                `<span class="quality-badge ${className}">${quality}</span>
+                 <p style="color: #4a5568; margin-top: 10px; font-size: 1.1em;">${interpretation}</p>`;
 
-            // Set up download links
-            const graphUrl = '/lstm-temp/grafico.png?' + new Date().getTime();
-            const modelUrl = '/lstm-temp/modelo.keras?' + new Date().getTime();
+            // Set up download links with cache busting
+            const timestamp = new Date().getTime();
+            const graphUrl = '/lstm-temp/grafico.png?' + timestamp;
+            const modelUrl = '/lstm-temp/modelo.keras?' + timestamp;
             
             document.getElementById('downloadGraph').href = graphUrl;
             document.getElementById('downloadModel').href = modelUrl;
             
-            // Load graph
+            // Load graph image
             const graphImg = document.getElementById('graphImage');
             graphImg.src = graphUrl;
             graphImg.onclick = () => window.open(graphUrl, '_blank');
+            
+            // Log for debugging
+            console.log('Métricas del modelo:', metrics);
+            console.log('Calidad calculada:', qualityScore);
         }
     </script>
 </body>

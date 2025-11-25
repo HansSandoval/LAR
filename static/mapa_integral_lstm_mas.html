@@ -342,6 +342,8 @@
         let marcadoresPuntos = [];
         let marcadoresCamiones = [];
         let lineasRutas = [];
+        let rastrosCamiones = [];  // Rastros permanentes de cada camión (línea sólida del recorrido)
+        let ultimaPosicionCamiones = {};  // Última posición conocida para animar
         
         // ==================== INICIALIZAR MAPA ====================
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -382,11 +384,26 @@
                 return;
             }
             
-            estadoDiv.innerHTML = '<div class="alert alert-info loading">Cargando predicciones LSTM...</div>';
+            estadoDiv.innerHTML = '<div class="alert alert-info loading">Cargando predicciones LSTM... (esto puede tardar 10-15 segundos)</div>';
             
             try {
-                const response = await fetch(`/api/lstm/predicciones-fecha?fecha=${fecha}`);
+                console.log(`🔍 Solicitando predicciones para fecha: ${fecha}`);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 segundos timeout
+                
+                const response = await fetch(`/api/lstm/predicciones-fecha?fecha=${fecha}`, {
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                
+                console.log(`✅ Respuesta recibida: ${response.status}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                console.log(`📊 Predicciones recibidas: ${data.predicciones?.length || 0} puntos`);
                 
                 if (data.error) {
                     throw new Error(data.error);
@@ -501,22 +518,21 @@
         function iniciarActualizacionAutomatica() {
             if (intervalId) clearInterval(intervalId);
             
-            console.log('🚀 Iniciando actualización automática cada 3 segundos (más lento para ver animación)');
+            console.log('🚀 Iniciando simulación con animación siguiendo calles OSRM');
+            console.log('⏱️ Intervalo: 3 segundos por paso');
+            console.log('🗺️ Animación siguiendo geometría real de calles');
             
             intervalId = setInterval(async () => {
                 if (!simulacionId) return;
                 
                 try {
                     // Ejecutar paso
-                    console.log(`⏩ Ejecutando paso de simulación ${simulacionId}`);
                     const pasoResponse = await fetch(`/api/mas/simulacion/${simulacionId}/paso`, { method: 'POST' });
                     const pasoData = await pasoResponse.json();
-                    console.log('✅ Paso ejecutado:', pasoData);
                     
                     // Obtener estado
                     const response = await fetch(`/api/mas/simulacion/${simulacionId}/estado`);
                     const data = await response.json();
-                    console.log('📊 Estado recibido:', data);
                     
                     if (!data.activa) {
                         console.log('🛑 Simulación terminada');
@@ -529,7 +545,7 @@
                 } catch (error) {
                     console.error('❌ Error en actualización:', error);
                 }
-            }, 3000); // Cambiado de 2000 a 3000ms para ver mejor el movimiento
+            }, 3000); // Intervalo fijo de 3 segundos (10x acelerado)
         }
         
         // ==================== FUNCIÓN: ACTUALIZAR VISUALIZACIÓN ====================
@@ -545,26 +561,55 @@
             lineasRutas.forEach(l => map.removeLayer(l));
             lineasRutas = [];
             
-            // Actualizar o crear marcadores de camiones con ANIMACIÓN
+            // Actualizar o crear marcadores de camiones con ANIMACIÓN y RASTRO
             data.camiones.forEach((camion, idx) => {
                 const nuevaPos = L.latLng(camion.posicion.lat, camion.posicion.lon);
+                
+                // DIBUJAR RASTRO PERMANENTE (línea sólida del recorrido ya realizado)
+                if (ultimaPosicionCamiones[idx]) {
+                    const posAnterior = ultimaPosicionCamiones[idx];
+                    
+                    // Solo dibujar rastro si el camión se movió significativamente
+                    const distancia = map.distance(posAnterior, nuevaPos);
+                    if (distancia > 10) {  // Más de 10 metros
+                        const rastro = L.polyline([posAnterior, nuevaPos], {
+                            color: camion.color || '#e74c3c',
+                            weight: 3,
+                            opacity: 0.8,
+                            smoothFactor: 1.0
+                        }).addTo(map);
+                        
+                        // Guardar rastro en array del camión
+                        if (!rastrosCamiones[idx]) {
+                            rastrosCamiones[idx] = [];
+                        }
+                        rastrosCamiones[idx].push(rastro);
+                    }
+                }
+                
+                // Guardar posición actual para el próximo frame
+                ultimaPosicionCamiones[idx] = nuevaPos;
                 
                 // Si ya existe el marcador, animarlo a la nueva posición
                 if (marcadoresCamiones[idx]) {
                     const marcadorExistente = marcadoresCamiones[idx];
                     const posActual = marcadorExistente.getLatLng();
                     
-                    // Animar movimiento suave con interpolación
-                    animarMovimiento(marcadorExistente, posActual, nuevaPos, 2500); // 2.5 segundos de animación
+                    // Animación fija de 2.8 segundos (sincronizada con intervalo de 3s)
+                    // El tiempo real se calcula en backend y se muestra en estadísticas
+                    const duracionMs = 2800;
+                    
+                    // Animar movimiento siguiendo geometría OSRM
+                    animarMovimiento(marcadorExistente, posActual, nuevaPos, duracionMs, camion.ruta_geometria);
                     
                     // Actualizar popup
                     marcadorExistente.setPopupContent(`
                         <div style="min-width: 200px;">
-                            <h4>🚛 Camión ${idx + 1}</h4>
+                            <h4>Camión ${idx + 1}</h4>
                             <p>
                                 <b>Carga:</b> ${camion.carga_actual.toFixed(0)} / ${camion.capacidad_total} kg<br>
                                 <b>Distancia:</b> ${camion.distancia_recorrida.toFixed(1)} km<br>
-                                <b>Estado:</b> ${camion.estado === 'en_ruta' ? '🔄 En Ruta' : '🏠 En Depósito'}
+                                <b>Estado:</b> ${camion.estado === 'en_ruta' ? 'En Ruta' : 'En Depósito'}
                             </p>
                         </div>
                     `);
@@ -578,11 +623,11 @@
                         })
                     }).bindPopup(`
                         <div style="min-width: 200px;">
-                            <h4>🚛 Camión ${idx + 1}</h4>
+                            <h4>Camión ${idx + 1}</h4>
                             <p>
                                 <b>Carga:</b> ${camion.carga_actual.toFixed(0)} / ${camion.capacidad_total} kg<br>
                                 <b>Distancia:</b> ${camion.distancia_recorrida.toFixed(1)} km<br>
-                                <b>Estado:</b> ${camion.estado === 'en_ruta' ? '🔄 En Ruta' : '🏠 En Depósito'}
+                                <b>Estado:</b> ${camion.estado === 'en_ruta' ? 'En Ruta' : 'En Depósito'}
                             </p>
                         </div>
                     `).addTo(map);
@@ -590,55 +635,42 @@
                     marcadoresCamiones[idx] = marker;
                 }
                 
-                // Dibujar ruta planificada con mejor visualización
+                // Dibujar RUTA PLANIFICADA (punteada, muestra el plan futuro)
+                if (camion.ruta_geometria && camion.ruta_geometria.length > 0) {
+                    // Usar geometría OSRM real
+                    const linea = L.polyline(camion.ruta_geometria, {
+                        color: camion.color || '#e74c3c',
+                        weight: 2,
+                        opacity: 0.4,
+                        dashArray: '8, 12',
+                        lineCap: 'round'
+                    }).addTo(map);
+                    lineasRutas.push(linea);
+                    
+                    console.log(`Camión ${idx + 1}: Ruta planificada con ${camion.ruta_geometria.length} puntos OSRM`);
+                } else if (camion.ruta && camion.ruta.length > 0) {
+                    // Fallback: línea recta entre waypoints
+                    const coordsRuta = [[camion.posicion.lat, camion.posicion.lon], ...camion.ruta.map(p => [p.lat, p.lon])];
+                    const linea = L.polyline(coordsRuta, {
+                        color: camion.color || '#e74c3c',
+                        weight: 2,
+                        opacity: 0.4,
+                        dashArray: '8, 12'
+                    }).addTo(map);
+                    lineasRutas.push(linea);
+                }
+                
+                // Marcadores de destinos pendientes
                 if (camion.ruta && camion.ruta.length > 0) {
-                    let coordsRuta;
-                    
-                    // Si hay geometría de ruta real por calles (OSRM), usarla
-                    if (camion.ruta_geometria && camion.ruta_geometria.length > 0) {
-                        // Ruta REAL por calles (más precisa)
-                        coordsRuta = camion.ruta_geometria;  // Ya viene en formato [lat, lon]
-                        
-                        const linea = L.polyline(coordsRuta, {
-                            color: camion.color || '#e74c3c',
-                            weight: 4,
-                            opacity: 0.7,
-                            dashArray: '5, 10',  // Línea punteada más visible
-                            lineCap: 'round',
-                            smoothFactor: 1.0
-                        }).bindTooltip(`🚛 Ruta Real Camión ${idx + 1}`, {
-                            permanent: false,
-                            sticky: true
-                        }).addTo(map);
-                        lineasRutas.push(linea);
-                        
-                        console.log(`Camión ${idx + 1}: Dibujando ruta REAL con ${coordsRuta.length} puntos por calles`);
-                    } else {
-                        // Ruta simplificada (líneas rectas entre waypoints)
-                        coordsRuta = [[camion.posicion.lat, camion.posicion.lon], ...camion.ruta.map(p => [p.lat, p.lon])];
-                        
-                        const linea = L.polyline(coordsRuta, {
-                            color: camion.color || '#e74c3c',
-                            weight: 3,
-                            opacity: 0.5,
-                            dashArray: '10, 10',
-                            lineCap: 'round'
-                        }).addTo(map);
-                        lineasRutas.push(linea);
-                        
-                        console.log(`Camión ${idx + 1}: Dibujando ruta SIMPLE con ${coordsRuta.length} waypoints`);
-                    }
-                    
-                    // Agregar marcadores en los puntos de destino (waypoints)
                     camion.ruta.forEach((punto, i) => {
                         const circulo = L.circleMarker([punto.lat, punto.lon], {
-                            radius: 5,
+                            radius: 4,
                             fillColor: camion.color || '#e74c3c',
                             color: 'white',
-                            weight: 2,
+                            weight: 1,
                             opacity: 1,
-                            fillOpacity: 0.9
-                        }).bindTooltip(`📍 Destino ${i + 1}`, { permanent: false }).addTo(map);
+                            fillOpacity: 0.7
+                        }).addTo(map);
                         lineasRutas.push(circulo);
                     });
                 }
@@ -695,9 +727,51 @@
             }
         }
         
-        // ==================== FUNCIÓN: ANIMAR MOVIMIENTO SUAVE ====================
-        function animarMovimiento(marker, desde, hacia, duracion) {
-            const pasos = 30; // Número de frames de animación
+        // ==================== FUNCIÓN: ANIMAR MOVIMIENTO SIGUIENDO GEOMETRÍA OSRM ====================
+        function animarMovimiento(marker, desde, hacia, duracion, geometria = null) {
+            // Si hay geometría OSRM, animar siguiendo cada punto de la ruta real
+            if (geometria && geometria.length > 2) {
+                console.log(`🚗 Animando con ${geometria.length} puntos OSRM`);
+                
+                // Filtrar puntos cercanos al inicio y fin
+                const puntosRuta = geometria.filter(punto => {
+                    const dist = Math.sqrt(
+                        Math.pow(punto[0] - desde.lat, 2) + 
+                        Math.pow(punto[1] - desde.lng, 2)
+                    );
+                    return dist < 0.1; // Dentro de ~10km
+                });
+                
+                if (puntosRuta.length < 2) {
+                    // Fallback a animación lineal
+                    animarMovimientoLineal(marker, desde, hacia, duracion);
+                    return;
+                }
+                
+                // Animar punto por punto siguiendo la geometría
+                const tiempoPorPunto = duracion / puntosRuta.length;
+                let indicePunto = 0;
+                
+                const timer = setInterval(() => {
+                    if (indicePunto >= puntosRuta.length) {
+                        clearInterval(timer);
+                        marker.setLatLng(hacia); // Asegurar posición final
+                        return;
+                    }
+                    
+                    const punto = puntosRuta[indicePunto];
+                    marker.setLatLng([punto[0], punto[1]]);
+                    indicePunto++;
+                }, tiempoPorPunto);
+            } else {
+                // Sin geometría: animación lineal tradicional
+                animarMovimientoLineal(marker, desde, hacia, duracion);
+            }
+        }
+        
+        // Animación lineal (fallback cuando no hay geometría)
+        function animarMovimientoLineal(marker, desde, hacia, duracion) {
+            const pasos = 30;
             const deltaLat = (hacia.lat - desde.lat) / pasos;
             const deltaLng = (hacia.lng - desde.lng) / pasos;
             const intervalo = duracion / pasos;
@@ -706,7 +780,7 @@
             const timer = setInterval(() => {
                 if (paso >= pasos) {
                     clearInterval(timer);
-                    marker.setLatLng(hacia); // Asegurar posición final exacta
+                    marker.setLatLng(hacia);
                     return;
                 }
                 
@@ -720,7 +794,7 @@
         // ==================== FUNCIÓN: DETENER SIMULACIÓN ====================
         function detenerSimulacion() {
             if (intervalId) {
-                clearInterval(intervalId);
+                clearInterval(intervalId); // Volver a clearInterval (sistema estable)
                 intervalId = null;
             }
             

@@ -1,0 +1,3841 @@
+[
+  {
+    "nombre": "Avenida Arturo Prat Chacón",
+    "latitud": -20.26730060428571,
+    "longitud": -70.13095887392862,
+    "tipo": "primary",
+    "way_ids": [
+      30754343,
+      30754763,
+      166187939,
+      166188318,
+      427094685,
+      840344173,
+      840344176,
+      840735883,
+      840735884,
+      840735885,
+      840735886,
+      840742993,
+      840742994,
+      840742995,
+      1126970591,
+      1126970592,
+      1126970594,
+      1126971337,
+      1126971338,
+      1126971341,
+      1126971343,
+      1126971344,
+      1126971855,
+      1126971856,
+      1126971857,
+      1126971859,
+      1126971860,
+      1126971861,
+      1126971863,
+      1149460728,
+      1149518404,
+      1149518480,
+      1215434082,
+      1215434083,
+      1301911242
+    ]
+  },
+  {
+    "nombre": "Avenida Francisco Bilbao",
+    "latitud": -20.262052986754973,
+    "longitud": -70.12936585562915,
+    "tipo": "secondary",
+    "way_ids": [
+      30754777,
+      50329537,
+      300547546,
+      840033840,
+      840033843,
+      840344167,
+      840344168,
+      840695951,
+      840735873,
+      840735874,
+      840735876,
+      840735877,
+      840742975,
+      840742981,
+      840742982,
+      842620037,
+      842620038,
+      1301911243,
+      1389831116,
+      1389831117,
+      1389831118,
+      1389831119
+    ]
+  },
+  {
+    "nombre": "Avenida Ramón Pérez Opazo",
+    "latitud": -20.254152821875003,
+    "longitud": -70.1310419015625,
+    "tipo": "secondary",
+    "way_ids": [
+      30754215,
+      38313554,
+      821229092,
+      836718568,
+      839590801,
+      839590803,
+      839590804,
+      839771319,
+      839771320,
+      839771321,
+      1392629221,
+      1392629222,
+      1392629225,
+      1392629226
+    ]
+  },
+  {
+    "nombre": "Avenida Cerro Dragón",
+    "latitud": -20.255766351851857,
+    "longitud": -70.12787144814814,
+    "tipo": "tertiary",
+    "way_ids": [
+      38313551,
+      839590793,
+      839771324,
+      1392314912
+    ]
+  },
+  {
+    "nombre": "Avenida Padre Hurtado",
+    "latitud": -20.26096154897959,
+    "longitud": -70.12751343469387,
+    "tipo": "tertiary",
+    "way_ids": [
+      38313549,
+      38313674,
+      836731130,
+      836731131,
+      840046531,
+      840046532,
+      840046533,
+      840046534,
+      840735875,
+      840735878,
+      840735879,
+      840735880,
+      840735887,
+      840735888,
+      840742978,
+      840742979,
+      1389831120,
+      1389831121,
+      1389831122,
+      1389831123,
+      1389831125,
+      1389831126,
+      1389831127,
+      1389831128,
+      1389831133,
+      1389831134,
+      1389831135,
+      1389831136
+    ]
+  },
+  {
+    "nombre": "Dos Oriente",
+    "latitud": -20.276487755555557,
+    "longitud": -70.12426617777778,
+    "tipo": "tertiary",
+    "way_ids": [
+      89637436,
+      193291388,
+      1389984724
+    ]
+  },
+  {
+    "nombre": "Playa El Águila",
+    "latitud": -20.252808950000002,
+    "longitud": -70.13560665,
+    "tipo": "tertiary",
+    "way_ids": [
+      307784358
+    ]
+  },
+  {
+    "nombre": "Quebrada Blanca",
+    "latitud": -20.26844192608696,
+    "longitud": -70.12482266956522,
+    "tipo": "tertiary",
+    "way_ids": [
+      303836287,
+      840033857
+    ]
+  },
+  {
+    "nombre": "Teresa Wilms Montt",
+    "latitud": -20.26850014722222,
+    "longitud": -70.12738680833334,
+    "tipo": "tertiary",
+    "way_ids": [
+      38341011,
+      38341012,
+      304038354,
+      546674778,
+      606126141,
+      1126971340,
+      1126971342
+    ]
+  },
+  {
+    "nombre": "Avenida Costanera",
+    "latitud": -20.262965023913043,
+    "longitud": -70.13075994347827,
+    "tipo": "residential",
+    "way_ids": [
+      38341465,
+      304038351,
+      778324999,
+      840735882
+    ]
+  },
+  {
+    "nombre": "Avenida La Tirana",
+    "latitud": -20.268070926291056,
+    "longitud": -70.12583722159623,
+    "tipo": "residential",
+    "way_ids": [
+      38313581,
+      193292090,
+      300547547,
+      713273945,
+      782075120,
+      821229093,
+      839488297,
+      840033841,
+      840033844,
+      840033845,
+      840033846,
+      840033849,
+      840033850,
+      840742985,
+      840742987,
+      840743000,
+      840743001,
+      840743002,
+      840743003,
+      842620033,
+      842620035,
+      842620036,
+      842620039,
+      842630903,
+      842630904,
+      842630905,
+      842630906,
+      842630907,
+      842630912,
+      842630914,
+      842630915,
+      842630916,
+      842630917,
+      842630918,
+      842630919,
+      842630920,
+      842630921,
+      842630922,
+      842630923,
+      1388990872,
+      1388990873,
+      1389831137,
+      1389831138,
+      1389831139,
+      1389831140,
+      1389971328
+    ]
+  },
+  {
+    "nombre": "Avenida Proyectada",
+    "latitud": -20.275125421874996,
+    "longitud": -70.1256628875,
+    "tipo": "residential",
+    "way_ids": [
+      89637439,
+      89637455,
+      840742986,
+      840742988
+    ]
+  },
+  {
+    "nombre": "Avenida Reinamar",
+    "latitud": -20.279091076,
+    "longitud": -70.125919708,
+    "tipo": "residential",
+    "way_ids": [
+      38341254,
+      89637429,
+      324052040,
+      842630902
+    ]
+  },
+  {
+    "nombre": "Caleta Río Seco",
+    "latitud": -20.256058673529406,
+    "longitud": -70.13094429705882,
+    "tipo": "residential",
+    "way_ids": [
+      38313552,
+      840742976,
+      1392629230,
+      1392629231
+    ]
+  },
+  {
+    "nombre": "Calle Cinco",
+    "latitud": -20.271683572222223,
+    "longitud": -70.12868267777777,
+    "tipo": "residential",
+    "way_ids": [
+      38341021
+    ]
+  },
+  {
+    "nombre": "Calle Cuatro",
+    "latitud": -20.274605709523808,
+    "longitud": -70.12866069999998,
+    "tipo": "residential",
+    "way_ids": [
+      782077983,
+      782077984,
+      842620034
+    ]
+  },
+  {
+    "nombre": "Calle Seis",
+    "latitud": -20.267583300000002,
+    "longitud": -70.1283191,
+    "tipo": "residential",
+    "way_ids": [
+      38341001
+    ]
+  },
+  {
+    "nombre": "Calle Uno",
+    "latitud": -20.26789570303031,
+    "longitud": -70.12716677272728,
+    "tipo": "residential",
+    "way_ids": [
+      38340977,
+      38341020,
+      38341463,
+      89637454,
+      294248705,
+      713273944
+    ]
+  },
+  {
+    "nombre": "Cardenal José María Caro",
+    "latitud": -20.266941407692308,
+    "longitud": -70.12408650769231,
+    "tipo": "residential",
+    "way_ids": [
+      38313535,
+      840033854
+    ]
+  },
+  {
+    "nombre": "Cerro Casiri",
+    "latitud": -20.26544505555556,
+    "longitud": -70.12805715555555,
+    "tipo": "residential",
+    "way_ids": [
+      38341003
+    ]
+  },
+  {
+    "nombre": "Cerro Colorado",
+    "latitud": -20.266135293333335,
+    "longitud": -70.12746723333333,
+    "tipo": "residential",
+    "way_ids": [
+      38341000,
+      840742983,
+      1301869326
+    ]
+  },
+  {
+    "nombre": "Cerro Sauna",
+    "latitud": -20.265915328571428,
+    "longitud": -70.12835251428572,
+    "tipo": "residential",
+    "way_ids": [
+      38341004
+    ]
+  },
+  {
+    "nombre": "Cerro Yabricoya",
+    "latitud": -20.266782400000004,
+    "longitud": -70.128083325,
+    "tipo": "residential",
+    "way_ids": [
+      38341006,
+      38341008
+    ]
+  },
+  {
+    "nombre": "Cinco Sur",
+    "latitud": -20.270939799999997,
+    "longitud": -70.12507146666665,
+    "tipo": "residential",
+    "way_ids": [
+      782086191
+    ]
+  },
+  {
+    "nombre": "Condominio Carrara",
+    "latitud": -20.26871517380952,
+    "longitud": -70.13002667857143,
+    "tipo": "residential",
+    "way_ids": [
+      83739270,
+      83739281,
+      83739283,
+      427094684,
+      1388971148,
+      1388971149,
+      1388971150,
+      1388971151,
+      1388971152
+    ]
+  },
+  {
+    "nombre": "Cuatro",
+    "latitud": -20.2766091,
+    "longitud": -70.1257696,
+    "tipo": "residential",
+    "way_ids": [
+      89637453
+    ]
+  },
+  {
+    "nombre": "Cuatro Sur",
+    "latitud": -20.273367342857142,
+    "longitud": -70.12542616190478,
+    "tipo": "residential",
+    "way_ids": [
+      89637434,
+      427091654,
+      840742999
+    ]
+  },
+  {
+    "nombre": "Doctor Neghme",
+    "latitud": -20.262618188888887,
+    "longitud": -70.12782984444445,
+    "tipo": "residential",
+    "way_ids": [
+      303832883
+    ]
+  },
+  {
+    "nombre": "Doctor Noé",
+    "latitud": -20.262942172727268,
+    "longitud": -70.12761362727271,
+    "tipo": "residential",
+    "way_ids": [
+      38341474,
+      840046535
+    ]
+  },
+  {
+    "nombre": "Dos",
+    "latitud": -20.276915066666668,
+    "longitud": -70.12482693333332,
+    "tipo": "residential",
+    "way_ids": [
+      89637433
+    ]
+  },
+  {
+    "nombre": "El Carmelo",
+    "latitud": -20.2525988,
+    "longitud": -70.12415803333333,
+    "tipo": "residential",
+    "way_ids": [
+      707975694
+    ]
+  },
+  {
+    "nombre": "Humberto Lizardi Flores",
+    "latitud": -20.270257809523805,
+    "longitud": -70.12727950476189,
+    "tipo": "residential",
+    "way_ids": [
+      38341017
+    ]
+  },
+  {
+    "nombre": "Inés Solari Magnasco",
+    "latitud": -20.262097654166666,
+    "longitud": -70.12511549583334,
+    "tipo": "residential",
+    "way_ids": [
+      38313539,
+      836731127,
+      836731128,
+      1389831124
+    ]
+  },
+  {
+    "nombre": "José Francisco Vergara",
+    "latitud": -20.255174694117642,
+    "longitud": -70.1326811882353,
+    "tipo": "residential",
+    "way_ids": [
+      38340993,
+      1392629227,
+      1392629228
+    ]
+  },
+  {
+    "nombre": "Las Terrazas del Mar",
+    "latitud": -20.264366986363633,
+    "longitud": -70.13019227272729,
+    "tipo": "residential",
+    "way_ids": [
+      205244280,
+      205244281
+    ]
+  },
+  {
+    "nombre": "Los Algarrobos",
+    "latitud": -20.263017121276597,
+    "longitud": -70.12386459999996,
+    "tipo": "residential",
+    "way_ids": [
+      38313537,
+      193292363,
+      840033860
+    ]
+  },
+  {
+    "nombre": "Los Mineros",
+    "latitud": -20.26960826923077,
+    "longitud": -70.12452356923076,
+    "tipo": "residential",
+    "way_ids": [
+      38341029
+    ]
+  },
+  {
+    "nombre": "Manuel Jesús Silva",
+    "latitud": -20.253386316666663,
+    "longitud": -70.13298037222224,
+    "tipo": "residential",
+    "way_ids": [
+      30754211,
+      839590805,
+      1392629233
+    ]
+  },
+  {
+    "nombre": "Mar Mediterráneo",
+    "latitud": -20.27765566923077,
+    "longitud": -70.12660981538463,
+    "tipo": "residential",
+    "way_ids": [
+      38341253,
+      38341264
+    ]
+  },
+  {
+    "nombre": "Mar Tirreno",
+    "latitud": -20.27743157272727,
+    "longitud": -70.12570885454544,
+    "tipo": "residential",
+    "way_ids": [
+      193291562
+    ]
+  },
+  {
+    "nombre": "Mar del Norte",
+    "latitud": -20.278277819999996,
+    "longitud": -70.12480850666665,
+    "tipo": "residential",
+    "way_ids": [
+      193291416,
+      228149117,
+      840125771
+    ]
+  },
+  {
+    "nombre": "Mare Nostrum",
+    "latitud": -20.2617741,
+    "longitud": -70.13158685,
+    "tipo": "residential",
+    "way_ids": [
+      304038349
+    ]
+  },
+  {
+    "nombre": "Matilla",
+    "latitud": -20.252554949999997,
+    "longitud": -70.12421025,
+    "tipo": "residential",
+    "way_ids": [
+      38341484
+    ]
+  },
+  {
+    "nombre": "Napa",
+    "latitud": -20.26753558333333,
+    "longitud": -70.12800425,
+    "tipo": "residential",
+    "way_ids": [
+      38341009,
+      842620047
+    ]
+  },
+  {
+    "nombre": "Nueva 4",
+    "latitud": -20.264106033333334,
+    "longitud": -70.12700004444444,
+    "tipo": "residential",
+    "way_ids": [
+      38313550
+    ]
+  },
+  {
+    "nombre": "Nueva Dos",
+    "latitud": -20.280739566666668,
+    "longitud": -70.127902,
+    "tipo": "residential",
+    "way_ids": [
+      304038352
+    ]
+  },
+  {
+    "nombre": "Nueva Uno",
+    "latitud": -20.280936133333334,
+    "longitud": -70.12737615555557,
+    "tipo": "residential",
+    "way_ids": [
+      38341265
+    ]
+  },
+  {
+    "nombre": "Océano Pacífico",
+    "latitud": -20.26097615,
+    "longitud": -70.1320798,
+    "tipo": "residential",
+    "way_ids": [
+      304038350
+    ]
+  },
+  {
+    "nombre": "Pasaje B",
+    "latitud": -20.26752211428572,
+    "longitud": -70.12891690000001,
+    "tipo": "residential",
+    "way_ids": [
+      38340998,
+      38341013,
+      842620041
+    ]
+  },
+  {
+    "nombre": "Pasaje Calaunsa",
+    "latitud": -20.267656549999998,
+    "longitud": -70.12908645,
+    "tipo": "residential",
+    "way_ids": [
+      38341464
+    ]
+  },
+  {
+    "nombre": "Pasaje Chauca",
+    "latitud": -20.267153399999998,
+    "longitud": -70.12911009999999,
+    "tipo": "residential",
+    "way_ids": [
+      38341467
+    ]
+  },
+  {
+    "nombre": "Pasaje Chiza",
+    "latitud": -20.266659599999997,
+    "longitud": -70.1291235,
+    "tipo": "residential",
+    "way_ids": [
+      38341468
+    ]
+  },
+  {
+    "nombre": "Pasaje Coscaya",
+    "latitud": -20.2656604,
+    "longitud": -70.1291656,
+    "tipo": "residential",
+    "way_ids": [
+      38341470
+    ]
+  },
+  {
+    "nombre": "Pasaje Cuatro",
+    "latitud": -20.258905375,
+    "longitud": -70.12981543333333,
+    "tipo": "residential",
+    "way_ids": [
+      38340973,
+      38341475,
+      303829775
+    ]
+  },
+  {
+    "nombre": "Pasaje Interior",
+    "latitud": -20.26066067428571,
+    "longitud": -70.13064516285714,
+    "tipo": "residential",
+    "way_ids": [
+      38340996
+    ]
+  },
+  {
+    "nombre": "Pasaje Ontario",
+    "latitud": -20.26667316,
+    "longitud": -70.12826738,
+    "tipo": "residential",
+    "way_ids": [
+      38341005
+    ]
+  },
+  {
+    "nombre": "Pasaje Patara",
+    "latitud": -20.266356166666668,
+    "longitud": -70.12775490000001,
+    "tipo": "residential",
+    "way_ids": [
+      38341007
+    ]
+  },
+  {
+    "nombre": "Pasaje Playa Ancha",
+    "latitud": -20.263160358333334,
+    "longitud": -70.12952348333333,
+    "tipo": "residential",
+    "way_ids": [
+      38340997,
+      840735881
+    ]
+  },
+  {
+    "nombre": "Pasaje Quebrada Umayani",
+    "latitud": -20.26816505,
+    "longitud": -70.1290698,
+    "tipo": "residential",
+    "way_ids": [
+      38341466
+    ]
+  },
+  {
+    "nombre": "Pasaje Talpate",
+    "latitud": -20.26614855,
+    "longitud": -70.1291391,
+    "tipo": "residential",
+    "way_ids": [
+      38341469
+    ]
+  },
+  {
+    "nombre": "Pasaje Uno",
+    "latitud": -20.26255333333333,
+    "longitud": -70.12605957142857,
+    "tipo": "residential",
+    "way_ids": [
+      38313668,
+      38313669,
+      38340983,
+      303829778,
+      303832885,
+      713273932,
+      713273938
+    ]
+  },
+  {
+    "nombre": "Playa Patillos",
+    "latitud": -20.253234966666668,
+    "longitud": -70.13381573333334,
+    "tipo": "residential",
+    "way_ids": [
+      38340961
+    ]
+  },
+  {
+    "nombre": "Presidente Eduardo Frei Montalva",
+    "latitud": -20.25799455925926,
+    "longitud": -70.12687242222222,
+    "tipo": "residential",
+    "way_ids": [
+      38313675,
+      38340978,
+      1392629229,
+      1392629235,
+      1392629236
+    ]
+  },
+  {
+    "nombre": "Presidente Jorge Alessandri Rodríguez",
+    "latitud": -20.25429759333333,
+    "longitud": -70.12633905333334,
+    "tipo": "residential",
+    "way_ids": [
+      38313533,
+      1392629237,
+      1392629238
+    ]
+  },
+  {
+    "nombre": "Presidente Manuel Balmaceda",
+    "latitud": -20.264892036734693,
+    "longitud": -70.12442469183674,
+    "tipo": "residential",
+    "way_ids": [
+      38313545,
+      765226009,
+      840033851,
+      840033852,
+      840033853,
+      840742980
+    ]
+  },
+  {
+    "nombre": "Presidente Salvador Allende Gossens",
+    "latitud": -20.256964058823524,
+    "longitud": -70.12869527647057,
+    "tipo": "residential",
+    "way_ids": [
+      38313542,
+      619291402,
+      836731135,
+      836731138,
+      840742973,
+      840742974
+    ]
+  },
+  {
+    "nombre": "Primeras Piedras",
+    "latitud": -20.261669375,
+    "longitud": -70.131996175,
+    "tipo": "residential",
+    "way_ids": [
+      304038356
+    ]
+  },
+  {
+    "nombre": "Pukará Tangani",
+    "latitud": -20.258785,
+    "longitud": -70.129116125,
+    "tipo": "residential",
+    "way_ids": [
+      38340988
+    ]
+  },
+  {
+    "nombre": "Pukará Tilcara",
+    "latitud": -20.260321159999997,
+    "longitud": -70.12958004,
+    "tipo": "residential",
+    "way_ids": [
+      38340987
+    ]
+  },
+  {
+    "nombre": "Pukará Turi",
+    "latitud": -20.260115,
+    "longitud": -70.1289826,
+    "tipo": "residential",
+    "way_ids": [
+      38340989
+    ]
+  },
+  {
+    "nombre": "Rancagua",
+    "latitud": -20.25444331666667,
+    "longitud": -70.12938950000002,
+    "tipo": "residential",
+    "way_ids": [
+      821229090,
+      821229091,
+      839771318
+    ]
+  },
+  {
+    "nombre": "Tamarugal",
+    "latitud": -20.265229365217397,
+    "longitud": -70.12239198260869,
+    "tipo": "residential",
+    "way_ids": [
+      303836286,
+      304036912,
+      836731129
+    ]
+  },
+  {
+    "nombre": "Toronto",
+    "latitud": -20.266738254545455,
+    "longitud": -70.12865182727272,
+    "tipo": "residential",
+    "way_ids": [
+      38341002,
+      38341010,
+      38341462
+    ]
+  },
+  {
+    "nombre": "Tres",
+    "latitud": -20.27533992857143,
+    "longitud": -70.1253712142857,
+    "tipo": "residential",
+    "way_ids": [
+      89637432,
+      89637437
+    ]
+  },
+  {
+    "nombre": "Uno",
+    "latitud": -20.275032899999996,
+    "longitud": -70.12543766666666,
+    "tipo": "residential",
+    "way_ids": [
+      89637438,
+      89637448,
+      89637450
+    ]
+  },
+  {
+    "nombre": "Vía Local 1",
+    "latitud": -20.263813,
+    "longitud": -70.12529768333333,
+    "tipo": "residential",
+    "way_ids": [
+      38313544
+    ]
+  },
+  {
+    "nombre": "Vía Local 2",
+    "latitud": -20.266633664285713,
+    "longitud": -70.12404686428572,
+    "tipo": "residential",
+    "way_ids": [
+      38313666,
+      38341041,
+      840091386
+    ]
+  },
+  {
+    "nombre": "Condominio Tres Mares",
+    "latitud": -20.267979660714285,
+    "longitud": -70.12678418571429,
+    "tipo": "service",
+    "way_ids": [
+      560383227,
+      658420719,
+      713273942,
+      713273943,
+      1388990888,
+      1388990889
+    ]
+  },
+  {
+    "nombre": "Diagonal Sur",
+    "latitud": -20.270191250000003,
+    "longitud": -70.12661270000001,
+    "tipo": "service",
+    "way_ids": [
+      38341019
+    ]
+  },
+  {
+    "nombre": "Avenida Salvador Allende Gossens",
+    "latitud": -20.259006801666672,
+    "longitud": -70.12882134916664,
+    "tipo": "unclassified",
+    "way_ids": [
+      38313534,
+      38340979,
+      272650400,
+      272650401,
+      272650403,
+      272657833,
+      272657834,
+      839590800,
+      839590802,
+      839590807,
+      840033838,
+      840742971,
+      840742972,
+      1389831129,
+      1389831130,
+      1389831131,
+      1389831132,
+      1392629219,
+      1392629220,
+      1392629223,
+      1392629224
+    ]
+  },
+  {
+    "nombre": "Peatonal Cuatro",
+    "latitud": -20.2638794,
+    "longitud": -70.12557735,
+    "tipo": "footway",
+    "way_ids": [
+      303832887
+    ]
+  },
+  {
+    "nombre": "Peatonal Dos",
+    "latitud": -20.2637641,
+    "longitud": -70.12492545,
+    "tipo": "footway",
+    "way_ids": [
+      303832886
+    ]
+  },
+  {
+    "nombre": "Peatonal Tres",
+    "latitud": -20.26377155,
+    "longitud": -70.12509575,
+    "tipo": "footway",
+    "way_ids": [
+      303832894
+    ]
+  },
+  {
+    "nombre": "Peatonal Uno",
+    "latitud": -20.26375675,
+    "longitud": -70.12475905,
+    "tipo": "footway",
+    "way_ids": [
+      303832889
+    ]
+  },
+  {
+    "nombre": "Calle 1",
+    "latitud": -20.263546657894736,
+    "longitud": -70.12420836842107,
+    "tipo": "living_street",
+    "way_ids": [
+      38313536,
+      38313540,
+      840060139
+    ]
+  },
+  {
+    "nombre": "Calle A",
+    "latitud": -20.2723620625,
+    "longitud": -70.12692715,
+    "tipo": "living_street",
+    "way_ids": [
+      38341023
+    ]
+  },
+  {
+    "nombre": "Calle B",
+    "latitud": -20.27255829444444,
+    "longitud": -70.12748880555556,
+    "tipo": "living_street",
+    "way_ids": [
+      38341018,
+      840742996,
+      840742997,
+      1389003944
+    ]
+  },
+  {
+    "nombre": "Calle C",
+    "latitud": -20.2722483375,
+    "longitud": -70.1279486875,
+    "tipo": "living_street",
+    "way_ids": [
+      38341024
+    ]
+  },
+  {
+    "nombre": "Calle D",
+    "latitud": -20.27333759230769,
+    "longitud": -70.12799963846155,
+    "tipo": "living_street",
+    "way_ids": [
+      38341025
+    ]
+  },
+  {
+    "nombre": "Calle Dos",
+    "latitud": -20.273254188000003,
+    "longitud": -70.126568732,
+    "tipo": "living_street",
+    "way_ids": [
+      38341022,
+      89637444,
+      840743004,
+      842620040
+    ]
+  },
+  {
+    "nombre": "Calle Interior Cuatro",
+    "latitud": -20.26494334,
+    "longitud": -70.12800610000002,
+    "tipo": "living_street",
+    "way_ids": [
+      303829773,
+      842620046
+    ]
+  },
+  {
+    "nombre": "Calle Interior Dos",
+    "latitud": -20.265032050000002,
+    "longitud": -70.12888385,
+    "tipo": "living_street",
+    "way_ids": [
+      38341461,
+      842620044
+    ]
+  },
+  {
+    "nombre": "Calle Interior Tres",
+    "latitud": -20.264563127272723,
+    "longitud": -70.12835670909091,
+    "tipo": "living_street",
+    "way_ids": [
+      303829777,
+      842620045
+    ]
+  },
+  {
+    "nombre": "Francisco Aravena",
+    "latitud": -20.253661283333333,
+    "longitud": -70.13205855,
+    "tipo": "living_street",
+    "way_ids": [
+      38340959
+    ]
+  },
+  {
+    "nombre": "Jardines del Sur",
+    "latitud": -20.266285635714286,
+    "longitud": -70.12714201428572,
+    "tipo": "living_street",
+    "way_ids": [
+      560383225,
+      658420717,
+      658420718,
+      658420720,
+      1388990890,
+      1388990891
+    ]
+  },
+  {
+    "nombre": "La Chamiza",
+    "latitud": -20.264273366666668,
+    "longitud": -70.12244086666668,
+    "tipo": "living_street",
+    "way_ids": [
+      38313670,
+      303836289
+    ]
+  },
+  {
+    "nombre": "Leonor Solar",
+    "latitud": -20.253934200000003,
+    "longitud": -70.13251065,
+    "tipo": "living_street",
+    "way_ids": [
+      38340958
+    ]
+  },
+  {
+    "nombre": "Malaquita",
+    "latitud": -20.2709799,
+    "longitud": -70.124393,
+    "tipo": "living_street",
+    "way_ids": [
+      840091385
+    ]
+  },
+  {
+    "nombre": "Mares del Sur",
+    "latitud": -20.25937648857143,
+    "longitud": -70.13182047714282,
+    "tipo": "living_street",
+    "way_ids": [
+      38340994,
+      38340995,
+      560383228,
+      713273939,
+      713273940,
+      713273941,
+      1388216127
+    ]
+  },
+  {
+    "nombre": "Pasaje 1",
+    "latitud": -20.263844300000002,
+    "longitud": -70.12395075,
+    "tipo": "living_street",
+    "way_ids": [
+      38313673
+    ]
+  },
+  {
+    "nombre": "Pasaje 2",
+    "latitud": -20.263055650000002,
+    "longitud": -70.12335631666667,
+    "tipo": "living_street",
+    "way_ids": [
+      38313671
+    ]
+  },
+  {
+    "nombre": "Pasaje 3",
+    "latitud": -20.261949674999997,
+    "longitud": -70.1254566125,
+    "tipo": "living_street",
+    "way_ids": [
+      38313667,
+      304036805
+    ]
+  },
+  {
+    "nombre": "Pasaje A",
+    "latitud": -20.26881918,
+    "longitud": -70.12823110000001,
+    "tipo": "living_street",
+    "way_ids": [
+      38341014,
+      842620042
+    ]
+  },
+  {
+    "nombre": "Pasaje Agua Santa",
+    "latitud": -20.2536097,
+    "longitud": -70.1300269,
+    "tipo": "living_street",
+    "way_ids": [
+      38340972
+    ]
+  },
+  {
+    "nombre": "Pasaje Aplita",
+    "latitud": -20.270150049999998,
+    "longitud": -70.1238085,
+    "tipo": "living_street",
+    "way_ids": [
+      304036913
+    ]
+  },
+  {
+    "nombre": "Pasaje Azurita",
+    "latitud": -20.268964266666668,
+    "longitud": -70.12430753333334,
+    "tipo": "living_street",
+    "way_ids": [
+      38341039
+    ]
+  },
+  {
+    "nombre": "Pasaje C",
+    "latitud": -20.268893075,
+    "longitud": -70.12776969999999,
+    "tipo": "living_street",
+    "way_ids": [
+      38341016,
+      842620043
+    ]
+  },
+  {
+    "nombre": "Pasaje Calcopirita",
+    "latitud": -20.2700462,
+    "longitud": -70.12522295,
+    "tipo": "living_street",
+    "way_ids": [
+      304036914
+    ]
+  },
+  {
+    "nombre": "Pasaje Cinco",
+    "latitud": -20.2636504,
+    "longitud": -70.12739260000001,
+    "tipo": "living_street",
+    "way_ids": [
+      38341476,
+      840046536
+    ]
+  },
+  {
+    "nombre": "Pasaje Crisocola",
+    "latitud": -20.26995285,
+    "longitud": -70.1245188,
+    "tipo": "living_street",
+    "way_ids": [
+      38341030,
+      713273946
+    ]
+  },
+  {
+    "nombre": "Pasaje Cuarzo",
+    "latitud": -20.26873286,
+    "longitud": -70.12495862,
+    "tipo": "living_street",
+    "way_ids": [
+      38341036,
+      840091384
+    ]
+  },
+  {
+    "nombre": "Pasaje D",
+    "latitud": -20.269594740000002,
+    "longitud": -70.12816847999999,
+    "tipo": "living_street",
+    "way_ids": [
+      38341015
+    ]
+  },
+  {
+    "nombre": "Pasaje Dolores",
+    "latitud": -20.253948,
+    "longitud": -70.13071,
+    "tipo": "living_street",
+    "way_ids": [
+      38340971
+    ]
+  },
+  {
+    "nombre": "Pasaje Dos",
+    "latitud": -20.259054416666668,
+    "longitud": -70.12884190000001,
+    "tipo": "living_street",
+    "way_ids": [
+      38340984,
+      38341448,
+      38341480,
+      303829776,
+      713273937
+    ]
+  },
+  {
+    "nombre": "Pasaje Fanerita",
+    "latitud": -20.269857275,
+    "longitud": -70.12503375,
+    "tipo": "living_street",
+    "way_ids": [
+      38341031
+    ]
+  },
+  {
+    "nombre": "Pasaje Feldespato",
+    "latitud": -20.26933295,
+    "longitud": -70.12415734999999,
+    "tipo": "living_street",
+    "way_ids": [
+      38341035
+    ]
+  },
+  {
+    "nombre": "Pasaje Filones",
+    "latitud": -20.268922766666666,
+    "longitud": -70.12463183333334,
+    "tipo": "living_street",
+    "way_ids": [
+      38341037
+    ]
+  },
+  {
+    "nombre": "Pasaje Granodiorita",
+    "latitud": -20.269238266666665,
+    "longitud": -70.12467386666667,
+    "tipo": "living_street",
+    "way_ids": [
+      38341038
+    ]
+  },
+  {
+    "nombre": "Pasaje Isla Juan Fernández",
+    "latitud": -20.257949800000002,
+    "longitud": -70.12885500285712,
+    "tipo": "living_street",
+    "way_ids": [
+      38340976,
+      193253451
+    ]
+  },
+  {
+    "nombre": "Pasaje Isla San Ambrosio",
+    "latitud": -20.25632264,
+    "longitud": -70.12933574,
+    "tipo": "living_street",
+    "way_ids": [
+      38340980,
+      38340981
+    ]
+  },
+  {
+    "nombre": "Pasaje Isla San Félix",
+    "latitud": -20.256879053333332,
+    "longitud": -70.12802561333334,
+    "tipo": "living_street",
+    "way_ids": [
+      38340986,
+      193253505,
+      304586749
+    ]
+  },
+  {
+    "nombre": "Pasaje Isla de Pascua",
+    "latitud": -20.255892333333332,
+    "longitud": -70.12999073333333,
+    "tipo": "living_street",
+    "way_ids": [
+      38340982
+    ]
+  },
+  {
+    "nombre": "Pasaje Lebu",
+    "latitud": -20.2644059,
+    "longitud": -70.1263003,
+    "tipo": "living_street",
+    "way_ids": [
+      303836285
+    ]
+  },
+  {
+    "nombre": "Pasaje Los Chunchos",
+    "latitud": -20.26029385102041,
+    "longitud": -70.12431369183673,
+    "tipo": "living_street",
+    "way_ids": [
+      38313672,
+      38341447,
+      707975689,
+      840033859
+    ]
+  },
+  {
+    "nombre": "Pasaje Malaquita",
+    "latitud": -20.270178233333336,
+    "longitud": -70.1241971,
+    "tipo": "living_street",
+    "way_ids": [
+      38341032
+    ]
+  },
+  {
+    "nombre": "Pasaje Mar Adriático",
+    "latitud": -20.278018760000002,
+    "longitud": -70.12571036,
+    "tipo": "living_street",
+    "way_ids": [
+      38341257
+    ]
+  },
+  {
+    "nombre": "Pasaje Mar Caspio",
+    "latitud": -20.2780534,
+    "longitud": -70.12616595,
+    "tipo": "living_street",
+    "way_ids": [
+      38341263
+    ]
+  },
+  {
+    "nombre": "Pasaje Mar Egeo",
+    "latitud": -20.279099616666667,
+    "longitud": -70.12526686666668,
+    "tipo": "living_street",
+    "way_ids": [
+      38341258,
+      840125772
+    ]
+  },
+  {
+    "nombre": "Pasaje Metandesita",
+    "latitud": -20.270270433333334,
+    "longitud": -70.1245699,
+    "tipo": "living_street",
+    "way_ids": [
+      38341034
+    ]
+  },
+  {
+    "nombre": "Pasaje Miramar",
+    "latitud": -20.2566791,
+    "longitud": -70.13147035,
+    "tipo": "living_street",
+    "way_ids": [
+      38340992
+    ]
+  },
+  {
+    "nombre": "Pasaje Ocho",
+    "latitud": -20.26340743333333,
+    "longitud": -70.12685520000001,
+    "tipo": "living_street",
+    "way_ids": [
+      38341477
+    ]
+  },
+  {
+    "nombre": "Pasaje Pampa Germania",
+    "latitud": -20.2537776,
+    "longitud": -70.1303659,
+    "tipo": "living_street",
+    "way_ids": [
+      38340970
+    ]
+  },
+  {
+    "nombre": "Pasaje Paposo",
+    "latitud": -20.2530629,
+    "longitud": -70.1295063,
+    "tipo": "living_street",
+    "way_ids": [
+      38341455
+    ]
+  },
+  {
+    "nombre": "Pasaje Pirita",
+    "latitud": -20.269025550000002,
+    "longitud": -70.1239622,
+    "tipo": "living_street",
+    "way_ids": [
+      303840046
+    ]
+  },
+  {
+    "nombre": "Pasaje Playa Chauca",
+    "latitud": -20.258539538461534,
+    "longitud": -70.12574510769231,
+    "tipo": "living_street",
+    "way_ids": [
+      38313548,
+      38341459
+    ]
+  },
+  {
+    "nombre": "Pasaje Playa El Saladero",
+    "latitud": -20.25687981304348,
+    "longitud": -70.12687859565217,
+    "tipo": "living_street",
+    "way_ids": [
+      38313547,
+      38341444,
+      38341450,
+      38341451,
+      839779925,
+      839780611,
+      839783746
+    ]
+  },
+  {
+    "nombre": "Pasaje Playa Las Pizarras",
+    "latitud": -20.25636195384616,
+    "longitud": -70.1273648230769,
+    "tipo": "living_street",
+    "way_ids": [
+      38341443,
+      38341449,
+      836731133
+    ]
+  },
+  {
+    "nombre": "Pasaje Playa Ligate",
+    "latitud": -20.253134125000003,
+    "longitud": -70.13439475000001,
+    "tipo": "living_street",
+    "way_ids": [
+      38340963
+    ]
+  },
+  {
+    "nombre": "Pasaje Playa Quintero",
+    "latitud": -20.257046695454548,
+    "longitud": -70.12643475909091,
+    "tipo": "living_street",
+    "way_ids": [
+      38313546,
+      38341458,
+      836731132
+    ]
+  },
+  {
+    "nombre": "Pasaje Salitrera Victoria",
+    "latitud": -20.2530478,
+    "longitud": -70.1288979,
+    "tipo": "living_street",
+    "way_ids": [
+      38341457
+    ]
+  },
+  {
+    "nombre": "Pasaje Seis",
+    "latitud": -20.26246535,
+    "longitud": -70.12616838333332,
+    "tipo": "living_street",
+    "way_ids": [
+      38341445,
+      38341478
+    ]
+  },
+  {
+    "nombre": "Pasaje Siete",
+    "latitud": -20.261744933333333,
+    "longitud": -70.1277874,
+    "tipo": "living_street",
+    "way_ids": [
+      38341479
+    ]
+  },
+  {
+    "nombre": "Pasaje Sulfuros",
+    "latitud": -20.270146566666664,
+    "longitud": -70.1248724,
+    "tipo": "living_street",
+    "way_ids": [
+      38341033
+    ]
+  },
+  {
+    "nombre": "Pasaje Temuco",
+    "latitud": -20.2646662,
+    "longitud": -70.12681265,
+    "tipo": "living_street",
+    "way_ids": [
+      303836293
+    ]
+  },
+  {
+    "nombre": "Pasaje Traiguén",
+    "latitud": -20.264602099999998,
+    "longitud": -70.12660135,
+    "tipo": "living_street",
+    "way_ids": [
+      303836284
+    ]
+  },
+  {
+    "nombre": "Pasaje Tres",
+    "latitud": -20.2584779,
+    "longitud": -70.12965913636366,
+    "tipo": "living_street",
+    "way_ids": [
+      38340985,
+      38341481,
+      303829772,
+      713273936
+    ]
+  },
+  {
+    "nombre": "Pasaje Tres Islas",
+    "latitud": -20.258469145454544,
+    "longitud": -70.12781068181818,
+    "tipo": "living_street",
+    "way_ids": [
+      38340974,
+      38340975
+    ]
+  },
+  {
+    "nombre": "Playa Brava",
+    "latitud": -20.254450623333334,
+    "longitud": -70.13468644333332,
+    "tipo": "primary_link",
+    "way_ids": [
+      205244282,
+      205244283,
+      494746720,
+      821229087
+    ]
+  },
+  {
+    "nombre": "Manuel Jesús Silva con José Francisco Vergara",
+    "latitud": -20.2534687,
+    "longitud": -70.1331969,
+    "tipo": "interseccion",
+    "node_id": 340125510
+  },
+  {
+    "nombre": "Manuel Jesús Silva con Leonor Solar",
+    "latitud": -20.2532944,
+    "longitud": -70.1327014,
+    "tipo": "interseccion",
+    "node_id": 452806501
+  },
+  {
+    "nombre": "Manuel Jesús Silva con Francisco Aravena",
+    "latitud": -20.2531128,
+    "longitud": -70.1321852,
+    "tipo": "interseccion",
+    "node_id": 452806502
+  },
+  {
+    "nombre": "Manuel Jesús Silva con Avenida Salvador Allende Gossens",
+    "latitud": -20.2529406,
+    "longitud": -70.1316956,
+    "tipo": "interseccion",
+    "node_id": 452356084
+  },
+  {
+    "nombre": "Avenida Ramón Pérez Opazo con Rancagua",
+    "latitud": -20.2534123,
+    "longitud": -70.1296282,
+    "tipo": "interseccion",
+    "node_id": 452356080
+  },
+  {
+    "nombre": "Avenida Ramón Pérez Opazo con Pasaje Agua Santa",
+    "latitud": -20.2536097,
+    "longitud": -70.1300269,
+    "tipo": "interseccion",
+    "node_id": 452806485
+  },
+  {
+    "nombre": "Avenida Ramón Pérez Opazo con Pasaje Pampa Germania",
+    "latitud": -20.2537776,
+    "longitud": -70.1303659,
+    "tipo": "interseccion",
+    "node_id": 452806486
+  },
+  {
+    "nombre": "Avenida Ramón Pérez Opazo con Pasaje Dolores",
+    "latitud": -20.253948,
+    "longitud": -70.13071,
+    "tipo": "interseccion",
+    "node_id": 452806487
+  },
+  {
+    "nombre": "Avenida Arturo Prat Chacón con Avenida Francisco Bilbao",
+    "latitud": -20.2557063,
+    "longitud": -70.1340298,
+    "tipo": "interseccion",
+    "node_id": 7841480801
+  },
+  {
+    "nombre": "Avenida Arturo Prat Chacón con Avenida Ramón Pérez Opazo",
+    "latitud": -20.2556901,
+    "longitud": -70.1340302,
+    "tipo": "interseccion",
+    "node_id": 340127038
+  },
+  {
+    "nombre": "Avenida Francisco Bilbao con Presidente Salvador Allende Gossens",
+    "latitud": -20.258541,
+    "longitud": -70.1314334,
+    "tipo": "interseccion",
+    "node_id": 7809356932
+  },
+  {
+    "nombre": "Avenida Francisco Bilbao con Pasaje Interior",
+    "latitud": -20.2597459,
+    "longitud": -70.1302677,
+    "tipo": "interseccion",
+    "node_id": 452806537
+  },
+  {
+    "nombre": "Avenida Francisco Bilbao con Pukará Tilcara",
+    "latitud": -20.2604458,
+    "longitud": -70.1298265,
+    "tipo": "interseccion",
+    "node_id": 7844556860
+  },
+  {
+    "nombre": "Presidente Jorge Alessandri Rodríguez con Avenida Cerro Dragón",
+    "latitud": -20.2545933,
+    "longitud": -70.1280839,
+    "tipo": "interseccion",
+    "node_id": 452806499
+  },
+  {
+    "nombre": "Presidente Jorge Alessandri Rodríguez con Pasaje Playa Las Pizarras",
+    "latitud": -20.2545236,
+    "longitud": -70.1276729,
+    "tipo": "interseccion",
+    "node_id": 452809952
+  },
+  {
+    "nombre": "Presidente Jorge Alessandri Rodríguez con Pasaje Playa El Saladero",
+    "latitud": -20.2544553,
+    "longitud": -70.1272699,
+    "tipo": "interseccion",
+    "node_id": 452809953
+  },
+  {
+    "nombre": "Presidente Jorge Alessandri Rodríguez con Pasaje Playa Quintero",
+    "latitud": -20.2543916,
+    "longitud": -70.1268936,
+    "tipo": "interseccion",
+    "node_id": 452809954
+  },
+  {
+    "nombre": "Presidente Jorge Alessandri Rodríguez con Pasaje Playa Chauca",
+    "latitud": -20.2543248,
+    "longitud": -70.1264996,
+    "tipo": "interseccion",
+    "node_id": 452809955
+  },
+  {
+    "nombre": "Presidente Jorge Alessandri Rodríguez con Avenida La Tirana",
+    "latitud": -20.2542534,
+    "longitud": -70.1260781,
+    "tipo": "interseccion",
+    "node_id": 452356327
+  },
+  {
+    "nombre": "Cardenal José María Caro con Avenida La Tirana",
+    "latitud": -20.2668132,
+    "longitud": -70.1249905,
+    "tipo": "interseccion",
+    "node_id": 452356352
+  },
+  {
+    "nombre": "Cardenal José María Caro con Vía Local 2",
+    "latitud": -20.2669233,
+    "longitud": -70.1242186,
+    "tipo": "interseccion",
+    "node_id": 452359304
+  },
+  {
+    "nombre": "Cardenal José María Caro con Pasaje Los Chunchos",
+    "latitud": -20.2669938,
+    "longitud": -70.1237243,
+    "tipo": "interseccion",
+    "node_id": 452359305
+  },
+  {
+    "nombre": "Cardenal José María Caro con Los Algarrobos",
+    "latitud": -20.2670648,
+    "longitud": -70.1232262,
+    "tipo": "interseccion",
+    "node_id": 452356355
+  },
+  {
+    "nombre": "Cardenal José María Caro con Pasaje Uno",
+    "latitud": -20.2671484,
+    "longitud": -70.1226404,
+    "tipo": "interseccion",
+    "node_id": 452359307
+  },
+  {
+    "nombre": "Calle 1 con Los Algarrobos",
+    "latitud": -20.264119,
+    "longitud": -70.1228129,
+    "tipo": "interseccion",
+    "node_id": 452356373
+  },
+  {
+    "nombre": "Calle 1 con Pasaje Los Chunchos",
+    "latitud": -20.264265,
+    "longitud": -70.1233014,
+    "tipo": "interseccion",
+    "node_id": 452359329
+  },
+  {
+    "nombre": "Calle 1 con Pasaje 1",
+    "latitud": -20.2644048,
+    "longitud": -70.123769,
+    "tipo": "interseccion",
+    "node_id": 452359330
+  },
+  {
+    "nombre": "Los Algarrobos con Presidente Jorge Alessandri Rodríguez",
+    "latitud": -20.2540699,
+    "longitud": -70.1249956,
+    "tipo": "interseccion",
+    "node_id": 452356329
+  },
+  {
+    "nombre": "Los Algarrobos con Presidente Salvador Allende Gossens",
+    "latitud": -20.2559808,
+    "longitud": -70.1246349,
+    "tipo": "interseccion",
+    "node_id": 452356403
+  },
+  {
+    "nombre": "Los Algarrobos con Presidente Eduardo Frei Montalva",
+    "latitud": -20.2578899,
+    "longitud": -70.1242745,
+    "tipo": "interseccion",
+    "node_id": 452359302
+  },
+  {
+    "nombre": "Los Algarrobos con Avenida Padre Hurtado",
+    "latitud": -20.2597844,
+    "longitud": -70.1239255,
+    "tipo": "interseccion",
+    "node_id": 452356391
+  },
+  {
+    "nombre": "Los Algarrobos con Inés Solari Magnasco",
+    "latitud": -20.2620077,
+    "longitud": -70.1234957,
+    "tipo": "interseccion",
+    "node_id": 452356387
+  },
+  {
+    "nombre": "Los Algarrobos con Pasaje 2",
+    "latitud": -20.2630021,
+    "longitud": -70.1231741,
+    "tipo": "interseccion",
+    "node_id": 452359300
+  },
+  {
+    "nombre": "Los Algarrobos con Presidente Manuel Balmaceda",
+    "latitud": -20.2648339,
+    "longitud": -70.1228266,
+    "tipo": "interseccion",
+    "node_id": 452356382
+  },
+  {
+    "nombre": "Inés Solari Magnasco con Avenida Salvador Allende Gossens",
+    "latitud": -20.2621983,
+    "longitud": -70.1268918,
+    "tipo": "interseccion",
+    "node_id": 452356344
+  },
+  {
+    "nombre": "Inés Solari Magnasco con Pasaje Playa Las Pizarras",
+    "latitud": -20.2621729,
+    "longitud": -70.1264538,
+    "tipo": "interseccion",
+    "node_id": 452809998
+  },
+  {
+    "nombre": "Inés Solari Magnasco con Pasaje Playa El Saladero",
+    "latitud": -20.2621536,
+    "longitud": -70.1260931,
+    "tipo": "interseccion",
+    "node_id": 452356475
+  },
+  {
+    "nombre": "Inés Solari Magnasco con Pasaje Playa Quintero",
+    "latitud": -20.2621273,
+    "longitud": -70.125602,
+    "tipo": "interseccion",
+    "node_id": 452356477
+  },
+  {
+    "nombre": "Inés Solari Magnasco con Pasaje Playa Chauca",
+    "latitud": -20.2621022,
+    "longitud": -70.1251323,
+    "tipo": "interseccion",
+    "node_id": 452356480
+  },
+  {
+    "nombre": "Calle 1 con Avenida La Tirana",
+    "latitud": -20.2631114,
+    "longitud": -70.124419,
+    "tipo": "interseccion",
+    "node_id": 452356539
+  },
+  {
+    "nombre": "Calle 1 con Pasaje Playa Chauca",
+    "latitud": -20.263138,
+    "longitud": -70.1249366,
+    "tipo": "interseccion",
+    "node_id": 452356536
+  },
+  {
+    "nombre": "Calle 1 con Vía Local 1",
+    "latitud": -20.2631582,
+    "longitud": -70.1253312,
+    "tipo": "interseccion",
+    "node_id": 452356533
+  },
+  {
+    "nombre": "Calle 1 con Pasaje Playa Quintero",
+    "latitud": -20.263162,
+    "longitud": -70.1254066,
+    "tipo": "interseccion",
+    "node_id": 452356525
+  },
+  {
+    "nombre": "Calle 1 con Peatonal Cuatro",
+    "latitud": -20.2631725,
+    "longitud": -70.1256114,
+    "tipo": "interseccion",
+    "node_id": 3082883019
+  },
+  {
+    "nombre": "Calle 1 con Pasaje Playa El Saladero",
+    "latitud": -20.2631876,
+    "longitud": -70.1259059,
+    "tipo": "interseccion",
+    "node_id": 452356523
+  },
+  {
+    "nombre": "Calle 1 con Avenida Salvador Allende Gossens",
+    "latitud": -20.2632095,
+    "longitud": -70.126333,
+    "tipo": "interseccion",
+    "node_id": 452356341
+  },
+  {
+    "nombre": "Presidente Salvador Allende Gossens con Pasaje Uno",
+    "latitud": -20.2581694,
+    "longitud": -70.1310277,
+    "tipo": "interseccion",
+    "node_id": 452806538
+  },
+  {
+    "nombre": "Presidente Salvador Allende Gossens con Pasaje Dos",
+    "latitud": -20.2579438,
+    "longitud": -70.1307835,
+    "tipo": "interseccion",
+    "node_id": 3082851828
+  },
+  {
+    "nombre": "Presidente Salvador Allende Gossens con Pasaje Tres",
+    "latitud": -20.2577163,
+    "longitud": -70.1305372,
+    "tipo": "interseccion",
+    "node_id": 3082852934
+  },
+  {
+    "nombre": "Presidente Salvador Allende Gossens con Avenida Salvador Allende Gossens",
+    "latitud": -20.2572473,
+    "longitud": -70.1300294,
+    "tipo": "interseccion",
+    "node_id": 452356584
+  },
+  {
+    "nombre": "Vía Local 1 con Presidente Manuel Balmaceda",
+    "latitud": -20.2645501,
+    "longitud": -70.1252607,
+    "tipo": "interseccion",
+    "node_id": 452356625
+  },
+  {
+    "nombre": "Presidente Manuel Balmaceda con La Chamiza",
+    "latitud": -20.2649341,
+    "longitud": -70.1225983,
+    "tipo": "interseccion",
+    "node_id": 3082920490
+  },
+  {
+    "nombre": "Presidente Manuel Balmaceda con Tamarugal",
+    "latitud": -20.2656393,
+    "longitud": -70.1220819,
+    "tipo": "interseccion",
+    "node_id": 3085521094
+  },
+  {
+    "nombre": "Pasaje Playa Quintero con Avenida Padre Hurtado",
+    "latitud": -20.2602015,
+    "longitud": -70.1259885,
+    "tipo": "interseccion",
+    "node_id": 452809987
+  },
+  {
+    "nombre": "Pasaje Playa Quintero con Pasaje Seis",
+    "latitud": -20.2612983,
+    "longitud": -70.1257684,
+    "tipo": "interseccion",
+    "node_id": 452809994
+  },
+  {
+    "nombre": "Pasaje Playa Chauca con Pasaje Seis",
+    "latitud": -20.261218,
+    "longitud": -70.1252994,
+    "tipo": "interseccion",
+    "node_id": 452810079
+  },
+  {
+    "nombre": "Pasaje Playa Chauca con Avenida Padre Hurtado",
+    "latitud": -20.2601229,
+    "longitud": -70.1255063,
+    "tipo": "interseccion",
+    "node_id": 452809986
+  },
+  {
+    "nombre": "Nueva 4 con Avenida Salvador Allende Gossens",
+    "latitud": -20.2637037,
+    "longitud": -70.1261871,
+    "tipo": "interseccion",
+    "node_id": 452356639
+  },
+  {
+    "nombre": "Nueva 4 con Pasaje Ocho",
+    "latitud": -20.2638994,
+    "longitud": -70.1265826,
+    "tipo": "interseccion",
+    "node_id": 452810119
+  },
+  {
+    "nombre": "Nueva 4 con Pasaje Traiguén",
+    "latitud": -20.2640574,
+    "longitud": -70.1269017,
+    "tipo": "interseccion",
+    "node_id": 3082920496
+  },
+  {
+    "nombre": "Nueva 4 con Pasaje Temuco",
+    "latitud": -20.264154,
+    "longitud": -70.127097,
+    "tipo": "interseccion",
+    "node_id": 3082920492
+  },
+  {
+    "nombre": "Nueva 4 con Avenida Francisco Bilbao",
+    "latitud": -20.2643556,
+    "longitud": -70.1275043,
+    "tipo": "interseccion",
+    "node_id": 452356550
+  },
+  {
+    "nombre": "Avenida Cerro Dragón con Avenida Ramón Pérez Opazo",
+    "latitud": -20.2528234,
+    "longitud": -70.1284481,
+    "tipo": "interseccion",
+    "node_id": 452806484
+  },
+  {
+    "nombre": "Caleta Río Seco con Avenida Francisco Bilbao",
+    "latitud": -20.2570168,
+    "longitud": -70.1328385,
+    "tipo": "interseccion",
+    "node_id": 452356576
+  },
+  {
+    "nombre": "Caleta Río Seco con José Francisco Vergara",
+    "latitud": -20.2565444,
+    "longitud": -70.132312,
+    "tipo": "interseccion",
+    "node_id": 452356651
+  },
+  {
+    "nombre": "Caleta Río Seco con Pasaje Miramar",
+    "latitud": -20.2562891,
+    "longitud": -70.1317608,
+    "tipo": "interseccion",
+    "node_id": 452806526
+  },
+  {
+    "nombre": "Caleta Río Seco con Avenida Salvador Allende Gossens",
+    "latitud": -20.2561043,
+    "longitud": -70.1309629,
+    "tipo": "interseccion",
+    "node_id": 452356643
+  },
+  {
+    "nombre": "Avenida Ramón Pérez Opazo con Pasaje Tres",
+    "latitud": -20.2540371,
+    "longitud": -70.1307151,
+    "tipo": "interseccion",
+    "node_id": 452806492
+  },
+  {
+    "nombre": "Avenida Ramón Pérez Opazo con Pasaje Dos",
+    "latitud": -20.2537697,
+    "longitud": -70.1301715,
+    "tipo": "interseccion",
+    "node_id": 452356674
+  },
+  {
+    "nombre": "Avenida La Tirana con Pasaje Fanerita",
+    "latitud": -20.2697398,
+    "longitud": -70.1256207,
+    "tipo": "interseccion",
+    "node_id": 452806748
+  },
+  {
+    "nombre": "Avenida La Tirana con Los Mineros",
+    "latitud": -20.2693909,
+    "longitud": -70.1255388,
+    "tipo": "interseccion",
+    "node_id": 452806749
+  },
+  {
+    "nombre": "Vía Local 2 con Pasaje 3",
+    "latitud": -20.2657373,
+    "longitud": -70.1240116,
+    "tipo": "interseccion",
+    "node_id": 452359331
+  },
+  {
+    "nombre": "Vía Local 2 con Presidente Manuel Balmaceda",
+    "latitud": -20.2646392,
+    "longitud": -70.12382,
+    "tipo": "interseccion",
+    "node_id": 452359295
+  },
+  {
+    "nombre": "Pasaje 3 con Los Algarrobos",
+    "latitud": -20.2658761,
+    "longitud": -70.1230132,
+    "tipo": "interseccion",
+    "node_id": 452359298
+  },
+  {
+    "nombre": "Pasaje 3 con Pasaje Los Chunchos",
+    "latitud": -20.265805,
+    "longitud": -70.1235249,
+    "tipo": "interseccion",
+    "node_id": 452359333
+  },
+  {
+    "nombre": "Pasaje Uno con Tamarugal",
+    "latitud": -20.2662932,
+    "longitud": -70.1219288,
+    "tipo": "interseccion",
+    "node_id": 452359291
+  },
+  {
+    "nombre": "La Chamiza con Calle 1",
+    "latitud": -20.2639738,
+    "longitud": -70.1223272,
+    "tipo": "interseccion",
+    "node_id": 452359327
+  },
+  {
+    "nombre": "La Chamiza con Pasaje 2",
+    "latitud": -20.2628601,
+    "longitud": -70.122691,
+    "tipo": "interseccion",
+    "node_id": 452359341
+  },
+  {
+    "nombre": "La Chamiza con Inés Solari Magnasco",
+    "latitud": -20.2619868,
+    "longitud": -70.1229761,
+    "tipo": "interseccion",
+    "node_id": 3082920483
+  },
+  {
+    "nombre": "Pasaje 2 con Tamarugal",
+    "latitud": -20.2627179,
+    "longitud": -70.1222071,
+    "tipo": "interseccion",
+    "node_id": 452359290
+  },
+  {
+    "nombre": "Pasaje 2 con Pasaje Los Chunchos",
+    "latitud": -20.2631468,
+    "longitud": -70.1236665,
+    "tipo": "interseccion",
+    "node_id": 452359343
+  },
+  {
+    "nombre": "Pasaje 2 con Pasaje 1",
+    "latitud": -20.2632838,
+    "longitud": -70.1241325,
+    "tipo": "interseccion",
+    "node_id": 3085521092
+  },
+  {
+    "nombre": "Pasaje 2 con Avenida La Tirana",
+    "latitud": -20.2633232,
+    "longitud": -70.1242667,
+    "tipo": "interseccion",
+    "node_id": 452356841
+  },
+  {
+    "nombre": "Pasaje Los Chunchos con Presidente Manuel Balmaceda",
+    "latitud": -20.264715,
+    "longitud": -70.1234332,
+    "tipo": "interseccion",
+    "node_id": 7839036074
+  },
+  {
+    "nombre": "Avenida Padre Hurtado con Avenida Arturo Prat Chacón",
+    "latitud": -20.2625526,
+    "longitud": -70.1306464,
+    "tipo": "interseccion",
+    "node_id": 452359315
+  },
+  {
+    "nombre": "Avenida Padre Hurtado con Avenida Costanera",
+    "latitud": -20.2625088,
+    "longitud": -70.1305632,
+    "tipo": "interseccion",
+    "node_id": 452806567
+  },
+  {
+    "nombre": "Avenida Padre Hurtado con Pasaje Playa Ancha",
+    "latitud": -20.2622468,
+    "longitud": -70.1300658,
+    "tipo": "interseccion",
+    "node_id": 452806566
+  },
+  {
+    "nombre": "Presidente Eduardo Frei Montalva con Avenida La Tirana",
+    "latitud": -20.258071,
+    "longitud": -70.1253612,
+    "tipo": "interseccion",
+    "node_id": 452359309
+  },
+  {
+    "nombre": "Presidente Eduardo Frei Montalva con Pasaje Playa Chauca",
+    "latitud": -20.2581408,
+    "longitud": -70.1257852,
+    "tipo": "interseccion",
+    "node_id": 452809976
+  },
+  {
+    "nombre": "Presidente Eduardo Frei Montalva con Pasaje Playa Quintero",
+    "latitud": -20.2582039,
+    "longitud": -70.1261686,
+    "tipo": "interseccion",
+    "node_id": 452809977
+  },
+  {
+    "nombre": "Presidente Eduardo Frei Montalva con Pasaje Playa El Saladero",
+    "latitud": -20.2582694,
+    "longitud": -70.1265568,
+    "tipo": "interseccion",
+    "node_id": 452809978
+  },
+  {
+    "nombre": "Presidente Eduardo Frei Montalva con Pasaje Playa Las Pizarras",
+    "latitud": -20.258337,
+    "longitud": -70.1269572,
+    "tipo": "interseccion",
+    "node_id": 452809979
+  },
+  {
+    "nombre": "Presidente Eduardo Frei Montalva con Avenida Cerro Dragón",
+    "latitud": -20.2584059,
+    "longitud": -70.1273698,
+    "tipo": "interseccion",
+    "node_id": 452359337
+  },
+  {
+    "nombre": "Leonor Solar con Avenida Ramón Pérez Opazo",
+    "latitud": -20.2547226,
+    "longitud": -70.1322756,
+    "tipo": "interseccion",
+    "node_id": 452806489
+  },
+  {
+    "nombre": "Francisco Aravena con Avenida Ramón Pérez Opazo",
+    "latitud": -20.2545172,
+    "longitud": -70.1318609,
+    "tipo": "interseccion",
+    "node_id": 452806488
+  },
+  {
+    "nombre": "Playa Patillos con Manuel Jesús Silva",
+    "latitud": -20.2536023,
+    "longitud": -70.1336695,
+    "tipo": "interseccion",
+    "node_id": 452806500
+  },
+  {
+    "nombre": "Pasaje Playa Ligate con Manuel Jesús Silva",
+    "latitud": -20.2537259,
+    "longitud": -70.1341066,
+    "tipo": "interseccion",
+    "node_id": 340125509
+  },
+  {
+    "nombre": "Pasaje Cuatro con Avenida Ramón Pérez Opazo",
+    "latitud": -20.2546983,
+    "longitud": -70.1320464,
+    "tipo": "interseccion",
+    "node_id": 452806493
+  },
+  {
+    "nombre": "Pasaje Tres Islas con Presidente Eduardo Frei Montalva",
+    "latitud": -20.2578136,
+    "longitud": -70.128391,
+    "tipo": "interseccion",
+    "node_id": 452806568
+  },
+  {
+    "nombre": "Pasaje Tres Islas con Presidente Salvador Allende Gossens",
+    "latitud": -20.2566495,
+    "longitud": -70.1286203,
+    "tipo": "interseccion",
+    "node_id": 452806545
+  },
+  {
+    "nombre": "Pasaje Tres Islas con Calle Uno",
+    "latitud": -20.2587609,
+    "longitud": -70.1276702,
+    "tipo": "interseccion",
+    "node_id": 452806573
+  },
+  {
+    "nombre": "Pasaje Tres Islas con Avenida Cerro Dragón",
+    "latitud": -20.2596321,
+    "longitud": -70.1271367,
+    "tipo": "interseccion",
+    "node_id": 452806520
+  },
+  {
+    "nombre": "Pasaje Isla Juan Fernández con Avenida Salvador Allende Gossens",
+    "latitud": -20.2602647,
+    "longitud": -70.1279478,
+    "tipo": "interseccion",
+    "node_id": 452806574
+  },
+  {
+    "nombre": "Pasaje Isla Juan Fernández con Calle Uno",
+    "latitud": -20.2588943,
+    "longitud": -70.1281116,
+    "tipo": "interseccion",
+    "node_id": 452806581
+  },
+  {
+    "nombre": "Pasaje Isla Juan Fernández con Presidente Eduardo Frei Montalva",
+    "latitud": -20.2579468,
+    "longitud": -70.1285771,
+    "tipo": "interseccion",
+    "node_id": 452806584
+  },
+  {
+    "nombre": "Pasaje Isla Juan Fernández con Pasaje Isla San Ambrosio",
+    "latitud": -20.257493,
+    "longitud": -70.1288925,
+    "tipo": "interseccion",
+    "node_id": 452806587
+  },
+  {
+    "nombre": "Calle Uno con Avenida Salvador Allende Gossens",
+    "latitud": -20.2591399,
+    "longitud": -70.1286748,
+    "tipo": "interseccion",
+    "node_id": 7842542817
+  },
+  {
+    "nombre": "Presidente Eduardo Frei Montalva con Avenida Salvador Allende Gossens",
+    "latitud": -20.2582605,
+    "longitud": -70.1290157,
+    "tipo": "interseccion",
+    "node_id": 452806594
+  },
+  {
+    "nombre": "Presidente Eduardo Frei Montalva con Pasaje Isla San Félix",
+    "latitud": -20.2575471,
+    "longitud": -70.1280184,
+    "tipo": "interseccion",
+    "node_id": 452806595
+  },
+  {
+    "nombre": "Pasaje Isla San Ambrosio con Presidente Salvador Allende Gossens",
+    "latitud": -20.256722,
+    "longitud": -70.1290526,
+    "tipo": "interseccion",
+    "node_id": 452806544
+  },
+  {
+    "nombre": "Pasaje Isla San Ambrosio con Caleta Río Seco",
+    "latitud": -20.2554567,
+    "longitud": -70.1296641,
+    "tipo": "interseccion",
+    "node_id": 452806523
+  },
+  {
+    "nombre": "Pasaje Isla de Pascua con Pasaje Isla Juan Fernández",
+    "latitud": -20.2566696,
+    "longitud": -70.1298059,
+    "tipo": "interseccion",
+    "node_id": 452806588
+  },
+  {
+    "nombre": "Pasaje Isla de Pascua con Caleta Río Seco",
+    "latitud": -20.2556508,
+    "longitud": -70.1300478,
+    "tipo": "interseccion",
+    "node_id": 452806524
+  },
+  {
+    "nombre": "Pasaje Uno con Avenida Ramón Pérez Opazo",
+    "latitud": -20.2531839,
+    "longitud": -70.1289885,
+    "tipo": "interseccion",
+    "node_id": 452806491
+  },
+  {
+    "nombre": "Pasaje Isla San Félix con Presidente Salvador Allende Gossens",
+    "latitud": -20.2565786,
+    "longitud": -70.1281982,
+    "tipo": "interseccion",
+    "node_id": 452806547
+  },
+  {
+    "nombre": "Pukará Tilcara con Pukará Turi",
+    "latitud": -20.2600399,
+    "longitud": -70.1290239,
+    "tipo": "interseccion",
+    "node_id": 452806602
+  },
+  {
+    "nombre": "Pukará Tangani con Pukará Turi",
+    "latitud": -20.2590238,
+    "longitud": -70.1295829,
+    "tipo": "interseccion",
+    "node_id": 452806603
+  },
+  {
+    "nombre": "Pukará Tangani con Avenida Salvador Allende Gossens",
+    "latitud": -20.2586854,
+    "longitud": -70.1289215,
+    "tipo": "interseccion",
+    "node_id": 452806475
+  },
+  {
+    "nombre": "Pukará Turi con Avenida Padre Hurtado",
+    "latitud": -20.2613466,
+    "longitud": -70.128305,
+    "tipo": "interseccion",
+    "node_id": 12890546370
+  },
+  {
+    "nombre": "José Francisco Vergara con Avenida Ramón Pérez Opazo",
+    "latitud": -20.254962,
+    "longitud": -70.1327598,
+    "tipo": "interseccion",
+    "node_id": 340125511
+  },
+  {
+    "nombre": "Pasaje Interior con Avenida Costanera",
+    "latitud": -20.2605106,
+    "longitud": -70.1318026,
+    "tipo": "interseccion",
+    "node_id": 3085532558
+  },
+  {
+    "nombre": "Pasaje Playa Ancha con Pasaje B",
+    "latitud": -20.2636219,
+    "longitud": -70.1292408,
+    "tipo": "interseccion",
+    "node_id": 452806626
+  },
+  {
+    "nombre": "Pasaje B con Avenida Costanera",
+    "latitud": -20.2638494,
+    "longitud": -70.1297522,
+    "tipo": "interseccion",
+    "node_id": 452806628
+  },
+  {
+    "nombre": "Cerro Colorado con Cerro Sauna",
+    "latitud": -20.265882,
+    "longitud": -70.127462,
+    "tipo": "interseccion",
+    "node_id": 452806635
+  },
+  {
+    "nombre": "Cerro Colorado con Jardines del Sur",
+    "latitud": -20.2660856,
+    "longitud": -70.1274626,
+    "tipo": "interseccion",
+    "node_id": 5404187353
+  },
+  {
+    "nombre": "Cerro Colorado con Pasaje Patara",
+    "latitud": -20.2663452,
+    "longitud": -70.1274738,
+    "tipo": "interseccion",
+    "node_id": 452806636
+  },
+  {
+    "nombre": "Cerro Colorado con Cerro Yabricoya",
+    "latitud": -20.2668063,
+    "longitud": -70.1274856,
+    "tipo": "interseccion",
+    "node_id": 452806637
+  },
+  {
+    "nombre": "Cerro Colorado con Calle Seis",
+    "latitud": -20.2675783,
+    "longitud": -70.1275053,
+    "tipo": "interseccion",
+    "node_id": 452806638
+  },
+  {
+    "nombre": "Cerro Colorado con Teresa Wilms Montt",
+    "latitud": -20.2684365,
+    "longitud": -70.1275272,
+    "tipo": "interseccion",
+    "node_id": 452806639
+  },
+  {
+    "nombre": "Calle Seis con Napa",
+    "latitud": -20.2675843,
+    "longitud": -70.1280026,
+    "tipo": "interseccion",
+    "node_id": 452806641
+  },
+  {
+    "nombre": "Calle Seis con Pasaje Ontario",
+    "latitud": -20.2675872,
+    "longitud": -70.128247,
+    "tipo": "interseccion",
+    "node_id": 452806642
+  },
+  {
+    "nombre": "Calle Seis con Toronto",
+    "latitud": -20.2675902,
+    "longitud": -70.1284953,
+    "tipo": "interseccion",
+    "node_id": 452806643
+  },
+  {
+    "nombre": "Toronto con Cerro Yabricoya",
+    "latitud": -20.2666874,
+    "longitud": -70.1287364,
+    "tipo": "interseccion",
+    "node_id": 452806645
+  },
+  {
+    "nombre": "Toronto con Cerro Sauna",
+    "latitud": -20.2659429,
+    "longitud": -70.1287446,
+    "tipo": "interseccion",
+    "node_id": 452806646
+  },
+  {
+    "nombre": "Cerro Casiri con Cerro Sauna",
+    "latitud": -20.2659007,
+    "longitud": -70.1280162,
+    "tipo": "interseccion",
+    "node_id": 452806647
+  },
+  {
+    "nombre": "Cerro Casiri con Calle Uno",
+    "latitud": -20.2653109,
+    "longitud": -70.1281048,
+    "tipo": "interseccion",
+    "node_id": 452806629
+  },
+  {
+    "nombre": "Cerro Sauna con Pasaje Ontario",
+    "latitud": -20.2659097,
+    "longitud": -70.1282844,
+    "tipo": "interseccion",
+    "node_id": 452806655
+  },
+  {
+    "nombre": "Pasaje Ontario con Pasaje Patara",
+    "latitud": -20.2663764,
+    "longitud": -70.128274,
+    "tipo": "interseccion",
+    "node_id": 452806656
+  },
+  {
+    "nombre": "Pasaje Ontario con Cerro Yabricoya",
+    "latitud": -20.2666673,
+    "longitud": -70.1282675,
+    "tipo": "interseccion",
+    "node_id": 452806657
+  },
+  {
+    "nombre": "Cerro Yabricoya con Napa",
+    "latitud": -20.2668191,
+    "longitud": -70.1280136,
+    "tipo": "interseccion",
+    "node_id": 452806659
+  },
+  {
+    "nombre": "Teresa Wilms Montt con Avenida Francisco Bilbao",
+    "latitud": -20.2684008,
+    "longitud": -70.1257948,
+    "tipo": "interseccion",
+    "node_id": 340132483
+  },
+  {
+    "nombre": "Teresa Wilms Montt con Condominio Tres Mares",
+    "latitud": -20.2684129,
+    "longitud": -70.1263567,
+    "tipo": "interseccion",
+    "node_id": 6705071307
+  },
+  {
+    "nombre": "Teresa Wilms Montt con Avenida Arturo Prat Chacón",
+    "latitud": -20.26859,
+    "longitud": -70.1293704,
+    "tipo": "interseccion",
+    "node_id": 452806530
+  },
+  {
+    "nombre": "Teresa Wilms Montt con Calle Cinco",
+    "latitud": -20.2685866,
+    "longitud": -70.1292798,
+    "tipo": "interseccion",
+    "node_id": 3085532569
+  },
+  {
+    "nombre": "Teresa Wilms Montt con Pasaje B",
+    "latitud": -20.2685654,
+    "longitud": -70.1287069,
+    "tipo": "interseccion",
+    "node_id": 452806664
+  },
+  {
+    "nombre": "Teresa Wilms Montt con Pasaje A",
+    "latitud": -20.2685482,
+    "longitud": -70.1282428,
+    "tipo": "interseccion",
+    "node_id": 452806663
+  },
+  {
+    "nombre": "Teresa Wilms Montt con Pasaje C",
+    "latitud": -20.2685313,
+    "longitud": -70.127785,
+    "tipo": "interseccion",
+    "node_id": 452806662
+  },
+  {
+    "nombre": "Pasaje D con Pasaje B",
+    "latitud": -20.2695766,
+    "longitud": -70.1286542,
+    "tipo": "interseccion",
+    "node_id": 452806665
+  },
+  {
+    "nombre": "Pasaje D con Pasaje A",
+    "latitud": -20.2696013,
+    "longitud": -70.1281972,
+    "tipo": "interseccion",
+    "node_id": 452806666
+  },
+  {
+    "nombre": "Pasaje D con Pasaje C",
+    "latitud": -20.269599,
+    "longitud": -70.1277398,
+    "tipo": "interseccion",
+    "node_id": 452806667
+  },
+  {
+    "nombre": "Humberto Lizardi Flores con Calle Cinco",
+    "latitud": -20.2698487,
+    "longitud": -70.1290819,
+    "tipo": "interseccion",
+    "node_id": 452806668
+  },
+  {
+    "nombre": "Humberto Lizardi Flores con Calle B",
+    "latitud": -20.2705385,
+    "longitud": -70.1271537,
+    "tipo": "interseccion",
+    "node_id": 452806674
+  },
+  {
+    "nombre": "Humberto Lizardi Flores con Diagonal Sur",
+    "latitud": -20.2705696,
+    "longitud": -70.1266142,
+    "tipo": "interseccion",
+    "node_id": 452806676
+  },
+  {
+    "nombre": "Humberto Lizardi Flores con Avenida La Tirana",
+    "latitud": -20.2705737,
+    "longitud": -70.1260957,
+    "tipo": "interseccion",
+    "node_id": 452806535
+  },
+  {
+    "nombre": "Calle B con Calle Uno",
+    "latitud": -20.2711417,
+    "longitud": -70.127254,
+    "tipo": "interseccion",
+    "node_id": 452806677
+  },
+  {
+    "nombre": "Calle B con Calle Dos",
+    "latitud": -20.2723825,
+    "longitud": -70.1274597,
+    "tipo": "interseccion",
+    "node_id": 452806678
+  },
+  {
+    "nombre": "Calle B con Calle D",
+    "latitud": -20.273827,
+    "longitud": -70.1276992,
+    "tipo": "interseccion",
+    "node_id": 452806680
+  },
+  {
+    "nombre": "Calle Uno con Calle C",
+    "latitud": -20.2710666,
+    "longitud": -70.127741,
+    "tipo": "interseccion",
+    "node_id": 452806684
+  },
+  {
+    "nombre": "Calle Cinco con Avenida Costanera",
+    "latitud": -20.2685162,
+    "longitud": -70.1292819,
+    "tipo": "interseccion",
+    "node_id": 452810003
+  },
+  {
+    "nombre": "Calle Cinco con Calle Dos",
+    "latitud": -20.2723164,
+    "longitud": -70.1285776,
+    "tipo": "interseccion",
+    "node_id": 452806687
+  },
+  {
+    "nombre": "Calle Cinco con Calle Cuatro",
+    "latitud": -20.2743783,
+    "longitud": -70.1280592,
+    "tipo": "interseccion",
+    "node_id": 452806690
+  },
+  {
+    "nombre": "Calle Dos con Calle D",
+    "latitud": -20.2722627,
+    "longitud": -70.1282651,
+    "tipo": "interseccion",
+    "node_id": 452806693
+  },
+  {
+    "nombre": "Calle Dos con Calle C",
+    "latitud": -20.2723083,
+    "longitud": -70.1279589,
+    "tipo": "interseccion",
+    "node_id": 452806694
+  },
+  {
+    "nombre": "Calle Dos con Calle A",
+    "latitud": -20.2724593,
+    "longitud": -70.1269433,
+    "tipo": "interseccion",
+    "node_id": 452806695
+  },
+  {
+    "nombre": "Calle A con Calle Uno",
+    "latitud": -20.2712139,
+    "longitud": -70.1267364,
+    "tipo": "interseccion",
+    "node_id": 452806683
+  },
+  {
+    "nombre": "Calle C con Calle D",
+    "latitud": -20.2730876,
+    "longitud": -70.1280982,
+    "tipo": "interseccion",
+    "node_id": 452806697
+  },
+  {
+    "nombre": "Los Mineros con Los Algarrobos",
+    "latitud": -20.2698086,
+    "longitud": -70.1235881,
+    "tipo": "interseccion",
+    "node_id": 452806754
+  },
+  {
+    "nombre": "Los Mineros con Pasaje Aplita",
+    "latitud": -20.2697796,
+    "longitud": -70.1237232,
+    "tipo": "interseccion",
+    "node_id": 3085521098
+  },
+  {
+    "nombre": "Los Mineros con Pasaje Malaquita",
+    "latitud": -20.2697022,
+    "longitud": -70.124085,
+    "tipo": "interseccion",
+    "node_id": 452806755
+  },
+  {
+    "nombre": "Los Mineros con Pasaje Crisocola",
+    "latitud": -20.269625,
+    "longitud": -70.1244456,
+    "tipo": "interseccion",
+    "node_id": 452806756
+  },
+  {
+    "nombre": "Los Mineros con Pasaje Granodiorita",
+    "latitud": -20.2695615,
+    "longitud": -70.1247418,
+    "tipo": "interseccion",
+    "node_id": 1038868279
+  },
+  {
+    "nombre": "Los Mineros con Pasaje Cuarzo",
+    "latitud": -20.2694843,
+    "longitud": -70.1251026,
+    "tipo": "interseccion",
+    "node_id": 452806757
+  },
+  {
+    "nombre": "Pasaje Crisocola con Pasaje Fanerita",
+    "latitud": -20.26996,
+    "longitud": -70.1245204,
+    "tipo": "interseccion",
+    "node_id": 452806758
+  },
+  {
+    "nombre": "Pasaje Fanerita con Pasaje Sulfuros",
+    "latitud": -20.2699008,
+    "longitud": -70.1248164,
+    "tipo": "interseccion",
+    "node_id": 452806760
+  },
+  {
+    "nombre": "Pasaje Fanerita con Pasaje Calcopirita",
+    "latitud": -20.2698285,
+    "longitud": -70.1251775,
+    "tipo": "interseccion",
+    "node_id": 3085521093
+  },
+  {
+    "nombre": "Pasaje Malaquita con Pasaje Metandesita",
+    "latitud": -20.2703421,
+    "longitud": -70.1242357,
+    "tipo": "interseccion",
+    "node_id": 452806761
+  },
+  {
+    "nombre": "Pasaje Sulfuros con Pasaje Metandesita",
+    "latitud": -20.2702028,
+    "longitud": -70.1248852,
+    "tipo": "interseccion",
+    "node_id": 452806762
+  },
+  {
+    "nombre": "Pasaje Metandesita con Pasaje Crisocola",
+    "latitud": -20.2702664,
+    "longitud": -70.1245888,
+    "tipo": "interseccion",
+    "node_id": 452806759
+  },
+  {
+    "nombre": "Pasaje Feldespato con Los Algarrobos",
+    "latitud": -20.2694588,
+    "longitud": -70.1235491,
+    "tipo": "interseccion",
+    "node_id": 452806763
+  },
+  {
+    "nombre": "Pasaje Feldespato con Pasaje Pirita",
+    "latitud": -20.269359,
+    "longitud": -70.1240357,
+    "tipo": "interseccion",
+    "node_id": 3082971526
+  },
+  {
+    "nombre": "Pasaje Feldespato con Pasaje Azurita",
+    "latitud": -20.2692882,
+    "longitud": -70.1243734,
+    "tipo": "interseccion",
+    "node_id": 452806765
+  },
+  {
+    "nombre": "Pasaje Feldespato con Pasaje Granodiorita",
+    "latitud": -20.2692258,
+    "longitud": -70.1246712,
+    "tipo": "interseccion",
+    "node_id": 452806766
+  },
+  {
+    "nombre": "Pasaje Cuarzo con Quebrada Blanca",
+    "latitud": -20.2684719,
+    "longitud": -70.1249104,
+    "tipo": "interseccion",
+    "node_id": 452357904
+  },
+  {
+    "nombre": "Pasaje Cuarzo con Pasaje Filones",
+    "latitud": -20.268853,
+    "longitud": -70.1249746,
+    "tipo": "interseccion",
+    "node_id": 452806767
+  },
+  {
+    "nombre": "Pasaje Filones con Pasaje Azurita",
+    "latitud": -20.2689878,
+    "longitud": -70.1243123,
+    "tipo": "interseccion",
+    "node_id": 1038868318
+  },
+  {
+    "nombre": "Pasaje Filones con Pasaje Granodiorita",
+    "latitud": -20.2689275,
+    "longitud": -70.1246086,
+    "tipo": "interseccion",
+    "node_id": 452806768
+  },
+  {
+    "nombre": "Pasaje Azurita con Quebrada Blanca",
+    "latitud": -20.2686168,
+    "longitud": -70.1242369,
+    "tipo": "interseccion",
+    "node_id": 3082971522
+  },
+  {
+    "nombre": "Vía Local 2 con Quebrada Blanca",
+    "latitud": -20.2685341,
+    "longitud": -70.1241653,
+    "tipo": "interseccion",
+    "node_id": 452806769
+  },
+  {
+    "nombre": "Mar Mediterráneo con Avenida Reinamar",
+    "latitud": -20.2786175,
+    "longitud": -70.126617,
+    "tipo": "interseccion",
+    "node_id": 7839607338
+  },
+  {
+    "nombre": "Avenida Reinamar con Dos Oriente",
+    "latitud": -20.2802443,
+    "longitud": -70.1242988,
+    "tipo": "interseccion",
+    "node_id": 1038868249
+  },
+  {
+    "nombre": "Avenida Reinamar con Mar del Norte",
+    "latitud": -20.279872,
+    "longitud": -70.1247977,
+    "tipo": "interseccion",
+    "node_id": 452808569
+  },
+  {
+    "nombre": "Avenida Reinamar con Pasaje Mar Egeo",
+    "latitud": -20.2795288,
+    "longitud": -70.1252577,
+    "tipo": "interseccion",
+    "node_id": 452808573
+  },
+  {
+    "nombre": "Avenida Reinamar con Pasaje Mar Adriático",
+    "latitud": -20.2792004,
+    "longitud": -70.1256976,
+    "tipo": "interseccion",
+    "node_id": 452808574
+  },
+  {
+    "nombre": "Avenida Reinamar con Pasaje Mar Caspio",
+    "latitud": -20.2788719,
+    "longitud": -70.1261378,
+    "tipo": "interseccion",
+    "node_id": 452808575
+  },
+  {
+    "nombre": "Pasaje Mar Adriático con Mar Tirreno",
+    "latitud": -20.2774253,
+    "longitud": -70.1257176,
+    "tipo": "interseccion",
+    "node_id": 452808565
+  },
+  {
+    "nombre": "Pasaje Mar Egeo con Mar Tirreno",
+    "latitud": -20.2774154,
+    "longitud": -70.1252644,
+    "tipo": "interseccion",
+    "node_id": 1038868253
+  },
+  {
+    "nombre": "Pasaje Mar Caspio con Mar Tirreno",
+    "latitud": -20.2774351,
+    "longitud": -70.1261617,
+    "tipo": "interseccion",
+    "node_id": 452808564
+  },
+  {
+    "nombre": "Nueva Uno con Nueva Dos",
+    "latitud": -20.2813853,
+    "longitud": -70.127618,
+    "tipo": "interseccion",
+    "node_id": 3085532556
+  },
+  {
+    "nombre": "Pasaje Playa Las Pizarras con Avenida Padre Hurtado",
+    "latitud": -20.2603358,
+    "longitud": -70.1268121,
+    "tipo": "interseccion",
+    "node_id": 452809989
+  },
+  {
+    "nombre": "Pasaje Playa El Saladero con Avenida Padre Hurtado",
+    "latitud": -20.260268,
+    "longitud": -70.1263965,
+    "tipo": "interseccion",
+    "node_id": 452809988
+  },
+  {
+    "nombre": "Pasaje Seis con Avenida La Tirana",
+    "latitud": -20.2611311,
+    "longitud": -70.1247925,
+    "tipo": "interseccion",
+    "node_id": 452809934
+  },
+  {
+    "nombre": "Pasaje Los Chunchos con Presidente Eduardo Frei Montalva",
+    "latitud": -20.25797,
+    "longitud": -70.124755,
+    "tipo": "interseccion",
+    "node_id": 452809975
+  },
+  {
+    "nombre": "Pasaje Los Chunchos con Presidente Salvador Allende Gossens",
+    "latitud": -20.2560615,
+    "longitud": -70.1251159,
+    "tipo": "interseccion",
+    "node_id": 452809974
+  },
+  {
+    "nombre": "Pasaje Los Chunchos con Presidente Jorge Alessandri Rodríguez",
+    "latitud": -20.2541519,
+    "longitud": -70.1254794,
+    "tipo": "interseccion",
+    "node_id": 452809956
+  },
+  {
+    "nombre": "Pasaje Los Chunchos con Avenida La Tirana",
+    "latitud": -20.2527499,
+    "longitud": -70.126392,
+    "tipo": "interseccion",
+    "node_id": 452809925
+  },
+  {
+    "nombre": "Pasaje Dos con Pasaje Los Chunchos",
+    "latitud": -20.2612572,
+    "longitud": -70.1241519,
+    "tipo": "interseccion",
+    "node_id": 452810080
+  },
+  {
+    "nombre": "Pasaje Dos con Avenida La Tirana",
+    "latitud": -20.2613324,
+    "longitud": -70.1246443,
+    "tipo": "interseccion",
+    "node_id": 452809924
+  },
+  {
+    "nombre": "Pasaje Playa Las Pizarras con Presidente Salvador Allende Gossens",
+    "latitud": -20.2564305,
+    "longitud": -70.127315,
+    "tipo": "interseccion",
+    "node_id": 452809970
+  },
+  {
+    "nombre": "Pasaje Playa Las Pizarras con Pasaje 3",
+    "latitud": -20.259649,
+    "longitud": -70.126711,
+    "tipo": "interseccion",
+    "node_id": 3085520283
+  },
+  {
+    "nombre": "Pasaje Playa El Saladero con Presidente Salvador Allende Gossens",
+    "latitud": -20.2563645,
+    "longitud": -70.1269214,
+    "tipo": "interseccion",
+    "node_id": 452809971
+  },
+  {
+    "nombre": "Pasaje Playa El Saladero con Avenida Ramón Pérez Opazo",
+    "latitud": -20.2525697,
+    "longitud": -70.1277624,
+    "tipo": "interseccion",
+    "node_id": 12868333148
+  },
+  {
+    "nombre": "Pasaje Salitrera Victoria con Avenida Ramón Pérez Opazo",
+    "latitud": -20.2530478,
+    "longitud": -70.1288979,
+    "tipo": "interseccion",
+    "node_id": 452809944
+  },
+  {
+    "nombre": "Pasaje Playa Quintero con Presidente Salvador Allende Gossens",
+    "latitud": -20.256299,
+    "longitud": -70.1265308,
+    "tipo": "interseccion",
+    "node_id": 452809972
+  },
+  {
+    "nombre": "Pasaje Playa Chauca con Presidente Salvador Allende Gossens",
+    "latitud": -20.2562338,
+    "longitud": -70.1261422,
+    "tipo": "interseccion",
+    "node_id": 452809973
+  },
+  {
+    "nombre": "Calle Interior Dos con Calle Uno",
+    "latitud": -20.2653397,
+    "longitud": -70.128846,
+    "tipo": "interseccion",
+    "node_id": 452810094
+  },
+  {
+    "nombre": "Toronto con Calle Uno",
+    "latitud": -20.2653287,
+    "longitud": -70.1285636,
+    "tipo": "interseccion",
+    "node_id": 452810095
+  },
+  {
+    "nombre": "Calle Uno con Avenida Costanera",
+    "latitud": -20.2653613,
+    "longitud": -70.1294043,
+    "tipo": "interseccion",
+    "node_id": 452806649
+  },
+  {
+    "nombre": "Calle Uno con Calle Interior Tres",
+    "latitud": -20.2653203,
+    "longitud": -70.128346,
+    "tipo": "interseccion",
+    "node_id": 3082852935
+  },
+  {
+    "nombre": "Pasaje Calaunsa con Avenida Costanera",
+    "latitud": -20.2676637,
+    "longitud": -70.1293067,
+    "tipo": "interseccion",
+    "node_id": 452810097
+  },
+  {
+    "nombre": "Avenida Costanera con Pasaje Quebrada Umayani",
+    "latitud": -20.268172,
+    "longitud": -70.1292919,
+    "tipo": "interseccion",
+    "node_id": 452810098
+  },
+  {
+    "nombre": "Avenida Costanera con Pasaje Chauca",
+    "latitud": -20.2671587,
+    "longitud": -70.1293213,
+    "tipo": "interseccion",
+    "node_id": 452810099
+  },
+  {
+    "nombre": "Avenida Costanera con Pasaje Chiza",
+    "latitud": -20.2666667,
+    "longitud": -70.1293356,
+    "tipo": "interseccion",
+    "node_id": 452810100
+  },
+  {
+    "nombre": "Avenida Costanera con Pasaje Talpate",
+    "latitud": -20.2661541,
+    "longitud": -70.1293556,
+    "tipo": "interseccion",
+    "node_id": 452810101
+  },
+  {
+    "nombre": "Avenida Costanera con Pasaje Coscaya",
+    "latitud": -20.2656686,
+    "longitud": -70.1293753,
+    "tipo": "interseccion",
+    "node_id": 452810102
+  },
+  {
+    "nombre": "Doctor Noé con Avenida Salvador Allende Gossens",
+    "latitud": -20.2625456,
+    "longitud": -70.1268144,
+    "tipo": "interseccion",
+    "node_id": 452809927
+  },
+  {
+    "nombre": "Doctor Noé con Pasaje Ocho",
+    "latitud": -20.2627473,
+    "longitud": -70.127221,
+    "tipo": "interseccion",
+    "node_id": 452810114
+  },
+  {
+    "nombre": "Doctor Noé con Pasaje Cuatro",
+    "latitud": -20.262911,
+    "longitud": -70.1275508,
+    "tipo": "interseccion",
+    "node_id": 452810115
+  },
+  {
+    "nombre": "Doctor Noé con Pasaje Cinco",
+    "latitud": -20.2630087,
+    "longitud": -70.1277477,
+    "tipo": "interseccion",
+    "node_id": 452810116
+  },
+  {
+    "nombre": "Pasaje Cuatro con Pasaje Seis",
+    "latitud": -20.2637371,
+    "longitud": -70.1270959,
+    "tipo": "interseccion",
+    "node_id": 452810117
+  },
+  {
+    "nombre": "Pasaje Cinco con Pasaje Seis",
+    "latitud": -20.263832,
+    "longitud": -70.1272921,
+    "tipo": "interseccion",
+    "node_id": 452810118
+  },
+  {
+    "nombre": "Pasaje Ocho con Pasaje Seis",
+    "latitud": -20.2635756,
+    "longitud": -70.126762,
+    "tipo": "interseccion",
+    "node_id": 5404187366
+  },
+  {
+    "nombre": "Pasaje Siete con Avenida Padre Hurtado",
+    "latitud": -20.2612327,
+    "longitud": -70.1280735,
+    "tipo": "interseccion",
+    "node_id": 452809990
+  },
+  {
+    "nombre": "Pasaje Siete con Pasaje Tres",
+    "latitud": -20.2615935,
+    "longitud": -70.1278768,
+    "tipo": "interseccion",
+    "node_id": 452810120
+  },
+  {
+    "nombre": "Pasaje Siete con Doctor Neghme",
+    "latitud": -20.2624086,
+    "longitud": -70.1274119,
+    "tipo": "interseccion",
+    "node_id": 3082883020
+  },
+  {
+    "nombre": "Pasaje Dos con Doctor Neghme",
+    "latitud": -20.2626727,
+    "longitud": -70.1279386,
+    "tipo": "interseccion",
+    "node_id": 3082883016
+  },
+  {
+    "nombre": "Pasaje Dos con Pasaje Tres",
+    "latitud": -20.2618609,
+    "longitud": -70.128414,
+    "tipo": "interseccion",
+    "node_id": 452810121
+  },
+  {
+    "nombre": "Pasaje Dos con Avenida Padre Hurtado",
+    "latitud": -20.2615031,
+    "longitud": -70.1286232,
+    "tipo": "interseccion",
+    "node_id": 452809991
+  },
+  {
+    "nombre": "Pasaje Tres con Pasaje Uno",
+    "latitud": -20.2617663,
+    "longitud": -70.128224,
+    "tipo": "interseccion",
+    "node_id": 452810122
+  },
+  {
+    "nombre": "Matilla con El Carmelo",
+    "latitud": -20.2525691,
+    "longitud": -70.1242183,
+    "tipo": "interseccion",
+    "node_id": 452810127
+  },
+  {
+    "nombre": "Avenida Francisco Bilbao con Avenida La Tirana",
+    "latitud": -20.2691764,
+    "longitud": -70.1258565,
+    "tipo": "interseccion",
+    "node_id": 1038868297
+  },
+  {
+    "nombre": "Tres con Avenida Proyectada",
+    "latitud": -20.2752637,
+    "longitud": -70.1254008,
+    "tipo": "interseccion",
+    "node_id": 1038868335
+  },
+  {
+    "nombre": "Tres con Cuatro",
+    "latitud": -20.276631,
+    "longitud": -70.125535,
+    "tipo": "interseccion",
+    "node_id": 1038868327
+  },
+  {
+    "nombre": "Dos con Calle Dos",
+    "latitud": -20.2768706,
+    "longitud": -70.1251394,
+    "tipo": "interseccion",
+    "node_id": 1038868322
+  },
+  {
+    "nombre": "Dos con Uno",
+    "latitud": -20.2769293,
+    "longitud": -70.1247268,
+    "tipo": "interseccion",
+    "node_id": 1038868315
+  },
+  {
+    "nombre": "Cuatro Sur con Avenida La Tirana",
+    "latitud": -20.2727734,
+    "longitud": -70.1262636,
+    "tipo": "interseccion",
+    "node_id": 7301928595
+  },
+  {
+    "nombre": "Cuatro Sur con Uno",
+    "latitud": -20.2734112,
+    "longitud": -70.1254579,
+    "tipo": "interseccion",
+    "node_id": 1038868258
+  },
+  {
+    "nombre": "Cuatro Sur con Tres",
+    "latitud": -20.2736697,
+    "longitud": -70.1251172,
+    "tipo": "interseccion",
+    "node_id": 1038868276
+  },
+  {
+    "nombre": "Cuatro Sur con Calle Dos",
+    "latitud": -20.2739178,
+    "longitud": -70.1247759,
+    "tipo": "interseccion",
+    "node_id": 1038868301
+  },
+  {
+    "nombre": "Cuatro Sur con Dos Oriente",
+    "latitud": -20.2743906,
+    "longitud": -70.1241576,
+    "tipo": "interseccion",
+    "node_id": 1038868321
+  },
+  {
+    "nombre": "Dos Oriente con Avenida Proyectada",
+    "latitud": -20.2756496,
+    "longitud": -70.1242545,
+    "tipo": "interseccion",
+    "node_id": 1038868262
+  },
+  {
+    "nombre": "Uno con Calle Uno",
+    "latitud": -20.271281,
+    "longitud": -70.1251432,
+    "tipo": "interseccion",
+    "node_id": 4263313169
+  },
+  {
+    "nombre": "Uno con Avenida Proyectada",
+    "latitud": -20.2750451,
+    "longitud": -70.1257867,
+    "tipo": "interseccion",
+    "node_id": 1038868241
+  },
+  {
+    "nombre": "Uno con Cuatro",
+    "latitud": -20.2765872,
+    "longitud": -70.1260042,
+    "tipo": "interseccion",
+    "node_id": 1038868254
+  },
+  {
+    "nombre": "Avenida Proyectada con Calle Dos",
+    "latitud": -20.2753093,
+    "longitud": -70.1249838,
+    "tipo": "interseccion",
+    "node_id": 1038868251
+  },
+  {
+    "nombre": "Avenida Proyectada con Avenida La Tirana",
+    "latitud": -20.2747748,
+    "longitud": -70.1266087,
+    "tipo": "interseccion",
+    "node_id": 7301928596
+  },
+  {
+    "nombre": "Calle Dos con Calle Uno",
+    "latitud": -20.2714178,
+    "longitud": -70.1244979,
+    "tipo": "interseccion",
+    "node_id": 1038868288
+  },
+  {
+    "nombre": "Calle Uno con Los Algarrobos",
+    "latitud": -20.2715561,
+    "longitud": -70.1238501,
+    "tipo": "interseccion",
+    "node_id": 12864364473
+  },
+  {
+    "nombre": "Calle Uno con Avenida La Tirana",
+    "latitud": -20.2710855,
+    "longitud": -70.126074,
+    "tipo": "interseccion",
+    "node_id": 1038868305
+  },
+  {
+    "nombre": "Pasaje Isla Juan Fernández con Caleta Río Seco",
+    "latitud": -20.2558459,
+    "longitud": -70.130441,
+    "tipo": "interseccion",
+    "node_id": 452806525
+  },
+  {
+    "nombre": "Pasaje Isla San Félix con Caleta Río Seco",
+    "latitud": -20.2551156,
+    "longitud": -70.1286207,
+    "tipo": "interseccion",
+    "node_id": 452806522
+  },
+  {
+    "nombre": "Mar del Norte con Mar Tirreno",
+    "latitud": -20.2774294,
+    "longitud": -70.1248215,
+    "tipo": "interseccion",
+    "node_id": 5404187808
+  },
+  {
+    "nombre": "Los Algarrobos con Cuatro Sur",
+    "latitud": -20.2742557,
+    "longitud": -70.1241389,
+    "tipo": "interseccion",
+    "node_id": 4263313149
+  },
+  {
+    "nombre": "Los Algarrobos con Quebrada Blanca",
+    "latitud": -20.2687743,
+    "longitud": -70.1235086,
+    "tipo": "interseccion",
+    "node_id": 3308073354
+  },
+  {
+    "nombre": "Los Algarrobos con Tamarugal",
+    "latitud": -20.2686778,
+    "longitud": -70.1235153,
+    "tipo": "interseccion",
+    "node_id": 3082920491
+  },
+  {
+    "nombre": "Las Terrazas del Mar con Avenida Arturo Prat Chacón",
+    "latitud": -20.2635026,
+    "longitud": -70.1301614,
+    "tipo": "interseccion",
+    "node_id": 2152255657
+  },
+  {
+    "nombre": "Playa Brava con Avenida Arturo Prat Chacón",
+    "latitud": -20.2552031,
+    "longitud": -70.1344067,
+    "tipo": "interseccion",
+    "node_id": 2152255646
+  },
+  {
+    "nombre": "Playa Brava con Avenida Ramón Pérez Opazo",
+    "latitud": -20.2554978,
+    "longitud": -70.1338296,
+    "tipo": "interseccion",
+    "node_id": 2152255652
+  },
+  {
+    "nombre": "Avenida Salvador Allende Gossens con Presidente Manuel Balmaceda",
+    "latitud": -20.2646732,
+    "longitud": -70.1255589,
+    "tipo": "interseccion",
+    "node_id": 452356334
+  },
+  {
+    "nombre": "Avenida Salvador Allende Gossens con Doctor Neghme",
+    "latitud": -20.2622071,
+    "longitud": -70.1270101,
+    "tipo": "interseccion",
+    "node_id": 452356472
+  },
+  {
+    "nombre": "Pasaje Tres con Pasaje Cuatro",
+    "latitud": -20.2585196,
+    "longitud": -70.1296914,
+    "tipo": "interseccion",
+    "node_id": 3082851832
+  },
+  {
+    "nombre": "Calle Interior Cuatro con Calle Interior Tres",
+    "latitud": -20.264234,
+    "longitud": -70.1281873,
+    "tipo": "interseccion",
+    "node_id": 7860735530
+  },
+  {
+    "nombre": "Pasaje Cuatro con Pasaje Dos",
+    "latitud": -20.2587354,
+    "longitud": -70.1299529,
+    "tipo": "interseccion",
+    "node_id": 3082852933
+  },
+  {
+    "nombre": "Pasaje Cuatro con Pasaje Uno",
+    "latitud": -20.2589197,
+    "longitud": -70.1302084,
+    "tipo": "interseccion",
+    "node_id": 3082851827
+  },
+  {
+    "nombre": "Doctor Neghme con Pasaje Uno",
+    "latitud": -20.2625802,
+    "longitud": -70.127754,
+    "tipo": "interseccion",
+    "node_id": 3082883022
+  },
+  {
+    "nombre": "Doctor Neghme con Avenida Francisco Bilbao",
+    "latitud": -20.262871,
+    "longitud": -70.128334,
+    "tipo": "interseccion",
+    "node_id": 3082883015
+  },
+  {
+    "nombre": "Pasaje Traiguén con Presidente Manuel Balmaceda",
+    "latitud": -20.2650793,
+    "longitud": -70.1263382,
+    "tipo": "interseccion",
+    "node_id": 3082920486
+  },
+  {
+    "nombre": "Pasaje Lebu con Presidente Manuel Balmaceda",
+    "latitud": -20.2649124,
+    "longitud": -70.126018,
+    "tipo": "interseccion",
+    "node_id": 3082920494
+  },
+  {
+    "nombre": "Tamarugal con Calle 1",
+    "latitud": -20.2638279,
+    "longitud": -70.1218389,
+    "tipo": "interseccion",
+    "node_id": 452356370
+  },
+  {
+    "nombre": "Quebrada Blanca con Avenida La Tirana",
+    "latitud": -20.2681789,
+    "longitud": -70.1252858,
+    "tipo": "interseccion",
+    "node_id": 3082920482
+  },
+  {
+    "nombre": "Pasaje Temuco con Presidente Manuel Balmaceda",
+    "latitud": -20.2651784,
+    "longitud": -70.1265283,
+    "tipo": "interseccion",
+    "node_id": 3082920495
+  },
+  {
+    "nombre": "Pasaje Pirita con Quebrada Blanca",
+    "latitud": -20.2686921,
+    "longitud": -70.1238887,
+    "tipo": "interseccion",
+    "node_id": 3082979639
+  },
+  {
+    "nombre": "Pasaje 3 con Avenida Cerro Dragón",
+    "latitud": -20.2597092,
+    "longitud": -70.127122,
+    "tipo": "interseccion",
+    "node_id": 3085520285
+  },
+  {
+    "nombre": "Pasaje 3 con Pasaje Playa El Saladero",
+    "latitud": -20.259589,
+    "longitud": -70.1263009,
+    "tipo": "interseccion",
+    "node_id": 3085520282
+  },
+  {
+    "nombre": "Mare Nostrum con Primeras Piedras",
+    "latitud": -20.26191,
+    "longitud": -70.1318451,
+    "tipo": "interseccion",
+    "node_id": 3085532551
+  },
+  {
+    "nombre": "Mare Nostrum con Avenida Arturo Prat Chacón",
+    "latitud": -20.2616382,
+    "longitud": -70.1313286,
+    "tipo": "interseccion",
+    "node_id": 3085532564
+  },
+  {
+    "nombre": "Océano Pacífico con Avenida Arturo Prat Chacón",
+    "latitud": -20.2608445,
+    "longitud": -70.1318193,
+    "tipo": "interseccion",
+    "node_id": 3085532572
+  },
+  {
+    "nombre": "Océano Pacífico con Primeras Piedras",
+    "latitud": -20.2611078,
+    "longitud": -70.1323403,
+    "tipo": "interseccion",
+    "node_id": 3085532546
+  },
+  {
+    "nombre": "Avenida Costanera con Avenida Arturo Prat Chacón",
+    "latitud": -20.2572002,
+    "longitud": -70.1337948,
+    "tipo": "interseccion",
+    "node_id": 3085532545
+  },
+  {
+    "nombre": "Pasaje Isla San Félix con Avenida Cerro Dragón",
+    "latitud": -20.2583415,
+    "longitud": -70.1273826,
+    "tipo": "interseccion",
+    "node_id": 3091473975
+  },
+  {
+    "nombre": "Playa El Águila con Playa Brava",
+    "latitud": -20.2528182,
+    "longitud": -70.1356314,
+    "tipo": "interseccion",
+    "node_id": 340125514
+  },
+  {
+    "nombre": "Avenida Reinamar con Avenida La Tirana",
+    "latitud": -20.2781716,
+    "longitud": -70.1270788,
+    "tipo": "interseccion",
+    "node_id": 1038868314
+  },
+  {
+    "nombre": "Avenida Arturo Prat Chacón con Calle Cuatro",
+    "latitud": -20.2748381,
+    "longitud": -70.1300877,
+    "tipo": "interseccion",
+    "node_id": 4263341310
+  },
+  {
+    "nombre": "Presidente Salvador Allende Gossens con Rancagua",
+    "latitud": -20.2566907,
+    "longitud": -70.1288659,
+    "tipo": "interseccion",
+    "node_id": 452356589
+  },
+  {
+    "nombre": "Presidente Salvador Allende Gossens con Avenida Cerro Dragón",
+    "latitud": -20.2565003,
+    "longitud": -70.1277308,
+    "tipo": "interseccion",
+    "node_id": 452356590
+  },
+  {
+    "nombre": "Presidente Salvador Allende Gossens con Avenida La Tirana",
+    "latitud": -20.2561628,
+    "longitud": -70.1257195,
+    "tipo": "interseccion",
+    "node_id": 452356591
+  },
+  {
+    "nombre": "Pasaje Los Chunchos con Avenida Padre Hurtado",
+    "latitud": -20.2599425,
+    "longitud": -70.1244001,
+    "tipo": "interseccion",
+    "node_id": 452809985
+  },
+  {
+    "nombre": "Pasaje Uno con Presidente Manuel Balmaceda",
+    "latitud": -20.2646654,
+    "longitud": -70.1236861,
+    "tipo": "interseccion",
+    "node_id": 452359296
+  },
+  {
+    "nombre": "Presidente Manuel Balmaceda con Avenida Francisco Bilbao",
+    "latitud": -20.2653852,
+    "longitud": -70.1269252,
+    "tipo": "interseccion",
+    "node_id": 1038868219
+  },
+  {
+    "nombre": "Avenida Costanera con Mares del Sur",
+    "latitud": -20.259522,
+    "longitud": -70.1324111,
+    "tipo": "interseccion",
+    "node_id": 3085532563
+  },
+  {
+    "nombre": "Calle Cuatro con Calle B",
+    "latitud": -20.2743689,
+    "longitud": -70.1277893,
+    "tipo": "interseccion",
+    "node_id": 452806681
+  },
+  {
+    "nombre": "Rancagua con Caleta Río Seco",
+    "latitud": -20.2552278,
+    "longitud": -70.1292115,
+    "tipo": "interseccion",
+    "node_id": 452356641
+  },
+  {
+    "nombre": "Avenida Padre Hurtado con Avenida Cerro Dragón",
+    "latitud": -20.2602944,
+    "longitud": -70.1270193,
+    "tipo": "interseccion",
+    "node_id": 452356637
+  },
+  {
+    "nombre": "Pasaje Playa Las Pizarras con Avenida Ramón Pérez Opazo",
+    "latitud": -20.2528,
+    "longitud": -70.1282198,
+    "tipo": "interseccion",
+    "node_id": 452809949
+  },
+  {
+    "nombre": "Avenida Cerro Dragón con Caleta Río Seco",
+    "latitud": -20.2550155,
+    "longitud": -70.1280036,
+    "tipo": "interseccion",
+    "node_id": 452356640
+  },
+  {
+    "nombre": "Avenida Salvador Allende Gossens con Avenida Ramón Pérez Opazo",
+    "latitud": -20.2542834,
+    "longitud": -70.1313862,
+    "tipo": "interseccion",
+    "node_id": 452356081
+  },
+  {
+    "nombre": "Doctor Noé con Avenida Francisco Bilbao",
+    "latitud": -20.263254,
+    "longitud": -70.128242,
+    "tipo": "interseccion",
+    "node_id": 7838900780
+  },
+  {
+    "nombre": "Avenida Francisco Bilbao con Avenida Padre Hurtado",
+    "latitud": -20.2616652,
+    "longitud": -70.1291282,
+    "tipo": "interseccion",
+    "node_id": 452359323
+  },
+  {
+    "nombre": "Avenida Francisco Bilbao con Cerro Colorado",
+    "latitud": -20.2645176,
+    "longitud": -70.1274132,
+    "tipo": "interseccion",
+    "node_id": 452806527
+  },
+  {
+    "nombre": "Avenida Arturo Prat Chacón con Condominio Carrara",
+    "latitud": -20.2678186,
+    "longitud": -70.1294978,
+    "tipo": "interseccion",
+    "node_id": 975301964
+  },
+  {
+    "nombre": "Calle Cuatro con Avenida La Tirana",
+    "latitud": -20.2743929,
+    "longitud": -70.1266304,
+    "tipo": "interseccion",
+    "node_id": 1038868229
+  },
+  {
+    "nombre": "Avenida Padre Hurtado con Avenida Salvador Allende Gossens",
+    "latitud": -20.260882,
+    "longitud": -70.127619,
+    "tipo": "interseccion",
+    "node_id": 452359338
+  },
+  {
+    "nombre": "Avenida Padre Hurtado con Avenida La Tirana",
+    "latitud": -20.2600395,
+    "longitud": -70.124995,
+    "tipo": "interseccion",
+    "node_id": 452359308
+  }
+]

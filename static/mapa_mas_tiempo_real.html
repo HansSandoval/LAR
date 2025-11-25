@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Multi-Agente (MAS) - Recolección de Residuos Iquique</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+        
+        /* MAPA */
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        /* PANEL DE CONTROL */
+        .control-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 350px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .control-panel h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .control-panel h3 {
+            font-size: 16px;
+            margin: 15px 0 10px 0;
+            color: #34495e;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        
+        .control-section {
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 12px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(56, 239, 125, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(235, 51, 73, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        /* ESTADÍSTICAS */
+        .stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-card.green {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .stat-card.orange {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .stat-card.blue {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.9;
+            margin-top: 3px;
+        }
+        
+        /* LISTA DE CAMIONES */
+        .trucks-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .truck-item {
+            background: #f8f9fa;
+            border-left: 4px solid;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .truck-item strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+        
+        .truck-item span {
+            display: inline-block;
+            margin-right: 10px;
+            color: #666;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s;
+        }
+        
+        /* ALERTAS */
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            display: none;
+        }
+        
+        .alert.show {
+            display: block;
+            animation: slideIn 0.3s;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* TOGGLE SWITCH */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin-left: 10px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* SPINNER */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- MAPA -->
+    <div id="map"></div>
+    
+    <!-- PANEL DE CONTROL -->
+    <div class="control-panel">
+        <h2>Sistema Multi-Agente (MAS)</h2>
+        
+        <!-- ALERTAS -->
+        <div id="alertContainer"></div>
+        
+        <!-- CONFIGURACIÓN -->
+        <div class="control-section">
+            <h3>Configuracion</h3>
+            
+            <div class="input-group">
+                <label>Número de Camiones</label>
+                <input type="number" id="numCamiones" value="3" min="1" max="8">
+            </div>
+            
+            <div class="input-group">
+                <label>Capacidad por Camión (kg)</label>
+                <input type="number" id="capacidadCamion" value="3500" min="1000" max="5000" step="500">
+            </div>
+            
+            <div class="input-group">
+                <label>Número de Clientes</label>
+                <input type="number" id="numClientes" value="50" min="10" max="460">
+            </div>
+            
+            <div class="input-group">
+                <label style="display: flex; align-items: center;">
+                    Usar Predicciones LSTM
+                    <label class="switch">
+                        <input type="checkbox" id="usarLSTM" checked>
+                        <span class="slider"></span>
+                    </label>
+                </label>
+            </div>
+            
+            <button class="btn btn-primary" onclick="iniciarSimulacion()">
+                Iniciar Simulacion
+            </button>
+            
+            <button class="btn btn-success" id="btnPaso" onclick="ejecutarPaso()" disabled>
+                Ejecutar Paso
+            </button>
+            
+            <button class="btn btn-danger" id="btnDetener" onclick="detenerSimulacion()" disabled>
+                Detener Simulacion
+            </button>
+        </div>
+        
+        <!-- ESTADÍSTICAS GLOBALES -->
+        <div class="control-section">
+            <h3>Estadisticas Globales</h3>
+            
+            <div class="stats-container">
+                <div class="stat-card green">
+                    <span class="stat-value" id="statResiduos">0</span>
+                    <span class="stat-label">KG RECOLECTADOS</span>
+                </div>
+                
+                <div class="stat-card orange">
+                    <span class="stat-value" id="statDistancia">0.0</span>
+                    <span class="stat-label">KM RECORRIDOS</span>
+                </div>
+                
+                <div class="stat-card blue">
+                    <span class="stat-value" id="statClientes">0/0</span>
+                    <span class="stat-label">CLIENTES SERVIDOS</span>
+                </div>
+                
+                <div class="stat-card">
+                    <span class="stat-value" id="statEficiencia">0%</span>
+                    <span class="stat-label">EFICIENCIA</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ESTADO DE CAMIONES -->
+        <div class="control-section">
+            <h3>Estado de Camiones</h3>
+            <div class="trucks-list" id="trucksContainer">
+                <p style="text-align: center; color: #999; font-size: 13px;">
+                    Inicia una simulacion para ver los camiones
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    
+    <script>
+        // ==================== CONFIGURACIÓN ====================
+        
+        const API_BASE_URL = 'http://localhost:8000/api/mas';
+        
+        // Variables globales
+        let map;
+        let simulacionActual = null;
+        let capasCamiones = {};
+        let capasRutas = {};
+        let intervalActualizacion = null;
+        let marcadoresClientes = {};
+        
+        // ==================== INICIALIZACIÓN DEL MAPA ====================
+        
+        function initMap() {
+            // Crear mapa centrado en Sector Sur de Iquique (coordenadas reales dentro de la ciudad)
+            map = L.map('map').setView([-20.2666, -70.1300], 14);
+            
+            // Capa base de OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+            
+            // Zona de cobertura (círculo 5km)
+            L.circle([-20.2666, -70.1300], {
+                color: '#3498db',
+                fillColor: '#3498db',
+                fillOpacity: 0.1,
+                radius: 5000,
+                weight: 2
+            }).bindPopup('<b>Zona de Cobertura</b><br>Radio: 5 km<br>Sector Sur Iquique').addTo(map);
+            
+            // Depot (punto central)
+            L.marker([-20.2666, -70.1300], {
+                icon: L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                })
+            }).bindPopup('<b>DEPOT</b><br>Centro de Operaciones').addTo(map);
+        }
+        
+        // ==================== FUNCIONES DE SIMULACIÓN ====================
+        
+        async function iniciarSimulacion() {
+            const config = {
+                num_camiones: parseInt(document.getElementById('numCamiones').value),
+                capacidad_camion: parseInt(document.getElementById('capacidadCamion').value),
+                num_clientes: parseInt(document.getElementById('numClientes').value),
+                coordenadas_reales: true,
+                velocidad_simulacion: 1.0,
+                usar_predicciones_lstm: document.getElementById('usarLSTM').checked
+            };
+            
+            mostrarAlerta('Iniciando simulacion...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/simular`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(config)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    simulacionActual = data.simulacion_id;
+                    mostrarAlerta(`Simulacion iniciada: ${simulacionActual}`, 'success');
+                    
+                    // Habilitar botones
+                    document.getElementById('btnPaso').disabled = false;
+                    document.getElementById('btnDetener').disabled = false;
+                    
+                    // Iniciar actualización automática
+                    iniciarActualizacionAutomatica();
+                    
+                    // Cargar estado inicial
+                    await actualizarEstado();
+                    
+                } else {
+                    mostrarAlerta(`Error: ${data.detail}`, 'danger');
+                }
+                
+            } catch (error) {
+                mostrarAlerta(`Error de conexion: ${error.message}`, 'danger');
+                console.error(error);
+            }
+        }
+        
+        async function ejecutarPaso() {
+            if (!simulacionActual) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/simulacion/${simulacionActual}/paso`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    console.log(`✓ Paso ${data.paso} ejecutado - ${data.eventos.length} eventos`);
+                    
+                    // Actualizar visualización
+                    await actualizarEstado();
+                    
+                    if (data.eventos.length === 0) {
+                        mostrarAlerta('Simulacion completada', 'success');
+                        detenerSimulacion();
+                    }
+                } else {
+                    mostrarAlerta(`Error: ${data.detail}`, 'danger');
+                }
+                
+            } catch (error) {
+                console.error('Error ejecutando paso:', error);
+            }
+        }
+        
+        async function detenerSimulacion() {
+            if (!simulacionActual) return;
+            
+            if (intervalActualizacion) {
+                clearInterval(intervalActualizacion);
+                intervalActualizacion = null;
+            }
+            
+            try {
+                await fetch(`${API_BASE_URL}/simulacion/${simulacionActual}`, {
+                    method: 'DELETE'
+                });
+                
+                mostrarAlerta('Simulacion detenida', 'info');
+                
+            } catch (error) {
+                console.error('Error deteniendo simulación:', error);
+            }
+            
+            // Deshabilitar botones
+            document.getElementById('btnPaso').disabled = true;
+            document.getElementById('btnDetener').disabled = true;
+            
+            simulacionActual = null;
+        }
+        
+        function iniciarActualizacionAutomatica() {
+            if (intervalActualizacion) {
+                clearInterval(intervalActualizacion);
+            }
+            
+            // Actualizar cada 2 segundos
+            intervalActualizacion = setInterval(async () => {
+                if (simulacionActual) {
+                    await ejecutarPaso();
+                }
+            }, 2000);
+        }
+        
+        // ==================== ACTUALIZACIÓN DE ESTADO ====================
+        
+        async function actualizarEstado() {
+            if (!simulacionActual) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/simulacion/${simulacionActual}/estado`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Actualizar estadísticas
+                    actualizarEstadisticas(data.estadisticas);
+                    
+                    // Actualizar camiones en el mapa
+                    actualizarCamionesEnMapa(data.camiones);
+                    
+                    // Actualizar lista de camiones
+                    actualizarListaCamiones(data.camiones);
+                    
+                    // Verificar si terminó
+                    if (!data.activa) {
+                        detenerSimulacion();
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error actualizando estado:', error);
+            }
+        }
+        
+        function actualizarEstadisticas(stats) {
+            document.getElementById('statResiduos').textContent = 
+                Math.round(stats.total_residuos_recolectados).toLocaleString();
+            
+            document.getElementById('statDistancia').textContent = 
+                stats.total_distancia_recorrida.toFixed(1);
+            
+            document.getElementById('statClientes').textContent = 
+                `${stats.clientes_servidos}/${stats.clientes_totales}`;
+            
+            document.getElementById('statEficiencia').textContent = 
+                `${Math.round(stats.eficiencia)}%`;
+        }
+        
+        function actualizarCamionesEnMapa(camiones) {
+            camiones.forEach(camion => {
+                const camionId = camion.id;
+                
+                // ACTUALIZAR RUTA (Polyline)
+                if (camion.ruta.length > 0) {
+                    const coords = camion.ruta.map(p => [p.lat, p.lon]);
+                    
+                    if (capasRutas[camionId]) {
+                        // Actualizar ruta existente
+                        capasRutas[camionId].setLatLngs(coords);
+                    } else {
+                        // Crear nueva ruta
+                        capasRutas[camionId] = L.polyline(coords, {
+                            color: camion.color,
+                            weight: 4,
+                            opacity: 0.7,
+                            smoothFactor: 1
+                        }).addTo(map);
+                        
+                        capasRutas[camionId].bindPopup(
+                            `<b>${camion.nombre}</b><br>Ruta recorrida`
+                        );
+                    }
+                }
+                
+                // ACTUALIZAR MARCADOR DE CAMIÓN
+                if (capasCamiones[camionId]) {
+                    // Actualizar posición
+                    capasCamiones[camionId].setLatLng([camion.posicion.lat, camion.posicion.lon]);
+                    
+                    // Actualizar popup
+                    capasCamiones[camionId].getPopup().setContent(
+                        generarPopupCamion(camion)
+                    );
+                } else {
+                    // Crear nuevo marcador
+                    capasCamiones[camionId] = L.circleMarker(
+                        [camion.posicion.lat, camion.posicion.lon],
+                        {
+                            radius: 10,
+                            fillColor: camion.color,
+                            color: '#fff',
+                            weight: 3,
+                            opacity: 1,
+                            fillOpacity: 0.9
+                        }
+                    ).addTo(map);
+                    
+                    capasCamiones[camionId].bindPopup(generarPopupCamion(camion));
+                }
+            });
+        }
+        
+        function generarPopupCamion(camion) {
+            const cargaPorcentaje = (camion.carga_actual / camion.capacidad_total * 100).toFixed(0);
+            
+            return `
+                <div style="min-width: 150px;">
+                    <h4 style="margin: 0 0 8px 0; color: ${camion.color};">
+                        ${camion.nombre}
+                    </h4>
+                    <p style="margin: 4px 0; font-size: 12px;">
+                        <b>Estado:</b> ${traducirEstado(camion.estado)}<br>
+                        <b>Carga:</b> ${Math.round(camion.carga_actual)}/${camion.capacidad_total}kg 
+                        (${cargaPorcentaje}%)<br>
+                        <b>Distancia:</b> ${camion.distancia_recorrida.toFixed(1)} km<br>
+                        <b>Clientes:</b> ${camion.clientes_servidos.length}
+                    </p>
+                </div>
+            `;
+        }
+        
+        function actualizarListaCamiones(camiones) {
+            const container = document.getElementById('trucksContainer');
+            
+            if (camiones.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; font-size: 13px;">Sin camiones activos</p>';
+                return;
+            }
+            
+            container.innerHTML = camiones.map(camion => {
+                const cargaPorcentaje = (camion.carga_actual / camion.capacidad_total * 100);
+                
+                return `
+                    <div class="truck-item" style="border-left-color: ${camion.color};">
+                        <strong>${camion.nombre}</strong>
+                        <span>${traducirEstado(camion.estado)}</span>
+                        <span>${Math.round(camion.carga_actual)}kg</span>
+                        <span>${camion.distancia_recorrida.toFixed(1)}km</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${cargaPorcentaje}%; background: ${camion.color};"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // ==================== FUNCIONES AUXILIARES ====================
+        
+        function mostrarAlerta(mensaje, tipo) {
+            const container = document.getElementById('alertContainer');
+            
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${tipo} show`;
+            alert.textContent = mensaje;
+            
+            container.innerHTML = '';
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 300);
+            }, 5000);
+        }
+        
+        function traducirEstado(estado) {
+            const estados = {
+                'en_ruta': 'En ruta',
+                'retornando': 'Retornando',
+                'en_depot': 'En depot'
+            };
+            return estados[estado] || estado;
+        }
+        
+        // ==================== INICIALIZACIÓN ====================
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Inicializando Sistema MAS...');
+            initMap();
+            console.log('Mapa inicializado correctamente');
+        });
+    </script>
+</body>
+</html>
