@@ -1,19 +1,22 @@
 """
 Router para gestionar operaciones CRUD en la tabla PuntoDisposicion.
 Endpoints para crear, listar, actualizar y eliminar puntos de disposición de residuos.
+Usando PostgreSQL directo sin SQLAlchemy
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
-from sqlalchemy import func
-from ..database.db import get_db
-from ..models.models import PuntoDisposicion
+from fastapi import APIRouter, HTTPException, Query
+from typing import Optional
+
 from ..schemas.schemas import (
     PuntoDisposicionCreate,
     PuntoDisposicionUpdate,
     PuntoDisposicionResponse
 )
+from ..service.punto_disposicion_service import PuntoDisposicionService
+
 router = APIRouter(prefix="/puntos-disposicion", tags=["Puntos de Disposición"])
+
+punto_disposicion_service = PuntoDisposicionService()
 
 
 @router.get(
@@ -25,9 +28,8 @@ router = APIRouter(prefix="/puntos-disposicion", tags=["Puntos de Disposición"]
 async def get_puntos_disposicion(
     skip: int = Query(0, ge=0, description="Número de registros a saltar"),
     limit: int = Query(10, ge=1, le=100, description="Número máximo de registros a retornar"),
-    tipo: str = Query(None, description="Filtrar por tipo (relleno, reciclaje, compostaje, etc.)"),
-    nombre: str = Query(None, description="Filtrar por nombre (búsqueda parcial)"),
-    db: Session = Depends(get_db)
+    tipo: Optional[str] = Query(None, description="Filtrar por tipo (relleno, reciclaje, compostaje, etc.)"),
+    nombre: Optional[str] = Query(None, description="Filtrar por nombre (búsqueda parcial)"),
 ):
     """
     Obtiene una lista paginada de puntos de disposición con filtros opcionales.
@@ -42,22 +44,9 @@ async def get_puntos_disposicion(
     ```
     """
     try:
-        query = db.query(PuntoDisposicion)
-        
-        # Aplicar filtros
-        if tipo:
-            query = query.filter(PuntoDisposicion.tipo == tipo)
-        if nombre:
-            query = query.filter(PuntoDisposicion.nombre.ilike(f"%{nombre}%"))
-        
-        # Obtener total
-        total = query.count()
-        
-        # Aplicar paginación
-        puntos = query.offset(skip).limit(limit).all()
-        
+        puntos, total = punto_disposicion_service.obtener_puntos_disposicion(tipo, nombre, skip, limit)
         return {
-            "data": [PuntoDisposicionResponse.from_orm(p) for p in puntos],
+            "data": puntos,
             "total": total,
             "skip": skip,
             "limit": limit
@@ -72,7 +61,7 @@ async def get_puntos_disposicion(
     summary="Obtener un punto de disposición por ID",
     description="Retorna los detalles de un punto de disposición específico"
 )
-async def get_punto_disposicion(punto_id: int, db: Session = Depends(get_db)):
+async def get_punto_disposicion(punto_id: int):
     """
     Obtiene los detalles de un punto de disposición específico por su ID.
     
@@ -82,12 +71,10 @@ async def get_punto_disposicion(punto_id: int, db: Session = Depends(get_db)):
     ```
     """
     try:
-        punto = db.query(PuntoDisposicion).filter(PuntoDisposicion.id_disposicion == punto_id).first()
+        punto = punto_disposicion_service.obtener_punto_disposicion(punto_id)
         if not punto:
             raise HTTPException(status_code=404, detail=f"Punto de disposición con ID {punto_id} no encontrado")
-        return PuntoDisposicionResponse.from_orm(punto)
-    except HTTPException:
-        raise
+        return punto
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener punto de disposición: {str(e)}")
 
@@ -99,7 +86,7 @@ async def get_punto_disposicion(punto_id: int, db: Session = Depends(get_db)):
     summary="Crear un nuevo punto de disposición",
     description="Crea un nuevo registro de punto de disposición"
 )
-async def create_punto_disposicion(punto: PuntoDisposicionCreate, db: Session = Depends(get_db)):
+async def create_punto_disposicion(punto: PuntoDisposicionCreate):
     """
     Crea un nuevo punto de disposición.
     
@@ -121,32 +108,10 @@ async def create_punto_disposicion(punto: PuntoDisposicionCreate, db: Session = 
     ```
     """
     try:
-        # Validar coordenadas
-        if not (-90 <= punto.latitud <= 90):
-            raise HTTPException(status_code=400, detail="Latitud debe estar entre -90 y 90")
-        
-        if not (-180 <= punto.longitud <= 180):
-            raise HTTPException(status_code=400, detail="Longitud debe estar entre -180 y 180")
-        
-        # Validar capacidad
-        if punto.capacidad_diaria_ton <= 0:
-            raise HTTPException(status_code=400, detail="Capacidad diaria debe ser positiva")
-        
-        nuevo_punto = PuntoDisposicion(
-            nombre=punto.nombre,
-            tipo=punto.tipo,
-            latitud=punto.latitud,
-            longitud=punto.longitud,
-            capacidad_diaria_ton=punto.capacidad_diaria_ton
-        )
-        db.add(nuevo_punto)
-        db.commit()
-        db.refresh(nuevo_punto)
-        return PuntoDisposicionResponse.from_orm(nuevo_punto)
-    except HTTPException:
-        raise
+        return punto_disposicion_service.crear_punto_disposicion(punto.dict())
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al crear punto de disposición: {str(e)}")
 
 
@@ -159,7 +124,6 @@ async def create_punto_disposicion(punto: PuntoDisposicionCreate, db: Session = 
 async def update_punto_disposicion(
     punto_id: int,
     punto_data: PuntoDisposicionUpdate,
-    db: Session = Depends(get_db)
 ):
     """
     Actualiza un punto de disposición existente.
@@ -178,33 +142,14 @@ async def update_punto_disposicion(
     ```
     """
     try:
-        punto = db.query(PuntoDisposicion).filter(PuntoDisposicion.id_disposicion == punto_id).first()
+        punto = punto_disposicion_service.obtener_punto_disposicion(punto_id)
         if not punto:
             raise HTTPException(status_code=404, detail=f"Punto de disposición con ID {punto_id} no encontrado")
         
-        # Validar coordenadas si se actualizan
-        if punto_data.latitud is not None and not (-90 <= punto_data.latitud <= 90):
-            raise HTTPException(status_code=400, detail="Latitud debe estar entre -90 y 90")
-        
-        if punto_data.longitud is not None and not (-180 <= punto_data.longitud <= 180):
-            raise HTTPException(status_code=400, detail="Longitud debe estar entre -180 y 180")
-        
-        # Validar capacidad si se actualiza
-        if punto_data.capacidad_diaria_ton is not None and punto_data.capacidad_diaria_ton <= 0:
-            raise HTTPException(status_code=400, detail="Capacidad diaria debe ser positiva")
-        
-        # Actualizar campos
-        datos = punto_data.dict(exclude_unset=True)
-        for campo, valor in datos.items():
-            setattr(punto, campo, valor)
-        
-        db.commit()
-        db.refresh(punto)
-        return PuntoDisposicionResponse.from_orm(punto)
-    except HTTPException:
-        raise
+        return punto_disposicion_service.actualizar_punto_disposicion(punto_id, punto_data.dict(exclude_unset=True))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al actualizar punto de disposición: {str(e)}")
 
 
@@ -214,7 +159,7 @@ async def update_punto_disposicion(
     summary="Eliminar un punto de disposición",
     description="Elimina un punto de disposición de la base de datos"
 )
-async def delete_punto_disposicion(punto_id: int, db: Session = Depends(get_db)):
+async def delete_punto_disposicion(punto_id: int):
     """
     Elimina un punto de disposición existente.
     
@@ -226,17 +171,11 @@ async def delete_punto_disposicion(punto_id: int, db: Session = Depends(get_db))
     ```
     """
     try:
-        punto = db.query(PuntoDisposicion).filter(PuntoDisposicion.id_disposicion == punto_id).first()
-        if not punto:
+        resultado = punto_disposicion_service.eliminar_punto_disposicion(punto_id)
+        if not resultado:
             raise HTTPException(status_code=404, detail=f"Punto de disposición con ID {punto_id} no encontrado")
-        
-        db.delete(punto)
-        db.commit()
         return None
-    except HTTPException:
-        raise
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al eliminar punto de disposición: {str(e)}")
 
 
@@ -249,7 +188,6 @@ async def get_puntos_por_proximidad(
     latitud: float = Query(..., description="Latitud del punto de referencia"),
     longitud: float = Query(..., description="Longitud del punto de referencia"),
     radio_km: float = Query(50, gt=0, description="Radio de búsqueda en kilómetros"),
-    db: Session = Depends(get_db)
 ):
     """
     Busca puntos de disposición cercanos a unas coordenadas específicas.
@@ -262,37 +200,7 @@ async def get_puntos_por_proximidad(
     ```
     """
     try:
-        from math import radians, sin, cos, sqrt, atan2
-        
-        def calcular_distancia(lat1, lon1, lat2, lon2):
-            """Calcula distancia en km entre dos puntos usando Haversine."""
-            R = 6371  # Radio de la Tierra en km
-            lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
-            dlat = lat2 - lat1
-            dlon = lon2 - lon1
-            a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
-            c = 2 * atan2(sqrt(a), sqrt(1 - a))
-            return R * c
-        
-        todos_los_puntos = db.query(PuntoDisposicion).all()
-        
-        puntos_cercanos = []
-        for punto in todos_los_puntos:
-            distancia = calcular_distancia(latitud, longitud, punto.latitud, punto.longitud)
-            if distancia <= radio_km:
-                punto_dict = PuntoDisposicionResponse.from_orm(punto).dict()
-                punto_dict["distancia_km"] = round(distancia, 2)
-                puntos_cercanos.append(punto_dict)
-        
-        # Ordenar por distancia
-        puntos_cercanos.sort(key=lambda x: x["distancia_km"])
-        
-        return {
-            "punto_referencia": {"latitud": latitud, "longitud": longitud},
-            "radio_km": radio_km,
-            "puntos_encontrados": len(puntos_cercanos),
-            "puntos": puntos_cercanos
-        }
+        return punto_disposicion_service.obtener_puntos_proximidad(latitud, longitud, radio_km)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al buscar puntos cercanos: {str(e)}")
 
@@ -302,7 +210,7 @@ async def get_puntos_por_proximidad(
     summary="Obtener estadísticas por tipo de disposición",
     description="Retorna conteo y capacidad promedio agrupada por tipo"
 )
-async def get_estadisticas_por_tipo(db: Session = Depends(get_db)):
+async def get_estadisticas_por_tipo():
     """
     Obtiene estadísticas de puntos de disposición agrupadas por tipo.
     
@@ -312,25 +220,6 @@ async def get_estadisticas_por_tipo(db: Session = Depends(get_db)):
     ```
     """
     try:
-        from sqlalchemy import func
-        
-        estadisticas = db.query(
-            PuntoDisposicion.tipo,
-            func.count(PuntoDisposicion.id_disposicion).label("cantidad"),
-            func.avg(PuntoDisposicion.capacidad_diaria_ton).label("capacidad_promedio"),
-            func.sum(PuntoDisposicion.capacidad_diaria_ton).label("capacidad_total")
-        ).group_by(PuntoDisposicion.tipo).all()
-        
-        return {
-            "estadisticas": [
-                {
-                    "tipo": tipo,
-                    "cantidad_puntos": cantidad,
-                    "capacidad_promedio_ton": round(capacidad_promedio, 2) if capacidad_promedio else 0,
-                    "capacidad_total_ton": round(capacidad_total, 2) if capacidad_total else 0
-                }
-                for tipo, cantidad, capacidad_promedio, capacidad_total in estadisticas
-            ]
-        }
+        return punto_disposicion_service.obtener_estadisticas_por_tipo()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener estadísticas: {str(e)}")

@@ -338,6 +338,7 @@
         const map = L.map('map').setView([-20.2666, -70.1300], 14);
         let simulacionId = null;
         let intervalId = null;
+        let timeoutId = null; // Nuevo: para control de ciclo secuencial
         let prediccionesActuales = [];
         let marcadoresPuntos = [];
         let marcadoresCamiones = [];
@@ -514,214 +515,166 @@
             }
         }
         
-        // ==================== FUNCIÓN: ACTUALIZACIÓN AUTOMÁTICA ====================
+        // ==================== FUNCIÓN: INICIAR ACTUALIZACIÓN AUTOMÁTICA ====================
         function iniciarActualizacionAutomatica() {
+            if (timeoutId) clearTimeout(timeoutId);
             if (intervalId) clearInterval(intervalId);
             
             console.log('🚀 Iniciando simulación con animación siguiendo calles OSRM');
-            console.log('⏱️ Intervalo: 3 segundos por paso');
-            console.log('🗺️ Animación siguiendo geometría real de calles');
+            console.log('🔄 Ciclo de actualización secuencial activado');
             
-            intervalId = setInterval(async () => {
-                if (!simulacionId) return;
-                
-                try {
-                    // Ejecutar paso
-                    const pasoResponse = await fetch(`/api/mas/simulacion/${simulacionId}/paso`, { method: 'POST' });
-                    const pasoData = await pasoResponse.json();
-                    
-                    // Obtener estado
-                    const response = await fetch(`/api/mas/simulacion/${simulacionId}/estado`);
-                    const data = await response.json();
-                    
-                    if (!data.activa) {
-                        console.log('🛑 Simulación terminada');
-                        detenerSimulacion();
-                        return;
-                    }
-                    
-                    actualizarVisualizacion(data);
-                    
-                } catch (error) {
-                    console.error('❌ Error en actualización:', error);
-                }
-            }, 3000); // Intervalo fijo de 3 segundos (10x acelerado)
+            // Iniciar el ciclo
+            ejecutarCicloSimulacion();
         }
-        
-        // ==================== FUNCIÓN: ACTUALIZAR VISUALIZACIÓN ====================
-        function actualizarVisualizacion(data) {
-            // Actualizar estadísticas (ajustado a la estructura del backend)
-            const stats = data.estadisticas || {};
-            document.getElementById('kgRecolectados').textContent = (stats.total_residuos_recolectados || 0).toFixed(0);
-            document.getElementById('puntosServidos').textContent = `${stats.clientes_servidos || 0}/${stats.clientes_totales || 0}`;
-            document.getElementById('eficiencia').textContent = `${(stats.eficiencia || 0).toFixed(0)}%`;
-            document.getElementById('paso').textContent = data.paso || 0;
+
+        // ==================== FUNCIÓN: ACTUALIZACIÓN AUTOMÁTICA ROBUSTA ====================
+        async function ejecutarCicloSimulacion() {
+            if (!simulacionId) return;
             
-            // Limpiar rutas anteriores
+            const debugDiv = document.getElementById('debugInfo') || crearDebugPanel();
+            
+            try {
+                debugDiv.innerHTML = `🔄 Solicitando paso... (SimID: ${simulacionId})`;
+                debugDiv.style.color = '#ffff00'; // Amarillo procesando
+                
+                // 1. EJECUTAR PASO
+                const controller = new AbortController();
+                const timeoutIdFetch = setTimeout(() => controller.abort(), 60000); // 60s timeout
+                
+                const pasoResponse = await fetch(`/api/mas/simulacion/${simulacionId}/paso`, { 
+                    method: 'POST',
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutIdFetch);
+                
+                // MANEJO DE ERRORES CRÍTICOS (404 = Simulación perdida por reinicio)
+                if (pasoResponse.status === 404) {
+                    throw new Error("SIMULACION_PERDIDA");
+                }
+                
+                if (!pasoResponse.ok) {
+                    throw new Error(`Error HTTP: ${pasoResponse.status}`);
+                }
+                
+                // 2. OBTENER ESTADO ACTUALIZADO
+                debugDiv.innerHTML = `📥 Obteniendo estado...`;
+                const estadoResponse = await fetch(`/api/mas/simulacion/${simulacionId}/estado`);
+                
+                if (estadoResponse.status === 404) throw new Error("SIMULACION_PERDIDA");
+                
+                const data = await estadoResponse.json();
+                
+                // 3. ACTUALIZAR VISUALIZACIÓN
+                debugDiv.innerHTML = `🎨 Renderizando (Paso ${data.paso})`;
+                debugDiv.style.color = '#00ff00'; // Verde éxito
+                
+                actualizarVisualizacion(data);
+                
+                // Verificar si terminó
+                if (!data.activa) {
+                    console.log('🛑 Simulación terminada por el servidor');
+                    debugDiv.innerHTML = `🏁 Simulación Finalizada`;
+                    detenerSimulacion();
+                    return;
+                }
+                
+                // 4. SIGUIENTE CICLO
+                timeoutId = setTimeout(ejecutarCicloSimulacion, 1000); 
+                
+            } catch (error) {
+                console.error('❌ Error en ciclo:', error);
+                
+                if (error.message === "SIMULACION_PERDIDA" || error.message.includes("404")) {
+                    debugDiv.innerHTML = `⚠️ SERVIDOR REINICIADO. Por favor inicia de nuevo.`;
+                    debugDiv.style.color = '#ff0000';
+                    alert("La conexión con la simulación se perdió (posiblemente el servidor se reinició). Por favor, haz clic en 'Iniciar Simulación' nuevamente.");
+                    detenerSimulacion();
+                } else {
+                    debugDiv.innerHTML = `❌ Error: ${error.message}. Reintentando...`;
+                    timeoutId = setTimeout(ejecutarCicloSimulacion, 5000);
+                }
+            }
+        }
+
+        // ==================== FUNCIÓN: ACTUALIZAR VISUALIZACIÓN (DEBUGGEADA) ====================
+        function actualizarVisualizacion(data) {
+            console.log("📊 Datos recibidos:", data); // LOG PARA VERIFICAR DATOS
+            
+            // 1. Actualizar Estadísticas
+            const stats = data.estadisticas || {};
+            
+            // Usar optional chaining y valores por defecto para evitar fallos
+            const kg = (stats.total_residuos_recolectados || 0).toFixed(0);
+            const servidos = stats.clientes_servidos || 0;
+            const totales = stats.clientes_totales || 0;
+            const efic = (stats.eficiencia || 0).toFixed(1);
+            const paso = data.paso || 0;
+            
+            // Actualizar DOM
+            document.getElementById('kgRecolectados').textContent = kg;
+            document.getElementById('puntosServidos').textContent = `${servidos}/${totales}`;
+            document.getElementById('eficiencia').textContent = `${efic}%`;
+            document.getElementById('paso').textContent = paso;
+            
+            // 2. Actualizar Mapa (Camiones)
             lineasRutas.forEach(l => map.removeLayer(l));
             lineasRutas = [];
             
-            // Actualizar o crear marcadores de camiones con ANIMACIÓN y RASTRO
             data.camiones.forEach((camion, idx) => {
                 const nuevaPos = L.latLng(camion.posicion.lat, camion.posicion.lon);
                 
-                // DIBUJAR RASTRO PERMANENTE (línea sólida del recorrido ya realizado)
+                // Rastro
                 if (ultimaPosicionCamiones[idx]) {
                     const posAnterior = ultimaPosicionCamiones[idx];
-                    
-                    // Solo dibujar rastro si el camión se movió significativamente
-                    const distancia = map.distance(posAnterior, nuevaPos);
-                    if (distancia > 10) {  // Más de 10 metros
-                        const rastro = L.polyline([posAnterior, nuevaPos], {
+                    if (map.distance(posAnterior, nuevaPos) > 5) {
+                        L.polyline([posAnterior, nuevaPos], {
                             color: camion.color || '#e74c3c',
-                            weight: 3,
-                            opacity: 0.8,
-                            smoothFactor: 1.0
+                            weight: 3, opacity: 0.6
                         }).addTo(map);
-                        
-                        // Guardar rastro en array del camión
-                        if (!rastrosCamiones[idx]) {
-                            rastrosCamiones[idx] = [];
-                        }
-                        rastrosCamiones[idx].push(rastro);
                     }
                 }
-                
-                // Guardar posición actual para el próximo frame
                 ultimaPosicionCamiones[idx] = nuevaPos;
                 
-                // Si ya existe el marcador, animarlo a la nueva posición
+                // Marcador
                 if (marcadoresCamiones[idx]) {
-                    const marcadorExistente = marcadoresCamiones[idx];
-                    const posActual = marcadorExistente.getLatLng();
+                    // Animar
+                    const geometria = camion.geometria_actual || camion.ruta_geometria;
+                    animarMovimiento(marcadoresCamiones[idx], marcadoresCamiones[idx].getLatLng(), nuevaPos, 900, geometria);
                     
-                    // Animación fija de 2.8 segundos (sincronizada con intervalo de 3s)
-                    // El tiempo real se calcula en backend y se muestra en estadísticas
-                    const duracionMs = 2800;
-                    
-                    // Animar movimiento siguiendo geometría OSRM
-                    animarMovimiento(marcadorExistente, posActual, nuevaPos, duracionMs, camion.ruta_geometria);
-                    
-                    // Actualizar popup
-                    marcadorExistente.setPopupContent(`
-                        <div style="min-width: 200px;">
-                            <h4>Camión ${idx + 1}</h4>
-                            <p>
-                                <b>Carga:</b> ${camion.carga_actual.toFixed(0)} / ${camion.capacidad_total} kg<br>
-                                <b>Distancia:</b> ${camion.distancia_recorrida.toFixed(1)} km<br>
-                                <b>Estado:</b> ${camion.estado === 'en_ruta' ? 'En Ruta' : 'En Depósito'}
-                            </p>
-                        </div>
+                    // Popup
+                    marcadoresCamiones[idx].setPopupContent(`
+                        <b>Camión ${idx + 1}</b><br>
+                        Carga: ${camion.carga_actual.toFixed(0)} kg
                     `);
                 } else {
-                    // Crear nuevo marcador si no existe
+                    // Crear
                     const marker = L.marker(nuevaPos, {
                         icon: L.divIcon({
                             className: 'truck-icon',
-                            html: `<div style="background: ${camion.color || '#e74c3c'}; color: white; width: 35px; height: 35px; border-radius: 50%; border: 3px solid white; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.4); font-size: 16px;">${idx + 1}</div>`,
-                            iconSize: [35, 35]
+                            html: `<div style="background: ${camion.color}; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid white;">${idx+1}</div>`
                         })
-                    }).bindPopup(`
-                        <div style="min-width: 200px;">
-                            <h4>Camión ${idx + 1}</h4>
-                            <p>
-                                <b>Carga:</b> ${camion.carga_actual.toFixed(0)} / ${camion.capacidad_total} kg<br>
-                                <b>Distancia:</b> ${camion.distancia_recorrida.toFixed(1)} km<br>
-                                <b>Estado:</b> ${camion.estado === 'en_ruta' ? 'En Ruta' : 'En Depósito'}
-                            </p>
-                        </div>
-                    `).addTo(map);
-                    
+                    }).addTo(map);
                     marcadoresCamiones[idx] = marker;
                 }
                 
-                // Dibujar RUTA PLANIFICADA (punteada, muestra el plan futuro)
-                if (camion.ruta_geometria && camion.ruta_geometria.length > 0) {
-                    // Usar geometría OSRM real
-                    const linea = L.polyline(camion.ruta_geometria, {
-                        color: camion.color || '#e74c3c',
-                        weight: 2,
-                        opacity: 0.4,
-                        dashArray: '8, 12',
-                        lineCap: 'round'
-                    }).addTo(map);
-                    lineasRutas.push(linea);
-                    
-                    console.log(`Camión ${idx + 1}: Ruta planificada con ${camion.ruta_geometria.length} puntos OSRM`);
-                } else if (camion.ruta && camion.ruta.length > 0) {
-                    // Fallback: línea recta entre waypoints
-                    const coordsRuta = [[camion.posicion.lat, camion.posicion.lon], ...camion.ruta.map(p => [p.lat, p.lon])];
-                    const linea = L.polyline(coordsRuta, {
-                        color: camion.color || '#e74c3c',
-                        weight: 2,
-                        opacity: 0.4,
-                        dashArray: '8, 12'
+                // Ruta futura (línea punteada)
+                if (camion.ruta_geometria) {
+                     const linea = L.polyline(camion.ruta_geometria, {
+                        color: camion.color, weight: 2, dashArray: '5, 10', opacity: 0.5
                     }).addTo(map);
                     lineasRutas.push(linea);
                 }
-                
-                // Marcadores de destinos pendientes
-                if (camion.ruta && camion.ruta.length > 0) {
-                    camion.ruta.forEach((punto, i) => {
-                        const circulo = L.circleMarker([punto.lat, punto.lon], {
-                            radius: 4,
-                            fillColor: camion.color || '#e74c3c',
-                            color: 'white',
-                            weight: 1,
-                            opacity: 1,
-                            fillOpacity: 0.7
-                        }).addTo(map);
-                        lineasRutas.push(circulo);
-                    });
-                }
             });
             
-            // Actualizar lista de camiones
-            const listaCamiones = document.getElementById('listaCamiones');
-            listaCamiones.innerHTML = '';
-            data.camiones.forEach((camion, idx) => {
-                const porcentajeCarga = ((camion.carga_actual / camion.capacidad_total) * 100).toFixed(0);
-                const estadoIcon = camion.estado === 'en_ruta' ? '🔄' : '🏠';
-                listaCamiones.innerHTML += `
-                    <div class="truck-item">
-                        <strong>${estadoIcon} Camión ${idx + 1}</strong><br>
-                        <small>Carga: ${porcentajeCarga}% | ${camion.distancia_recorrida.toFixed(1)} km</small>
-                    </div>
-                `;
-            });
-            
-            // ELIMINAR o ATENUAR puntos ya servidos
-            if (data.clientes_servidos_ids && data.clientes_servidos_ids.length > 0) {
+            // 3. Actualizar Clientes (Servidos)
+            if (data.clientes_servidos_ids) {
                 data.clientes_servidos_ids.forEach(id => {
+                    // Ajustar ID (backend 0-based vs frontend array)
+                    // El backend devuelve indices de la lista de clientes
                     if (marcadoresPuntos[id]) {
-                        // Opción 1: Hacer fade out (semi-transparente + cambiar color a gris)
                         marcadoresPuntos[id].setStyle({
-                            fillColor: '#95a5a6',
-                            color: '#7f8c8d',
-                            fillOpacity: 0.3,
-                            opacity: 0.5,
-                            radius: 4
+                            fillColor: '#bdc3c7', color: '#7f8c8d', fillOpacity: 0.2
                         });
-                        
-                        // Actualizar popup para mostrar que fue servido
-                        const pred = prediccionesActuales[id];
-                        if (pred) {
-                            pred.servido = true;
-                            marcadoresPuntos[id].setPopupContent(`
-                                <div style="min-width: 200px;">
-                                    <h4 style="margin: 0 0 10px 0; color: #95a5a6;">✅ ${pred.punto}</h4>
-                                    <p style="margin: 5px 0;">
-                                        <b>Estado:</b> <span style="color: #27ae60;">RECOLECTADO</span><br>
-                                        <b>Cantidad:</b> ${pred.prediccion_kg.toFixed(0)} kg<br>
-                                        <b>Fecha:</b> ${pred.fecha}
-                                    </p>
-                                </div>
-                            `);
-                        }
-                        
-                        // Opción 2 (comentada): Eliminar completamente
-                        // map.removeLayer(marcadoresPuntos[id]);
-                        // marcadoresPuntos[id] = null;
                     }
                 });
             }
@@ -730,25 +683,19 @@
         // ==================== FUNCIÓN: ANIMAR MOVIMIENTO SIGUIENDO GEOMETRÍA OSRM ====================
         function animarMovimiento(marker, desde, hacia, duracion, geometria = null) {
             // Si hay geometría OSRM, animar siguiendo cada punto de la ruta real
-            if (geometria && geometria.length > 2) {
-                console.log(`🚗 Animando con ${geometria.length} puntos OSRM`);
+            // Se acepta length >= 2 para incluir líneas rectas generadas por fallback
+            if (geometria && geometria.length >= 2) {
+                // console.log(`🚗 Animando con ${geometria.length} puntos`);
                 
-                // Filtrar puntos cercanos al inicio y fin
-                const puntosRuta = geometria.filter(punto => {
-                    const dist = Math.sqrt(
-                        Math.pow(punto[0] - desde.lat, 2) + 
-                        Math.pow(punto[1] - desde.lng, 2)
-                    );
-                    return dist < 0.1; // Dentro de ~10km
-                });
+                const puntosRuta = geometria;
                 
-                if (puntosRuta.length < 2) {
-                    // Fallback a animación lineal
+                // Si son pocos puntos (ej. línea recta), usar interpolación lineal para suavidad
+                if (puntosRuta.length <= 2) {
                     animarMovimientoLineal(marker, desde, hacia, duracion);
                     return;
                 }
                 
-                // Animar punto por punto siguiendo la geometría
+                // Animar punto por punto siguiendo la geometría compleja
                 const tiempoPorPunto = duracion / puntosRuta.length;
                 let indicePunto = 0;
                 
@@ -765,6 +712,7 @@
                 }, tiempoPorPunto);
             } else {
                 // Sin geometría: animación lineal tradicional
+                console.warn("⚠️ Sin geometría válida, usando animación lineal");
                 animarMovimientoLineal(marker, desde, hacia, duracion);
             }
         }
@@ -794,8 +742,12 @@
         // ==================== FUNCIÓN: DETENER SIMULACIÓN ====================
         function detenerSimulacion() {
             if (intervalId) {
-                clearInterval(intervalId); // Volver a clearInterval (sistema estable)
+                clearInterval(intervalId);
                 intervalId = null;
+            }
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+                timeoutId = null;
             }
             
             if (simulacionId) {
@@ -808,6 +760,25 @@
         }
         
         // ==================== FUNCIONES AUXILIARES ====================
+        function crearDebugPanel() {
+            const div = document.createElement('div');
+            div.id = 'debugInfo';
+            div.style.position = 'fixed';
+            div.style.bottom = '10px';
+            div.style.right = '10px';
+            div.style.background = 'rgba(0,0,0,0.8)';
+            div.style.color = '#00ff00';
+            div.style.padding = '10px';
+            div.style.borderRadius = '5px';
+            div.style.fontFamily = 'monospace';
+            div.style.fontSize = '12px';
+            div.style.zIndex = '9999';
+            div.style.pointerEvents = 'none';
+            div.innerHTML = 'Esperando inicio...';
+            document.body.appendChild(div);
+            return div;
+        }
+
         function getColorPorDemanda(kg) {
             if (kg < 80) return '#2ecc71';
             if (kg < 120) return '#f39c12';

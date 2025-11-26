@@ -98,13 +98,65 @@ def build_initial_routes(n_nodes: int, demands: List[float], vehicle_count: int,
     return {'routes': routes, 'unassigned': unassigned, 'total_distance': 0.0}
 
 
-def planificar_vrp_api(input_model: VRPInput, timeout_2opt: float = 30.0) -> VRPOutput:
+def nearest_neighbor_vrp(dist_matrix: List[List[float]], demands: List[float], vehicle_count: int, capacity: float) -> Dict:
+    """
+    Implementación de VRP usando heurística de Vecino Más Cercano (Nearest Neighbor).
+    """
+    n_nodes = len(dist_matrix)
+    unvisited = set(range(1, n_nodes)) # 0 es depot
+    routes = []
+    total_distance = 0.0
+    
+    for _ in range(vehicle_count):
+        if not unvisited:
+            break
+            
+        current_route = [0]
+        current_load = 0.0
+        current_node = 0
+        
+        while True:
+            # Buscar vecino más cercano no visitado que quepa
+            best_node = None
+            min_dist = float('inf')
+            
+            for node in unvisited:
+                if current_load + demands[node] <= capacity:
+                    dist = dist_matrix[current_node][node]
+                    if dist < min_dist:
+                        min_dist = dist
+                        best_node = node
+            
+            if best_node is not None:
+                current_route.append(best_node)
+                current_load += demands[best_node]
+                total_distance += min_dist
+                current_node = best_node
+                unvisited.remove(best_node)
+            else:
+                break
+        
+        # Volver al depósito
+        if len(current_route) > 1:
+            total_distance += dist_matrix[current_node][0]
+            current_route.append(0)
+            routes.append(current_route)
+            
+    return {
+        'routes': routes,
+        'total_distance': total_distance,
+        'unassigned': list(unvisited)
+    }
+
+
+def planificar_vrp_api(input_model: VRPInput, aplicar_2opt: bool = True, timeout_2opt: float = 30.0) -> VRPOutput:
     """Wrapper que recibe el Pydantic model y devuelve el Pydantic output.
 
-    Pipeline: Construcción inicial → 2-opt
+    Pipeline: Construcción inicial (NN) → 2-opt (Opcional)
     
     Parámetros:
     - input_model: VRPInput con candidatos y restricciones
+    - aplicar_2opt: Si True, aplica optimización local
     - timeout_2opt: tiempo máximo en segundos para 2-opt
 
     Retorna VRPOutput con rutas optimizadas.
@@ -116,17 +168,21 @@ def planificar_vrp_api(input_model: VRPInput, timeout_2opt: float = 30.0) -> VRP
     capacity = prep['capacity']
     demands = [float(n.demand or 0.0) for n in nodes]
 
-    # Paso 1: Construcción de ruta inicial
-    result = build_initial_routes(len(dist_matrix), demands, vehicle_count, capacity)
+    # Paso 1: Construcción de ruta inicial usando Nearest Neighbor (mejor que secuencial)
+    result = nearest_neighbor_vrp(dist_matrix, demands, vehicle_count, capacity)
     routes = result['routes']
+    distancia_final = result['total_distance']
+    unassigned_indices = result['unassigned']
     
     # Paso 2: Búsqueda local (2-opt)
-    if len(routes) > 0:
+    if aplicar_2opt and len(routes) > 0:
+        print(f"DEBUG: Iniciando 2-opt con {len(routes)} rutas. Distancia pre-opt: {distancia_final}")
         opt_result = optimiza_rutas_2opt(routes, dist_matrix, timeout=timeout_2opt)
         routes = opt_result['routes']
         distancia_final = opt_result['distancia_final']
+        print(f"DEBUG: Fin 2-opt. Distancia post-opt: {distancia_final}")
     else:
-        distancia_final = 0.0
+        print("DEBUG: Saltando 2-opt")
 
     # Conversión a IDs
     def idx_to_id(idx: int):
@@ -134,7 +190,7 @@ def planificar_vrp_api(input_model: VRPInput, timeout_2opt: float = 30.0) -> VRP
         return node.id if node.id is not None else idx
 
     routes_ids = [[idx_to_id(i) for i in r] for r in routes]
-    unassigned_ids = [idx_to_id(i) for i in result['unassigned']]
+    unassigned_ids = [idx_to_id(i) for i in unassigned_indices]
 
     return VRPOutput(routes=routes_ids, unassigned=unassigned_ids, total_distance=distancia_final)
 

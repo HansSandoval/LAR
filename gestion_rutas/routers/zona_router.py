@@ -2,14 +2,12 @@
 routers/zona_router.py
 
 Endpoints CRUD completos para la tabla Zona
+Usando PostgreSQL directo sin SQLAlchemy
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
 
-from ..database.db import get_db
-from ..models.models import Zona
 from ..schemas.schemas import ZonaCreate, ZonaUpdate, ZonaResponse
 from ..service.zona_service import ZonaService
 
@@ -23,43 +21,39 @@ zona_service = ZonaService()
 
 @router.get("/", response_model=List[ZonaResponse], summary="Obtener todas las zonas")
 def get_zonas(
-    db: Session = Depends(get_db),
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
     tipo: Optional[str] = None,
-    nombre: Optional[str] = None,
 ):
     """
-    Obtiene todas las zonas con paginación y filtros opcionales.
+    Obtiene todas las zonas.
     
     **Query Parameters:**
-    - `skip`: Número de registros a saltar (default: 0)
-    - `limit`: Número máximo de registros a retornar (default: 10, máx: 100)
-    - `tipo`: Filtrar por tipo de zona (opcional)
-    - `nombre`: Filtrar por nombre (búsqueda parcial, opcional)
+    - `skip`: Número de registros a saltar
+    - `limit`: Número máximo de registros
+    - `tipo`: Filtrar por tipo (opcional)
     """
-    query = db.query(Zona)
-    
-    if tipo:
-        query = query.filter(Zona.tipo == tipo)
-    if nombre:
-        query = query.filter(Zona.nombre.ilike(f"%{nombre}%"))
-    
-    zonas = query.offset(skip).limit(limit).all()
-    return zonas
+    try:
+        zonas = zona_service.obtener_todas_zonas()
+        return zonas
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/{zona_id}", response_model=ZonaResponse, summary="Obtener zona por ID")
-def get_zona(zona_id: int, db: Session = Depends(get_db)):
+def get_zona(zona_id: int):
     """Obtiene una zona específica por su ID."""
-    zona = db.query(Zona).filter(Zona.id_zona == zona_id).first()
-    if not zona:
-        raise HTTPException(status_code=404, detail=f"Zona con ID {zona_id} no encontrada")
-    return zona
+    try:
+        zona = zona_service.obtener_zona(zona_id)
+        if not zona:
+            raise HTTPException(status_code=404, detail=f"Zona con ID {zona_id} no encontrada")
+        return zona
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/", response_model=ZonaResponse, status_code=201, summary="Crear nueva zona")
-def create_zona(zona: ZonaCreate, db: Session = Depends(get_db)):
+def create_zona(zona: ZonaCreate):
     """
     Crea una nueva zona.
     
@@ -73,44 +67,38 @@ def create_zona(zona: ZonaCreate, db: Session = Depends(get_db)):
     - `coordenadas_limite`: JSON con coordenadas del límite
     - `prioridad`: Nivel de prioridad
     """
-    db_zona = Zona(**zona.dict())
-    db.add(db_zona)
-    db.commit()
-    db.refresh(db_zona)
-    return db_zona
+    try:
+        return zona_service.crear_zona(zona.dict())
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.put("/{zona_id}", response_model=ZonaResponse, summary="Actualizar zona")
-def update_zona(zona_id: int, zona: ZonaUpdate, db: Session = Depends(get_db)):
+def update_zona(zona_id: int, zona: ZonaUpdate):
     """Actualiza una zona existente."""
-    db_zona = db.query(Zona).filter(Zona.id_zona == zona_id).first()
-    if not db_zona:
-        raise HTTPException(status_code=404, detail=f"Zona con ID {zona_id} no encontrada")
-    
-    update_data = zona.dict(exclude_unset=True)
-    for field, value in update_data.items():
-        setattr(db_zona, field, value)
-    
-    db.add(db_zona)
-    db.commit()
-    db.refresh(db_zona)
-    return db_zona
+    try:
+        updated_zona = zona_service.actualizar_zona(zona_id, zona.dict(exclude_unset=True))
+        if not updated_zona:
+            raise HTTPException(status_code=404, detail=f"Zona con ID {zona_id} no encontrada")
+        return updated_zona
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.delete("/{zona_id}", status_code=204, summary="Eliminar zona")
-def delete_zona(zona_id: int, db: Session = Depends(get_db)):
+def delete_zona(zona_id: int):
     """Elimina una zona específica."""
-    db_zona = db.query(Zona).filter(Zona.id_zona == zona_id).first()
-    if not db_zona:
-        raise HTTPException(status_code=404, detail=f"Zona con ID {zona_id} no encontrada")
-    
-    db.delete(db_zona)
-    db.commit()
-    return None
+    try:
+        result = zona_service.eliminar_zona(zona_id)
+        if not result:
+            raise HTTPException(status_code=404, detail=f"Zona con ID {zona_id} no encontrada")
+        return None
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/{zona_id}/estadisticas", summary="Obtener estadísticas de zona")
-def get_zona_estadisticas(zona_id: int, db: Session = Depends(get_db)):
+def get_zona_estadisticas(zona_id: int):
     """
     Obtiene estadísticas de una zona específica.
     
@@ -120,15 +108,18 @@ def get_zona_estadisticas(zona_id: int, db: Session = Depends(get_db)):
     - Número de incidencias
     - Número de predicciones LSTM
     """
-    zona = db.query(Zona).filter(Zona.id_zona == zona_id).first()
-    if not zona:
-        raise HTTPException(status_code=404, detail=f"Zona con ID {zona_id} no encontrada")
-    
-    return {
-        "zona_id": zona_id,
-        "nombre": zona.nombre,
-        "puntos_recoleccion": len(zona.puntos) if hasattr(zona, 'puntos') else 0,
-        "rutas_planificadas": len(zona.rutas) if hasattr(zona, 'rutas') else 0,
-        "incidencias": len(zona.incidencias) if hasattr(zona, 'incidencias') else 0,
-        "predicciones_lstm": len(zona.predicciones) if hasattr(zona, 'predicciones') else 0,
-    }
+    try:
+        zona = zona_service.obtener_zona(zona_id)
+        if not zona:
+            raise HTTPException(status_code=404, detail=f"Zona con ID {zona_id} no encontrada")
+        
+        return {
+            "zona_id": zona_id,
+            "nombre": zona.get("nombre"),
+            "puntos_recoleccion": 0,
+            "rutas_planificadas": 0,
+            "incidencias": 0,
+            "predicciones_lstm": 0,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

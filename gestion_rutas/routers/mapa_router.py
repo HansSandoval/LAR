@@ -1,7 +1,7 @@
+# -*- coding: utf-8 -*-
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
-from ..database.db import SessionLocal
-from ..models.models import PuntoRecoleccion, PuntoDisposicion
+from ..database.db import execute_query
 import json
 
 router = APIRouter(prefix="/mapa", tags=["Visualización"])
@@ -9,85 +9,79 @@ router = APIRouter(prefix="/mapa", tags=["Visualización"])
 @router.get("/data")
 async def obtener_datos_mapa():
     """Obtener datos del mapa en formato JSON"""
-    session = SessionLocal()
-    puntos = session.query(PuntoRecoleccion).all()
-    disposiciones = session.query(PuntoDisposicion).all()
-    session.close()
-    
-    puntos_validos = [p for p in puntos if p.latitud and p.longitud]
-    disposiciones_validas = [d for d in disposiciones if d.latitud and d.longitud]
-    
-    puntos_data = []
-    for p in puntos_validos:
-        puntos_data.append({
-            "id_punto": p.id_punto,
-            "lat": p.latitud,
-            "lng": p.longitud,
-            "nombre": p.nombre or "Sin nombre",
-            "tipo": p.tipo,
-            "estado": p.estado
-        })
-    
-    disposiciones_data = []
-    for d in disposiciones_validas:
-        disposiciones_data.append({
-            "id_punto_disp": d.id_punto_disp,
-            "lat": d.latitud,
-            "lng": d.longitud,
-            "nombre": d.nombre or "Sin nombre",
-            "tipo": d.tipo
-        })
-    
-    return {
-        "puntos_recoleccion": puntos_data,
-        "puntos_disposicion": disposiciones_data,
-        "rutas": [],
-        "resumen": {
-            "total_puntos": len(puntos_data),
-            "total_disposiciones": len(disposiciones_data)
+    try:
+        puntos = execute_query("SELECT * FROM punto_recoleccion WHERE latitud IS NOT NULL AND longitud IS NOT NULL", ())
+        disposiciones = execute_query("SELECT * FROM punto_disposicion WHERE latitud IS NOT NULL AND longitud IS NOT NULL", ())
+        
+        puntos_data = []
+        for p in puntos:
+            puntos_data.append({
+                "id_punto": p.get('id'),
+                "lat": p.get('latitud'),
+                "lng": p.get('longitud'),
+                "nombre": p.get('nombre') or "Sin nombre",
+                "tipo": p.get('tipo_punto'),
+                "estado": p.get('estado_activo')
+            })
+        
+        disposiciones_data = []
+        for d in disposiciones:
+            disposiciones_data.append({
+                "id_punto_disp": d.get('id'),
+                "lat": d.get('latitud'),
+                "lng": d.get('longitud'),
+                "nombre": d.get('nombre') or "Sin nombre",
+                "tipo": d.get('tipo')
+            })
+        
+        return {
+            "puntos_recoleccion": puntos_data,
+            "puntos_disposicion": disposiciones_data,
+            "rutas": [],
+            "resumen": {
+                "total_puntos": len(puntos_data),
+                "total_disposiciones": len(disposiciones_data)
+            }
         }
-    }
+    except Exception as e:
+        return {"error": str(e), "puntos_recoleccion": [], "puntos_disposicion": [], "rutas": [], "resumen": {"total_puntos": 0, "total_disposiciones": 0}}
 
 @router.get("/rutas", response_class=HTMLResponse)
 async def mostrar_mapa_rutas():
-    session = SessionLocal()
-    puntos = session.query(PuntoRecoleccion).all()
-    disposiciones = session.query(PuntoDisposicion).all()
-    puntos_validos = [p for p in puntos if p.latitud and p.longitud]
-    disposiciones_validas = [d for d in disposiciones if d.latitud and d.longitud]
-    
-    if puntos_validos:
-        lats = [p.latitud for p in puntos_validos]
-        lons = [p.longitud for p in puntos_validos]
-        centro_lat = sum(lats) / len(lats)
-        centro_lon = sum(lons) / len(lons)
-    else:
-        centro_lat = -20.2683
-        centro_lon = -70.1475
-    
-    session.close()
-    
-    # Construir JSON de puntos con JSON estándar
-    puntos_data = []
-    for p in puntos_validos:
-        puntos_data.append({
-            "lat": p.latitud,
-            "lng": p.longitud,
-            "nombre": p.nombre or "Sin nombre"
-        })
-    puntos_json = json.dumps(puntos_data)
-    
-    # Construir JSON de disposiciones
-    disposiciones_data = []
-    for d in disposiciones_validas:
-        disposiciones_data.append({
-            "lat": d.latitud,
-            "lng": d.longitud,
-            "nombre": d.nombre or "Sin nombre"
-        })
-    disposiciones_json = json.dumps(disposiciones_data)
-    
-    html_content = f"""<!DOCTYPE html>
+    try:
+        puntos = execute_query("SELECT * FROM punto_recoleccion WHERE latitud IS NOT NULL AND longitud IS NOT NULL", ())
+        disposiciones = execute_query("SELECT * FROM punto_disposicion WHERE latitud IS NOT NULL AND longitud IS NOT NULL", ())
+        
+        if puntos:
+            lats = [p.get('latitud') for p in puntos]
+            lons = [p.get('longitud') for p in puntos]
+            centro_lat = sum(lats) / len(lats)
+            centro_lon = sum(lons) / len(lons)
+        else:
+            centro_lat = -20.2683
+            centro_lon = -70.1475
+        
+        # Construir JSON de puntos con JSON estándar
+        puntos_data = []
+        for p in puntos:
+            puntos_data.append({
+                "lat": p.get('latitud'),
+                "lng": p.get('longitud'),
+                "nombre": p.get('nombre') or "Sin nombre"
+            })
+        puntos_json = json.dumps(puntos_data, ensure_ascii=False)
+        
+        # Construir JSON de disposiciones
+        disposiciones_data = []
+        for d in disposiciones:
+            disposiciones_data.append({
+                "lat": d.get('latitud'),
+                "lng": d.get('longitud'),
+                "nombre": d.get('nombre') or "Sin nombre"
+            })
+        disposiciones_json = json.dumps(disposiciones_data, ensure_ascii=False)
+        
+        html_content = f"""<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8">
@@ -186,5 +180,7 @@ async def mostrar_mapa_rutas():
     </script>
 </body>
 </html>"""
-    
-    return html_content
+        
+        return html_content
+    except Exception as e:
+        return f"<h1>Error cargando mapa</h1><p>{str(e)}</p>"

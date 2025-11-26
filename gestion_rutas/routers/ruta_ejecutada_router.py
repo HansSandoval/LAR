@@ -1,18 +1,18 @@
 """
-Router para gestionar operaciones CRUD en la tabla RutaEjecutada.
+Router para gestionar operaciones CRUD en la tabla RutaEjecutada - PostgreSQL Directo
 Endpoints para crear, listar, actualizar y eliminar registros de rutas ejecutadas.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException, Query
 from datetime import date
-from ..database.db import get_db
-from ..models.models import RutaEjecutada, RutaPlanificada, Camion, PuntoRecoleccion
 from ..schemas.schemas import (
     RutaEjecutadaCreate,
     RutaEjecutadaUpdate,
     RutaEjecutadaResponse
 )
+from ..service.ruta_ejecutada_service import RutaEjecutadaService
+from ..service.ruta_planificada_service import RutaPlanificadaService
+from ..service.camion_service import CamionService
 
 router = APIRouter(prefix="/rutas-ejecutadas", tags=["Rutas Ejecutadas"])
 

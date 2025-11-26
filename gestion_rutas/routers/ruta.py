@@ -1,8 +1,6 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException
 from ..vrp.schemas import VRPInput, VRPOutput
 from ..vrp.planificador import planificar_vrp_api
-from ..database.db import get_db
 from ..service.ruta_service import RutaService
 
 router = APIRouter(
@@ -66,7 +64,7 @@ def planificar_rutas(input_vrp: VRPInput, aplicar_optimizacion: bool = True):
 
 
 @router.get("/{ruta_id}/con-calles", summary="Obtener ruta con calles y geometría")
-def obtener_ruta_con_calles(ruta_id: int, db: Session = Depends(get_db)):
+def obtener_ruta_con_calles(ruta_id: int):
     """
     Obtener ruta con información detallada de calles usando OSRM.
     
@@ -83,5 +81,8 @@ def obtener_ruta_con_calles(ruta_id: int, db: Session = Depends(get_db)):
     - `orden_optimizado`: Orden de visita optimizado
     - `puntos`: Lista de puntos con coordenadas y direcciones
     """
-    ruta_data = RutaService.calcular_ruta_con_calles(db, ruta_id)
-    return ruta_data
+    try:
+        ruta_data = RutaService.calcular_ruta_con_calles(ruta_id)
+        return ruta_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener ruta: {str(e)}")

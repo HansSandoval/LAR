@@ -132,6 +132,7 @@ def optimiza_rutas_2opt(routes: List[List[int]], dist_matrix: List[List[float]],
     
     # Calcular distancia final
     distancia_final = sum(calcula_distancia_ruta(r, dist_matrix) for r in rutas_optimizadas)
+    print(f"DEBUG: optimiza_rutas_2opt calc final: {distancia_final}. Rutas: {len(rutas_optimizadas)}")
     
     tiempo_total = time.time() - tiempo_inicio
     

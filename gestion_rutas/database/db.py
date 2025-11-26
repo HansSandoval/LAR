@@ -1,11 +1,19 @@
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from contextlib import contextmanager
 from dotenv import load_dotenv
-from ..models.models import Base
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Cargar variables de entorno
 load_dotenv()
+
+# Dummy Base class for backward compatibility with old ORM models
+# (not used anymore - we use PostgreSQL direct queries now)
+class Base:
+    pass
 
 # PostgreSQL 17 - Configuración para Iquique
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
@@ -14,36 +22,85 @@ POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
 POSTGRES_DB = os.getenv("POSTGRES_DB", "gestion_rutas")
 
-# URL de conexión PostgreSQL
-DATABASE_URL = f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}?client_encoding=utf8"
+print(f"[DB] Usando PostgreSQL directo: {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}")
 
-print(f"[DB] Usando PostgreSQL: {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}")
 
-# Crear engine de PostgreSQL con manejo de encoding UTF-8
-engine = create_engine(
-    DATABASE_URL, 
-    echo=False, 
-    pool_pre_ping=True, 
-    pool_size=10,
-    connect_args={'application_name': 'gestion_rutas', 'options': '-c client_encoding=utf8'}
-)
+class PostgresDB:
+    """Conexión directa a PostgreSQL sin SQLAlchemy"""
+    
+    def __init__(self):
+        self.host = POSTGRES_HOST
+        self.port = POSTGRES_PORT
+        self.database = POSTGRES_DB
+        self.user = POSTGRES_USER
+        self.password = POSTGRES_PASSWORD
+    
+    def get_connection(self):
+        """Obtiene conexión a PostgreSQL"""
+        try:
+            conn = psycopg2.connect(
+                host=self.host,
+                port=self.port,
+                database=self.database,
+                user=self.user,
+                password=self.password,
+                client_encoding='utf8'
+            )
+            return conn
+        except psycopg2.Error as e:
+            logger.error(f"Error conectando a PostgreSQL: {e}")
+            raise
+    
+    @contextmanager
+    def get_cursor(self, commit=True):
+        """Context manager para cursor con auto-commit/rollback"""
+        conn = self.get_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        try:
+            yield cursor
+            if commit:
+                conn.commit()
+        except Exception as e:
+            conn.rollback()
+            logger.error(f"Error en transacción: {e}")
+            raise
+        finally:
+            cursor.close()
+            conn.close()
 
-# Session factory
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Dependencia para inyectar sesiones en FastAPI
-def get_db():
-    """Obtener sesión de base de datos para usar en endpoints"""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# Instancia global
+db = PostgresDB()
 
-def init_db():
-    """Crear todas las tablas en la base de datos"""
-    Base.metadata.create_all(bind=engine)
 
-def drop_db():
-    """Eliminar todas las tablas de la base de datos"""
-    Base.metadata.drop_all(bind=engine)
+def execute_query(query, params=None, fetch=True):
+    """Ejecutar query SELECT - retorna lista de dicts"""
+    with db.get_cursor(commit=False) as cursor:
+        cursor.execute(query, params or ())
+        if fetch:
+            resultados = cursor.fetchall()
+            return [dict(row) for row in resultados]
+        return None
+
+
+def execute_query_one(query, params=None):
+    """Ejecutar query SELECT - retorna un dict o None"""
+    with db.get_cursor(commit=False) as cursor:
+        cursor.execute(query, params or ())
+        resultado = cursor.fetchone()
+        return dict(resultado) if resultado else None
+
+
+def execute_insert_update_delete(query, params=None):
+    """Ejecutar INSERT/UPDATE/DELETE - retorna filas afectadas"""
+    with db.get_cursor() as cursor:
+        cursor.execute(query, params or ())
+        return cursor.rowcount
+
+
+def execute_insert_returning(query, params=None):
+    """Ejecutar INSERT con RETURNING - retorna el registro insertado"""
+    with db.get_cursor() as cursor:
+        cursor.execute(query, params or ())
+        resultado = cursor.fetchone()
+        return dict(resultado) if resultado else None

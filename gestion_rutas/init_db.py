@@ -5,16 +5,20 @@ Crea todas las tablas y datos de prueba
 
 import logging
 from datetime import date, datetime, time
-from .database.db import SessionLocal, init_db
-from .models.models import (
-    Zona, PuntoRecoleccion, Camion, Turno, 
-    RutaPlanificada, RutaEjecutada, Incidencia, 
-    PrediccionDemanda, Usuario, PeriodoTemporal
-)
+# DEPRECATED: Este archivo usa el patrón antiguo de SQLAlchemy
+# Usar scripts específicos de PostgreSQL para migraciones
+# from .database.db import SessionLocal, init_db
+# from .models.models import (
+#     Zona, PuntoRecoleccion, Camion, Turno, 
+#     RutaPlanificada, RutaEjecutada, Incidencia, 
+#     PrediccionDemanda, Usuario, PeriodoTemporal
+# )
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Deprecated: Este módulo ya no se utiliza con PostgreSQL directo
 
 
 def crear_datos_prueba():

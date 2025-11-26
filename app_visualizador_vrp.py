@@ -22,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).parent / "gestion_rutas"))
 from vrp import VRPInput, NodeCoordinate, planificar_vrp_api
 from vrp.optimizacion import calcula_distancia_ruta
 from vrp.planificador import validate_and_prepare, nearest_neighbor_vrp
+from vrp.inference_ppo import planificar_con_ppo
 
 
 # Configuración de página
@@ -170,17 +171,51 @@ result_nn = nearest_neighbor_vrp(dist_matrix, demands, vehículos, capacidad)
 routes_nn = result_nn['routes']
 distancia_nn = result_nn['total_distance']
 
-# Solución NN+2opt
-salida = planificar_vrp_api(entrada, aplicar_2opt=aplicar_2opt, timeout_2opt=timeout_2opt)
-
 # Convertir IDs de salida a índices para gráficas
 def ids_a_indices(routes_ids):
     """Convierte rutas con IDs a índices."""
-    id_to_idx = {n.id if n.id else i: i for i, n in enumerate(nodos)}
-    return [[id_to_idx[id_] for id_ in ruta] for ruta in routes_ids]
+    # Crear mapa robusto para IDs (str y int)
+    id_to_idx = {}
+    for i, n in enumerate(nodos):
+        id_val = n.id if n.id is not None else i
+        id_to_idx[id_val] = i
+        id_to_idx[str(id_val)] = i # Asegurar versión string
+        
+    rutas_indices = []
+    for ruta in routes_ids:
+        ruta_idx = []
+        for id_ in ruta:
+            if id_ in id_to_idx:
+                ruta_idx.append(id_to_idx[id_])
+            elif str(id_) in id_to_idx:
+                ruta_idx.append(id_to_idx[str(id_)])
+        rutas_indices.append(ruta_idx)
+    return rutas_indices
 
-routes_final = ids_a_indices(salida.routes)
-distancia_final = salida.total_distance
+# Selección de algoritmo
+st.sidebar.markdown("---")
+algoritmo = st.sidebar.radio("🧠 Algoritmo de Planificación:", ["Heurística (NN + 2-opt)", "Agente IA (PPO - RL)"])
+
+if algoritmo == "Agente IA (PPO - RL)":
+    with st.spinner("🤖 El Agente IA está explorando el entorno..."):
+        rutas_ppo_ids = planificar_con_ppo(nodos, vehículos, capacidad)
+    
+    if rutas_ppo_ids:
+        print(f"DEBUG: Rutas IA (IDs): {rutas_ppo_ids}")
+        routes_final = ids_a_indices(rutas_ppo_ids)
+        print(f"DEBUG: Rutas IA (Indices): {routes_final}")
+        # Calcular distancia usando la matriz de distancias existente
+        distancia_final = sum(calcula_distancia_ruta(r, dist_matrix) for r in routes_final)
+        st.sidebar.success("✅ Ruta generada por IA")
+    else:
+        st.error("⚠️ No se pudo cargar el modelo PPO o falló la inferencia.")
+        routes_final = []
+        distancia_final = 0.0
+else:
+    # Solución NN+2opt
+    salida = planificar_vrp_api(entrada, aplicar_2opt=aplicar_2opt, timeout_2opt=timeout_2opt)
+    routes_final = ids_a_indices(salida.routes)
+    distancia_final = salida.total_distance
 
 # ============================================================================
 # MÉTRICAS PRINCIPALES
@@ -202,7 +237,7 @@ with col4:
     st.metric("📊 Demanda Total", f"{demanda_total} kg")
 
 # ============================================================================
-# COMPARATIVA NN vs NN+2opt
+# COMPARATIVA
 # ============================================================================
 
 st.markdown("---")
@@ -213,7 +248,17 @@ with col_comparison_l:
     st.metric("Distancia", f"{distancia_nn:.2f} km", delta=f"(Inicial)")
 
 with col_comparison_r:
-    if aplicar_2opt:
+    if algoritmo == "Agente IA (PPO - RL)":
+        st.subheader("🤖 Agente IA (PPO)")
+        mejora = distancia_nn - distancia_final
+        mejora_pct = (mejora / distancia_nn * 100) if distancia_nn > 0 else 0
+        st.metric(
+            "Distancia", 
+            f"{distancia_final:.2f} km",
+            delta=f"-{mejora:.2f} km ({mejora_pct:.1f}%)",
+            delta_color="inverse"
+        )
+    elif aplicar_2opt:
         mejora = distancia_nn - distancia_final
         mejora_pct = (mejora / distancia_nn * 100) if distancia_nn > 0 else 0
         st.subheader("✨ NN + 2-opt (Optimizado)")

@@ -2,11 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from .routers import (
-    ruta, lstm_router, mapa_router, mapa_predicciones_router, mas_router,
+    ruta, mapa_router,
     zona_router, punto_router, camion_router, ruta_planificada_router,
-    turno_router, ruta_ejecutada_router, incidencia_router,
-    prediccion_demanda_router, usuario_router, punto_disposicion_router,
-    periodo_temporal_router
+    turno_router, usuario_router, punto_disposicion_router,
+    lstm_router, mas_router
 )
 import logging
 import os
@@ -37,17 +36,23 @@ app.include_router(punto_router.router)
 app.include_router(camion_router.router)
 app.include_router(ruta_planificada_router.router)
 app.include_router(turno_router.router)
-app.include_router(ruta_ejecutada_router.router)
-app.include_router(incidencia_router.router)
-app.include_router(prediccion_demanda_router.router)
+# app.include_router(ruta_ejecutada_router.router)  # Pendiente: Conversión a PostgreSQL
+# app.include_router(incidencia_router.router)  # Pendiente: Conversión a PostgreSQL
 app.include_router(usuario_router.router)
 app.include_router(punto_disposicion_router.router)
-app.include_router(periodo_temporal_router.router)
 app.include_router(ruta.router)
-app.include_router(lstm_router.router)
 app.include_router(mapa_router.router)
-app.include_router(mapa_predicciones_router.router)
+app.include_router(lstm_router.router)
 app.include_router(mas_router.router)
+
+# Nota: Los siguientes routers están pendientes de conversión a PostgreSQL directo:
+# app.include_router(lstm_router.router)
+# app.include_router(mapa_predicciones_router.router)
+# app.include_router(mas_router.router)
+# app.include_router(ruta_ejecutada_router.router)
+# app.include_router(incidencia_router.router)
+# app.include_router(prediccion_demanda_router.router)
+# app.include_router(periodo_temporal_router.router)
 
 # Montar archivos estáticos
 static_dir = Path(__file__).parent.parent / "static"

@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 import logging
 import requests
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -23,20 +24,47 @@ logger = logging.getLogger(__name__)
 class OSRMService:
     """Servicio OSRM simplificado integrado para evitar problemas de imports"""
     
-    OSRM_URL = "http://router.project-osrm.org/route/v1/driving"
+    OSRM_URL = "https://routing.openstreetmap.de/routed-car/route/v1/driving"
     _route_cache: Dict[str, Dict] = {}
+    _osrm_available = True
+    _consecutive_failures = 0
+    MAX_FAILURES = 50  # Aumentado para insistir en rutas reales
     
+    @staticmethod
+    def _generar_ruta_lineal(lat1: float, lon1: float, lat2: float, lon2: float) -> Dict:
+        """Genera una ruta lineal de respaldo (Haversine)"""
+        # Calcular distancia Haversine
+        R = 6371.0
+        lat1_rad, lon1_rad = np.radians(lat1), np.radians(lon1)
+        lat2_rad, lon2_rad = np.radians(lat2), np.radians(lon2)
+        dlat, dlon = lat2_rad - lat1_rad, lon2_rad - lon1_rad
+        a = np.sin(dlat / 2)**2 + np.cos(lat1_rad) * np.cos(lat2_rad) * np.sin(dlon / 2)**2
+        c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
+        distancia_km = R * c
+        
+        return {
+            "geometry": [[lat1, lon1], [lat2, lon2]], # Línea recta
+            "distancia_km": round(distancia_km, 3),
+            "duracion_minutos": round(distancia_km * 2, 2) # Estimación: 30km/h = 0.5km/min -> 2 min/km
+        }
+
     @staticmethod
     def obtener_ruta(lat1: float, lon1: float, lat2: float, lon2: float) -> Optional[Dict]:
         """
         Obtener ruta real por calles entre dos puntos usando OSRM.
-        
-        Returns:
-            Dict con:
-                - geometry: Lista de coordenadas [[lat, lon], ...] (convertidas para Leaflet)
-                - distancia_km: Distancia real en kilómetros
-                - duracion_minutos: Tiempo estimado en minutos
         """
+        # Optimización: Si los puntos son casi idénticos, retornar distancia 0 sin llamar a API
+        if abs(lat1 - lat2) < 0.0001 and abs(lon1 - lon2) < 0.0001:
+            return {
+                "geometry": [[lat1, lon1], [lat2, lon2]],
+                "distancia_km": 0.0,
+                "duracion_minutos": 0.0
+            }
+
+        # Si OSRM falló demasiadas veces, usar fallback lineal
+        if not OSRMService._osrm_available:
+            return OSRMService._generar_ruta_lineal(lat1, lon1, lat2, lon2)
+
         try:
             coords = f"{lon1},{lat1};{lon2},{lat2}"
             cache_key = f"{lat1:.6f},{lon1:.6f}-{lat2:.6f},{lon2:.6f}"
@@ -50,32 +78,55 @@ class OSRMService:
                 "overview": "full"
             }
             
+            # Añadir User-Agent para evitar bloqueos
+            headers = {
+                'User-Agent': 'LAR-VRP-Simulation/1.0 (Educational Project)'
+            }
+            
+            logger.debug(f"🌐 Consultando OSRM: {coords}")
+            
+            # ⚠️ DELAY PARA EVITAR RATE LIMITING (REDUCIDO)
+            time.sleep(0.1) 
+            
+            # Timeout aumentado para asegurar respuesta de OSRM
             response = requests.get(
                 f"{OSRMService.OSRM_URL}/{coords}", 
                 params=params, 
-                timeout=5
+                headers=headers,
+                timeout=5  # Aumentado a 5s
             )
-            data = response.json()
             
-            if data.get("code") == "Ok" and data.get("routes"):
-                ruta = data["routes"][0]
-                # Convertir geometría de [lon, lat] a [lat, lon] para Leaflet
-                geometry_leaflet = [[coord[1], coord[0]] for coord in ruta["geometry"]["coordinates"]]
-                
-                result = {
-                    "geometry": geometry_leaflet,
-                    "distancia_km": round(ruta["distance"] / 1000, 2),
-                    "duracion_minutos": round(ruta["duration"] / 60, 2)
-                }
-                
-                # Guardar en caché
-                OSRMService._route_cache[cache_key] = result
-                return result
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("code") == "Ok" and data.get("routes"):
+                    ruta = data["routes"][0]
+                    # Convertir geometría de [lon, lat] a [lat, lon] para Leaflet
+                    geometry_leaflet = [[coord[1], coord[0]] for coord in ruta["geometry"]["coordinates"]]
+                    
+                    result = {
+                        "geometry": geometry_leaflet,
+                        "distancia_km": round(ruta["distance"] / 1000, 2),
+                        "duracion_minutos": round(ruta["duration"] / 60, 2)
+                    }
+                    
+                    # Guardar en caché y resetear contador de fallos
+                    OSRMService._route_cache[cache_key] = result
+                    OSRMService._consecutive_failures = 0
+                    return result
             
-            return None
+            # Si falla la respuesta pero no es excepción, retornar lineal
+            return OSRMService._generar_ruta_lineal(lat1, lon1, lat2, lon2)
+            
         except Exception as e:
-            logger.warning(f"Error OSRM: {e}")
-            return None
+            OSRMService._consecutive_failures += 1
+            logger.warning(f"⚠️ Error OSRM ({OSRMService._consecutive_failures}/{OSRMService.MAX_FAILURES}): {str(e)[:100]}...")
+            
+            if OSRMService._consecutive_failures >= OSRMService.MAX_FAILURES:
+                logger.error("❌ OSRM desactivado por múltiples fallos. Usando distancia Haversine.")
+                OSRMService._osrm_available = False
+            
+            # Retornar ruta lineal en caso de error
+            return OSRMService._generar_ruta_lineal(lat1, lon1, lat2, lon2)
 
 
 @dataclass
@@ -105,7 +156,8 @@ class Camion:
     longitud: float = -70.1703
     tiempo_actual: float = 0.0
     ruta_actual: List[int] = field(default_factory=list)  # IDs de clientes a visitar
-    ruta_geometria: List[List[float]] = field(default_factory=list)  # Geometría real de la ruta [lon, lat]
+    ruta_geometria: List[List[float]] = field(default_factory=list)  # Geometría real ACUMULADA de la ruta
+    geometria_actual: List[List[float]] = field(default_factory=list)  # Geometría del ÚLTIMO tramo (para animación)
     distancia_recorrida_km: float = 0.0
     activo: bool = True
     
@@ -141,8 +193,9 @@ class DVRPTWEnv(gym.Env):
         max_steps: int = 500,
         penalizacion_distancia: float = 0.1,
         recompensa_servicio: float = 10.0,
-        usar_routing_real: bool = True,  # NUEVO: Usar OSRM para rutas reales
-        seed: int = None
+        usar_routing_real: bool = True,
+        seed: int = None,
+        modo_marl: bool = False
     ):
         """
         Args:
@@ -155,6 +208,7 @@ class DVRPTWEnv(gym.Env):
             recompensa_servicio: Recompensa por cliente servido
             usar_routing_real: Si True, usa OSRM para calcular rutas por calles reales
             seed: Semilla para reproducibilidad
+            modo_marl: Si True, usa espacios de observación/acción fijos para entrenamiento RL
         """
         super().__init__()
         
@@ -168,7 +222,11 @@ class DVRPTWEnv(gym.Env):
         self.max_steps = max_steps
         self.penalizacion_distancia = penalizacion_distancia
         self.recompensa_servicio = recompensa_servicio
-        self.usar_routing_real = usar_routing_real  # NUEVO
+        self.usar_routing_real = usar_routing_real
+        self.modo_marl = modo_marl
+        
+        # Configuración MARL
+        self.max_clientes_visibles = 10  # K vecinos más cercanos
         
         # Caché para rutas OSRM ya calculadas (mejora rendimiento)
         self._routing_cache: Dict[Tuple[float, float, float, float], Dict] = {}
@@ -237,32 +295,48 @@ class DVRPTWEnv(gym.Env):
     def _setup_spaces(self):
         """
         Define espacios de observación y acción
-        
-        Observación (por camión):
-        - Posición actual (lat, lon)
-        - Carga actual / capacidad
-        - Distancia y demanda a cada cliente no servido
-        - Prioridad de cada cliente
-        
-        Acción:
-        - ID del próximo cliente a visitar (0 = volver al depósito)
         """
-        # Observación: [camion_lat, camion_lon, carga_porcentaje, 
-        #               cliente1_dist, cliente1_demanda, cliente1_prioridad, cliente1_servido, ...]
-        obs_size = 3 + (self.num_clientes * 4)  # 3 datos camión + 4 datos por cliente
-        
-        self.observation_space = spaces.Box(
-            low=-np.inf,
-            high=np.inf,
-            shape=(obs_size,),
-            dtype=np.float32
-        )
-        
-        # Acción: índice del cliente a visitar (0 = depot, 1-N = clientes)
-        self.action_space = spaces.Discrete(self.num_clientes + 1)
+        if self.modo_marl:
+            # MODO MARL: Espacios fijos y normalizados
+            # Observación: 
+            # - Camión (3): [lat_norm, lon_norm, carga_norm]
+            # - K Clientes (K*4): [dist_norm, demanda_norm, prioridad_norm, servido]
+            obs_size = 3 + (self.max_clientes_visibles * 4)
+            
+            self.observation_space = spaces.Box(
+                low=0.0,
+                high=1.0,
+                shape=(obs_size,),
+                dtype=np.float32
+            )
+            
+            # Acción: Elegir entre los K clientes más cercanos o Depot
+            # 0 = Depot
+            # 1..K = Cliente k-ésimo más cercano
+            self.action_space = spaces.Discrete(self.max_clientes_visibles + 1)
+            
+        else:
+            # MODO LEGACY (Compatible con mas_cooperativo.py)
+            # Observación variable (aunque definida como Box grande)
+            obs_size = 3 + (self.num_clientes * 4)
+            
+            self.observation_space = spaces.Box(
+                low=-np.inf,
+                high=np.inf,
+                shape=(obs_size,),
+                dtype=np.float32
+            )
+            
+            # Acción: ID absoluto del cliente
+            self.action_space = spaces.Discrete(self.num_clientes + 1)
     
-    def reset(self):
+    def reset(self, seed=None, options=None):
         """Reinicia el entorno para un nuevo episodio"""
+        super().reset(seed=seed)
+        
+        if seed is not None:
+            np.random.seed(seed)
+            
         # Reiniciar clientes
         for cliente in self.clientes:
             cliente.servido = False
@@ -275,169 +349,343 @@ class DVRPTWEnv(gym.Env):
         self.total_reward = 0.0
         self.clientes_servidos = 0
         
-        return self._get_observation()
+        return self._get_observation(), {}
     
     def _get_observation(self) -> np.ndarray:
         """
-        Obtiene observación del estado actual
-        
-        Para simplificar, retorna observación del primer camión activo.
-        En implementación completa, cada agente tendría su observación.
+        Obtiene observación del estado actual.
+        Soporta modo MARL (K vecinos) y modo Legacy (todos los clientes).
         """
-        # Buscar primer camión activo
+        # Buscar primer camión activo (para compatibilidad single-agent)
         camion = next((c for c in self.camiones if c.activo), self.camiones[0])
         
-        obs = [
-            camion.latitud,
-            camion.longitud,
-            camion.porcentaje_carga / 100.0  # Normalizado
-        ]
-        
-        # Información de cada cliente
-        for cliente in self.clientes:
-            distancia = self._calcular_distancia(
-                camion.latitud, camion.longitud,
-                cliente.latitud, cliente.longitud
-            )
-            obs.extend([
-                distancia / 10.0,  # Normalizar (asumiendo max 10km)
-                cliente.demanda_kg / self.capacidad_camion_kg,  # Normalizar
-                cliente.prioridad / 3.0,  # Normalizar (max prioridad = 3)
-                1.0 if cliente.servido else 0.0
-            ])
-        
-        return np.array(obs, dtype=np.float32)
-    
-    def step(self, action: int) -> Tuple[np.ndarray, float, bool, dict]:
-        """
-        Ejecuta una acción en el entorno
-        
-        Args:
-            action: ID del cliente a visitar (0 = depot)
-        
-        Returns:
-            observation, reward, done, info
-        """
-        self.current_step += 1
-        reward = 0.0
-        info = {'evento': None}
-        
-        # Buscar camión activo (simplificado: usar primer activo)
-        camion = next((c for c in self.camiones if c.activo), None)
-        
-        if camion is None:
-            # No hay camiones activos
-            return self._get_observation(), 0.0, True, {'evento': 'sin_camiones_activos'}
-        
-        # Acción 0: Volver al depósito
-        if action == 0:
-            distancia = self._calcular_distancia(
-                camion.latitud, camion.longitud,
-                self.depot_lat, self.depot_lon
-            )
+        if self.modo_marl:
+            # --- MODO MARL: K VECINOS MÁS CERCANOS ---
             
-                # Obtener geometría de ruta si está disponible
-            if self.usar_routing_real:
-                logger.info(f"🗺️ Intentando obtener ruta OSRM de ({camion.latitud}, {camion.longitud}) al depot ({self.depot_lat}, {self.depot_lon})")
-                ruta_info = self._obtener_ruta_completa(
-                    camion.latitud, camion.longitud,
-                    self.depot_lat, self.depot_lon
-                )
-                if ruta_info and 'geometry' in ruta_info:
-                    # ACUMULAR geometría en lugar de sobrescribir
-                    if not hasattr(camion, 'ruta_geometria') or not camion.ruta_geometria:
-                        camion.ruta_geometria = []
-                    camion.ruta_geometria.extend(ruta_info['geometry'])
-                    logger.info(f"✅ Geometría OSRM obtenida: {len(ruta_info['geometry'])} puntos (total acumulado: {len(camion.ruta_geometria)})")
-                else:
-                    logger.warning(f"⚠️ OSRM falló para ruta al depot")
+            # 1. Estado del camión (Normalizado aprox)
+            # Normalizamos lat/lon relativo al depot para que sea agnóstico a la ubicación global
+            # Usamos tanh para asegurar rango [-1, 1] o similar, pero el espacio dice [0, 1]
+            # Ajuste: Usar coordenadas relativas normalizadas + 0.5 para centrar en 0.5
+            lat_rel = (camion.latitud - self.depot_lat) * 10.0 # Escalar
+            lon_rel = (camion.longitud - self.depot_lon) * 10.0
             
-            camion.latitud = self.depot_lat
-            camion.longitud = self.depot_lon
-            camion.distancia_recorrida_km += distancia
-            camion.carga_actual_kg = 0.0  # Descargar
+            # Clampear entre 0 y 1 (0.5 es el centro/depot)
+            lat_norm = np.clip(lat_rel + 0.5, 0.0, 1.0)
+            lon_norm = np.clip(lon_rel + 0.5, 0.0, 1.0)
             
-            # Limpiar geometría acumulada para el próximo ciclo
-            camion.ruta_geometria = []
+            obs = [lat_norm, lon_norm, camion.porcentaje_carga / 100.0]
             
-            reward -= distancia * self.penalizacion_distancia
-            info['evento'] = 'retorno_depot'
-        
-        # Acción 1-N: Visitar cliente
-        elif 1 <= action <= self.num_clientes:
-            cliente_id = action - 1
-            cliente = self.clientes[cliente_id]
-            
-            # Validar si el cliente ya fue servido
-            if cliente.servido:
-                reward -= 5.0  # Penalización por intentar visitar cliente ya servido
-                info['evento'] = 'cliente_ya_servido'
-            
-            # Validar si el camión tiene capacidad
-            elif cliente.demanda_kg > camion.capacidad_disponible:
-                reward -= 3.0  # Penalización por falta de capacidad
-                info['evento'] = 'sin_capacidad'
-            
-            # Servir al cliente
-            else:
-                distancia = self._calcular_distancia(
-                    camion.latitud, camion.longitud,
-                    cliente.latitud, cliente.longitud
-                )
-                
-                # Obtener geometría de ruta real si está disponible
-                if self.usar_routing_real:
-                    ruta_info = self._obtener_ruta_completa(
+            # 2. Calcular distancias a TODOS los clientes no servidos
+            clientes_info = []
+            for cliente in self.clientes:
+                if not cliente.servido:
+                    dist = self._calcular_distancia_haversine(
                         camion.latitud, camion.longitud,
                         cliente.latitud, cliente.longitud
                     )
-                    if ruta_info and 'geometry' in ruta_info:
-                        # ACUMULAR geometría en lugar de sobrescribir
-                        if not hasattr(camion, 'ruta_geometria') or not camion.ruta_geometria:
-                            camion.ruta_geometria = []
-                        camion.ruta_geometria.extend(ruta_info['geometry'])
-                        logger.debug(f"Ruta a cliente {cliente_id}: {len(ruta_info['geometry'])} puntos (total: {len(camion.ruta_geometria)})")
+                    clientes_info.append({
+                        'dist': dist,
+                        'cliente': cliente
+                    })
+            
+            # 3. Ordenar por distancia y tomar los K mejores
+            clientes_info.sort(key=lambda x: x['dist'])
+            vecinos = clientes_info[:self.max_clientes_visibles]
+            
+            # 4. Rellenar observación
+            for info in vecinos:
+                c = info['cliente']
+                obs.extend([
+                    info['dist'] / 10.0,  # Distancia norm
+                    c.demanda_kg / self.capacidad_camion_kg, # Demanda norm
+                    c.prioridad / 3.0, # Prioridad norm
+                    0.0 # No servido (siempre 0 porque filtramos los servidos)
+                ])
+            
+            # 5. Padding (Rellenar con ceros si hay menos de K clientes)
+            faltantes = self.max_clientes_visibles - len(vecinos)
+            for _ in range(faltantes):
+                obs.extend([0.0, 0.0, 0.0, 1.0]) # 1.0 en 'servido' indica slot vacío/dummy
                 
-                # Mover camión
-                camion.latitud = cliente.latitud
-                camion.longitud = cliente.longitud
-                camion.distancia_recorrida_km += distancia
-                
-                # VALIDACIÓN: Verificar que las coordenadas sean válidas (Iquique)
-                if not (-20.35 <= camion.latitud <= -20.15):
-                    logger.error(f"⚠️ LATITUD FUERA DE RANGO: {camion.latitud} (cliente {cliente.nombre})")
-                if not (-70.25 <= camion.longitud <= -70.05):
-                    logger.error(f"⚠️ LONGITUD FUERA DE RANGO: {camion.longitud} (cliente {cliente.nombre})")
-                
-                logger.info(f"🚛 Camión {camion.id} → Cliente '{cliente.nombre}' en ({cliente.latitud:.6f}, {cliente.longitud:.6f}), distancia: {distancia:.2f} km")
-                
-                # Recolectar residuos
-                camion.carga_actual_kg += cliente.demanda_kg
-                cliente.servido = True
-                self.clientes_servidos += 1
-                
-                # Calcular recompensa
-                recompensa_base = self.recompensa_servicio * cliente.prioridad
-                penalizacion_dist = distancia * self.penalizacion_distancia
-                reward = recompensa_base - penalizacion_dist
-                
-                info['evento'] = 'cliente_servido'
-                info['cliente_id'] = cliente.id
-                info['demanda_recolectada'] = cliente.demanda_kg
+            return np.array(obs, dtype=np.float32)
+            
+        else:
+            # --- MODO LEGACY: TODOS LOS CLIENTES ---
+            obs = [
+                camion.latitud,
+                camion.longitud,
+                camion.porcentaje_carga / 100.0
+            ]
+            
+            for cliente in self.clientes:
+                distancia = self._calcular_distancia_haversine(
+                    camion.latitud, camion.longitud,
+                    cliente.latitud, cliente.longitud
+                )
+                obs.extend([
+                    distancia / 10.0,
+                    cliente.demanda_kg / self.capacidad_camion_kg,
+                    cliente.prioridad / 3.0,
+                    1.0 if cliente.servido else 0.0
+                ])
+            
+            return np.array(obs, dtype=np.float32)
+    
+    def step(self, action) -> Tuple[np.ndarray, float, bool, dict]:
+        """
+        Ejecuta un paso de simulación.
+        Soporta lista de acciones (Multi-Agent) o entero (Single-Agent).
+        """
+        self.current_step += 1
+        total_reward = 0.0
+        info = {'eventos': [], 'detalles_camiones': []}
         
-        # Verificar si el episodio terminó
-        done = (
-            self.current_step >= self.max_steps or
+        # Normalizar acción a lista
+        acciones_lista = []
+        
+        # Si es un array de numpy de dimensión 0 (escalar), convertir a int
+        if isinstance(action, np.ndarray) and action.ndim == 0:
+            action = int(action)
+            
+        if isinstance(action, list):
+            acciones_lista = action
+        elif isinstance(action, np.ndarray) and action.ndim > 0:
+            acciones_lista = action.tolist()
+        else:
+            # Single agent: aplicar al primer camión activo
+            acciones_lista = [0] * self.num_camiones
+            camion_activo = next((c for c in self.camiones if c.activo), None)
+            if camion_activo:
+                acciones_lista[camion_activo.id] = int(action)
+        
+        logger.info(f"👣 STEP {self.current_step} | Acciones: {acciones_lista}")
+        
+        # Ejecutar acciones para cada camión
+        for i, accion in enumerate(acciones_lista):
+            if i >= len(self.camiones):
+                break
+                
+            camion = self.camiones[i]
+            if not camion.activo:
+                continue
+                
+            # Ejecutar lógica para este camión
+            r, evt = self._ejecutar_accion_camion(camion, int(accion))
+            total_reward += r
+            if evt:
+                info['eventos'].append(evt)
+                
+        # Verificar terminación
+        terminated = (
             self.clientes_servidos >= self.num_clientes
         )
+        truncated = (
+            self.current_step >= self.max_steps
+        )
         
-        self.total_reward += reward
+        self.total_reward += total_reward
         info['total_reward'] = self.total_reward
         info['clientes_servidos'] = self.clientes_servidos
         info['step'] = self.current_step
         
-        return self._get_observation(), reward, done, info
+        logger.info(f"🏁 STEP {self.current_step} completado. Eventos: {len(info['eventos'])}")
+        
+        return self._get_observation(), total_reward, terminated, truncated, info
+
+    def _ejecutar_accion_camion(self, camion: Camion, action: int) -> Tuple[float, Optional[str]]:
+        """Ejecuta una acción para un camión específico y retorna (reward, evento)"""
+        reward = 0.0
+        evento = None
+        
+        logger.debug(f"🔧 Procesando acción {action} para Camión {camion.id}") # LOG INICIO
+        
+        try:
+            # Acción 0: Volver al depósito
+            if action == 0:
+                logger.debug(f"🏠 Camión {camion.id} retornando a depot") # LOG DEPOT
+                distancia = self._calcular_distancia(
+                    camion.latitud, camion.longitud,
+                    self.depot_lat, self.depot_lon
+                )
+                logger.debug(f"📏 Distancia calculada: {distancia}") # LOG DISTANCIA
+                
+                # Obtener geometría de ruta si está disponible
+                if self.usar_routing_real:
+                    logger.debug(f"🗺️ Camión {camion.id}: Calculando ruta al depot")
+                    ruta_info = self._obtener_ruta_completa(
+                        camion.latitud, camion.longitud,
+                        self.depot_lat, self.depot_lon
+                    )
+                    if ruta_info and 'geometry' in ruta_info:
+                        camion.geometria_actual = ruta_info['geometry']
+                        if not hasattr(camion, 'ruta_geometria') or not camion.ruta_geometria:
+                            camion.ruta_geometria = []
+                        camion.ruta_geometria.extend(ruta_info['geometry'])
+                    else:
+                        camion.geometria_actual = []
+                
+                camion.latitud = self.depot_lat
+                camion.longitud = self.depot_lon
+                camion.distancia_recorrida_km += distancia
+                camion.carga_actual_kg = 0.0
+                camion.ruta_geometria = [] # Reset al llegar al depot
+                
+                reward -= distancia * self.penalizacion_distancia
+                evento = f"Camión {camion.id} retornó al depot"
+            
+            # Acción 1-N: Visitar cliente
+            elif 1 <= action <= self.num_clientes:
+                cliente_id = action - 1
+                cliente = self.clientes[cliente_id]
+                
+                if cliente.servido:
+                    reward -= 5.0
+                    evento = f"Camión {camion.id} visitó cliente ya servido {cliente.id}"
+                elif cliente.demanda_kg > camion.capacidad_disponible:
+                    reward -= 3.0
+                    evento = f"Camión {camion.id} sin capacidad para {cliente.id}"
+                else:
+                    distancia = self._calcular_distancia(
+                        camion.latitud, camion.longitud,
+                        cliente.latitud, cliente.longitud
+                    )
+                    
+                    if self.usar_routing_real:
+                        logger.debug(f"🗺️ Camión {camion.id}: Calculando ruta a cliente {cliente.id}")
+                        ruta_info = self._obtener_ruta_completa(
+                            camion.latitud, camion.longitud,
+                            cliente.latitud, cliente.longitud
+                        )
+                        if ruta_info and 'geometry' in ruta_info:
+                            camion.geometria_actual = ruta_info['geometry']
+                            # NO acumular historial para evitar sobrecarga visual y de datos
+                            # El frontend se encarga de dibujar el rastro si es necesario
+                            camion.ruta_geometria = ruta_info['geometry']
+                        else:
+                            camion.geometria_actual = []
+                            camion.ruta_geometria = []
+                    
+                    camion.latitud = cliente.latitud
+                    camion.longitud = cliente.longitud
+                    camion.distancia_recorrida_km += distancia
+                    camion.carga_actual_kg += cliente.demanda_kg
+                    cliente.servido = True
+                    self.clientes_servidos += 1
+                    
+                    recompensa_base = self.recompensa_servicio * cliente.prioridad
+                    penalizacion_dist = distancia * self.penalizacion_distancia
+                    reward = recompensa_base - penalizacion_dist
+                    
+                    evento = f"Camión {camion.id} sirvió a cliente {cliente.id}"
+                    logger.info(f"🚛 Camión {camion.id} → Cliente '{cliente.nombre}' ({distancia:.2f} km)")
+            
+            return reward, evento
+            
+        except Exception as e:
+            logger.error(f"❌ Error ejecutando acción camión {camion.id}: {e}")
+            return 0.0, f"Error camión {camion.id}"
+
+    def step_agent(self, action: int, camion_id: int) -> Tuple[np.ndarray, float, bool, dict]:
+        """
+        Ejecuta una acción para un camión específico.
+        Método corregido para soportar Multi-Agent System correctamente.
+        """
+        info = {'eventos': []}
+        total_reward = 0.0
+        
+        if 0 <= camion_id < len(self.camiones):
+            camion = self.camiones[camion_id]
+            if camion.activo:
+                # Log para verificar que se está moviendo el camión correcto
+                logger.debug(f"🤖 Agente {camion_id} ejecutando acción {action}")
+                
+                reward, evt = self._ejecutar_accion_camion(camion, int(action))
+                total_reward += reward
+                if evt:
+                    info['eventos'].append(evt)
+        else:
+            logger.error(f"❌ ID de camión inválido en step_agent: {camion_id}")
+        
+        # Verificar terminación global
+        done = (
+            self.clientes_servidos >= self.num_clientes
+        )
+        
+        return self._get_observation(), total_reward, done, info
     
+    def get_agent_observation(self, camion_id: int) -> np.ndarray:
+        """
+        Obtiene la observación específica para un agente (camión).
+        Usado por el sistema MAS para inferencia PPO individual.
+        """
+        # Buscar el camión específico
+        camion = next((c for c in self.camiones if c.id == camion_id), None)
+        if not camion:
+            # Fallback si no se encuentra (no debería pasar)
+            return np.zeros(self.observation_space.shape, dtype=np.float32)
+            
+        # --- MODO MARL: K VECINOS MÁS CERCANOS ---
+        
+        # 1. Estado del camión (Normalizado aprox)
+        lat_rel = (camion.latitud - self.depot_lat) * 10.0
+        lon_rel = (camion.longitud - self.depot_lon) * 10.0
+        
+        lat_norm = np.clip(lat_rel + 0.5, 0.0, 1.0)
+        lon_norm = np.clip(lon_rel + 0.5, 0.0, 1.0)
+        
+        obs = [lat_norm, lon_norm, camion.porcentaje_carga / 100.0]
+        
+        # 2. Calcular distancias a TODOS los clientes no servidos
+        clientes_info = []
+        for cliente in self.clientes:
+            if not cliente.servido:
+                dist = self._calcular_distancia_haversine(
+                    camion.latitud, camion.longitud,
+                    cliente.latitud, cliente.longitud
+                )
+                clientes_info.append({
+                    'dist': dist,
+                    'cliente': cliente
+                })
+        
+        # 3. Ordenar por distancia y tomar los K mejores
+        clientes_info.sort(key=lambda x: x['dist'])
+        vecinos = clientes_info[:self.max_clientes_visibles]
+        
+        # 4. Rellenar observación
+        for info in vecinos:
+            c = info['cliente']
+            obs.extend([
+                info['dist'] / 10.0,  # Distancia norm
+                c.demanda_kg / self.capacidad_camion_kg, # Demanda norm
+                c.prioridad / 3.0, # Prioridad norm
+                0.0 # No servido
+            ])
+        
+        # 5. Padding
+        faltantes = self.max_clientes_visibles - len(vecinos)
+        for _ in range(faltantes):
+            obs.extend([0.0, 0.0, 0.0, 1.0]) # 1.0 en 'servido' indica slot vacío
+            
+        return np.array(obs, dtype=np.float32)
+
+    def _calcular_distancia_haversine(self, lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+        """Calcula distancia Haversine (línea recta) entre dos puntos."""
+        R = 6371.0  # Radio de la Tierra en km
+        
+        lat1_rad = np.radians(lat1)
+        lon1_rad = np.radians(lon1)
+        lat2_rad = np.radians(lat2)
+        lon2_rad = np.radians(lon2)
+        
+        dlat = lat2_rad - lat1_rad
+        dlon = lon2_rad - lon1_rad
+        
+        a = np.sin(dlat / 2)**2 + np.cos(lat1_rad) * np.cos(lat2_rad) * np.sin(dlon / 2)**2
+        c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
+        
+        return R * c
+
     def _calcular_distancia(self, lat1: float, lon1: float, lat2: float, lon2: float) -> float:
         """
         Calcula distancia entre dos puntos.
@@ -465,26 +713,16 @@ class DVRPTWEnv(gym.Env):
                     logger.debug(f"Distancia OSRM: {ruta['distancia_km']:.2f} km")
                     return ruta['distancia_km']
                 else:
-                    logger.warning("OSRM falló, usando haversine")
+                    # Solo loguear warning si OSRM debería estar disponible
+                    if OSRMService._osrm_available:
+                        logger.warning("OSRM falló, usando haversine")
                     
             except Exception as e:
-                logger.warning(f"Error al usar OSRM: {str(e)}, usando haversine")
+                if OSRMService._osrm_available:
+                    logger.warning(f"Error al usar OSRM: {str(e)}, usando haversine")
         
         # Fallback: Distancia haversine (línea recta)
-        R = 6371.0  # Radio de la Tierra en km
-        
-        lat1_rad = np.radians(lat1)
-        lon1_rad = np.radians(lon1)
-        lat2_rad = np.radians(lat2)
-        lon2_rad = np.radians(lon2)
-        
-        dlat = lat2_rad - lat1_rad
-        dlon = lon2_rad - lon1_rad
-        
-        a = np.sin(dlat / 2)**2 + np.cos(lat1_rad) * np.cos(lat2_rad) * np.sin(dlon / 2)**2
-        c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
-        
-        return R * c
+        return self._calcular_distancia_haversine(lat1, lon1, lat2, lon2)
     
     def _obtener_ruta_completa(self, lat1: float, lon1: float, lat2: float, lon2: float) -> Optional[Dict]:
         """
@@ -493,8 +731,9 @@ class DVRPTWEnv(gym.Env):
         Returns:
             Dict con 'geometry', 'distancia_km', 'duracion_minutos'
         """
+        # Si no se usa routing real, retornar lineal directamente
         if not self.usar_routing_real:
-            return None
+            return OSRMService._generar_ruta_lineal(lat1, lon1, lat2, lon2)
         
         try:
             # Buscar en caché primero
@@ -503,21 +742,21 @@ class DVRPTWEnv(gym.Env):
             if cache_key in self._routing_cache:
                 return self._routing_cache[cache_key]
             
-            # Usar servicio OSRM interno
+            # Usar servicio OSRM interno (que ya maneja fallbacks)
             ruta = OSRMService.obtener_ruta(lat1, lon1, lat2, lon2)
             
             if ruta:
                 # Guardar en caché
                 self._routing_cache[cache_key] = ruta
-                logger.info(f"🗺️ Ruta OSRM: {ruta['distancia_km']} km, {len(ruta['geometry'])} puntos")
+                logger.info(f"🗺️ Ruta: {ruta['distancia_km']} km, {len(ruta['geometry'])} puntos")
                 return ruta
             else:
-                logger.warning("OSRM no pudo calcular ruta")
-                return None
+                # Fallback final (no debería llegar aquí con la nueva lógica)
+                return OSRMService._generar_ruta_lineal(lat1, lon1, lat2, lon2)
                 
         except Exception as e:
             logger.warning(f"Error al obtener ruta completa: {str(e)}")
-            return None
+            return OSRMService._generar_ruta_lineal(lat1, lon1, lat2, lon2)
     
     def render(self, mode='human'):
         """Renderiza el estado actual del entorno"""

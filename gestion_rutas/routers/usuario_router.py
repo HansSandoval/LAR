@@ -1,20 +1,23 @@
 """
 Router para gestionar operaciones CRUD en la tabla Usuario.
 Endpoints para crear, listar, actualizar y eliminar usuarios con roles.
+Usando PostgreSQL directo sin SQLAlchemy
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
-from ..database.db import get_db
-from ..models.models import Usuario
+from fastapi import APIRouter, HTTPException, Query
+from typing import List, Optional
+
 from ..schemas.schemas import (
     UsuarioCreate,
     UsuarioUpdate,
     UsuarioResponse
 )
+from ..service.usuario_service import UsuarioService
 import re
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
+
+usuario_service = UsuarioService()
 
 
 def validar_email(email: str) -> bool:
@@ -40,7 +43,6 @@ async def get_usuarios(
     rol: str = Query(None, description="Filtrar por rol (admin, operador, gerente, visualizador)"),
     activo: bool = Query(None, description="Filtrar por estado activo/inactivo"),
     nombre: str = Query(None, description="Filtrar por nombre (búsqueda parcial)"),
-    db: Session = Depends(get_db)
 ):
     """
     Obtiene una lista paginada de usuarios con filtros opcionales.
@@ -56,24 +58,15 @@ async def get_usuarios(
     ```
     """
     try:
-        query = db.query(Usuario)
-        
-        # Aplicar filtros
-        if rol:
-            query = query.filter(Usuario.rol == rol)
-        if activo is not None:
-            query = query.filter(Usuario.activo == activo)
-        if nombre:
-            query = query.filter(Usuario.nombre.ilike(f"%{nombre}%"))
-        
-        # Obtener total
-        total = query.count()
-        
-        # Aplicar paginación
-        usuarios = query.offset(skip).limit(limit).all()
-        
+        usuarios, total = usuario_service.obtener_usuarios(
+            rol=rol,
+            activo=activo,
+            nombre=nombre,
+            skip=skip,
+            limit=limit
+        )
         return {
-            "data": [UsuarioResponse.from_orm(u) for u in usuarios],
+            "data": usuarios,
             "total": total,
             "skip": skip,
             "limit": limit
@@ -88,7 +81,7 @@ async def get_usuarios(
     summary="Obtener un usuario por ID",
     description="Retorna los detalles de un usuario específico"
 )
-async def get_usuario(usuario_id: int, db: Session = Depends(get_db)):
+async def get_usuario(usuario_id: int):
     """
     Obtiene los detalles de un usuario específico por su ID.
     
@@ -98,12 +91,10 @@ async def get_usuario(usuario_id: int, db: Session = Depends(get_db)):
     ```
     """
     try:
-        usuario = db.query(Usuario).filter(Usuario.id_usuario == usuario_id).first()
+        usuario = usuario_service.obtener_usuario(usuario_id)
         if not usuario:
             raise HTTPException(status_code=404, detail=f"Usuario con ID {usuario_id} no encontrado")
-        return UsuarioResponse.from_orm(usuario)
-    except HTTPException:
-        raise
+        return usuario
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener usuario: {str(e)}")
 
@@ -115,7 +106,7 @@ async def get_usuario(usuario_id: int, db: Session = Depends(get_db)):
     summary="Crear un nuevo usuario",
     description="Crea un nuevo registro de usuario con contraseña encriptada"
 )
-async def create_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
+async def create_usuario(usuario: UsuarioCreate):
     """
     Crea un nuevo usuario.
     
@@ -143,7 +134,7 @@ async def create_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
             raise HTTPException(status_code=400, detail="Email no tiene formato válido")
         
         # Validar que el email es único
-        usuario_existente = db.query(Usuario).filter(Usuario.correo == usuario.correo).first()
+        usuario_existente = usuario_service.obtener_usuario_por_correo(usuario.correo)
         if usuario_existente:
             raise HTTPException(status_code=400, detail="El email ya está registrado")
         
@@ -156,25 +147,10 @@ async def create_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
         if usuario.rol not in roles_validos:
             raise HTTPException(status_code=400, detail=f"Rol inválido. Debe ser uno de: {', '.join(roles_validos)}")
         
-        # Encriptar contraseña (en producción usar bcrypt o similar)
-        from hashlib import sha256
-        hash_password = sha256(usuario.password.encode()).hexdigest()
-        
-        nuevo_usuario = Usuario(
-            nombre=usuario.nombre,
-            correo=usuario.correo,
-            rol=usuario.rol,
-            hash_password=hash_password,
-            activo=True
-        )
-        db.add(nuevo_usuario)
-        db.commit()
-        db.refresh(nuevo_usuario)
-        return UsuarioResponse.from_orm(nuevo_usuario)
+        return usuario_service.crear_usuario(usuario.dict())
     except HTTPException:
         raise
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al crear usuario: {str(e)}")
 
 
@@ -187,7 +163,6 @@ async def create_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
 async def update_usuario(
     usuario_id: int,
     usuario_data: UsuarioUpdate,
-    db: Session = Depends(get_db)
 ):
     """
     Actualiza un usuario existente.
@@ -206,16 +181,16 @@ async def update_usuario(
     ```
     """
     try:
-        usuario = db.query(Usuario).filter(Usuario.id_usuario == usuario_id).first()
+        usuario = usuario_service.obtener_usuario(usuario_id)
         if not usuario:
             raise HTTPException(status_code=404, detail=f"Usuario con ID {usuario_id} no encontrado")
         
         # Validar email si se cambia
-        if usuario_data.correo and usuario_data.correo != usuario.correo:
+        if usuario_data.correo and usuario_data.correo != usuario.get('correo'):
             if not validar_email(usuario_data.correo):
                 raise HTTPException(status_code=400, detail="Email no tiene formato válido")
             
-            usuario_existente = db.query(Usuario).filter(Usuario.correo == usuario_data.correo).first()
+            usuario_existente = usuario_service.obtener_usuario_por_correo(usuario_data.correo)
             if usuario_existente:
                 raise HTTPException(status_code=400, detail="El email ya está registrado por otro usuario")
         
@@ -229,27 +204,11 @@ async def update_usuario(
         if usuario_data.password:
             if not validar_password(usuario_data.password):
                 raise HTTPException(status_code=400, detail="La contraseña debe tener mínimo 8 caracteres")
-            
-            from hashlib import sha256
-            usuario.hash_password = sha256(usuario_data.password.encode()).hexdigest()
         
-        # Actualizar campos
-        if usuario_data.nombre:
-            usuario.nombre = usuario_data.nombre
-        if usuario_data.correo:
-            usuario.correo = usuario_data.correo
-        if usuario_data.rol:
-            usuario.rol = usuario_data.rol
-        if usuario_data.activo is not None:
-            usuario.activo = usuario_data.activo
-        
-        db.commit()
-        db.refresh(usuario)
-        return UsuarioResponse.from_orm(usuario)
+        return usuario_service.actualizar_usuario(usuario_id, usuario_data.dict(exclude_unset=True))
     except HTTPException:
         raise
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al actualizar usuario: {str(e)}")
 
 
@@ -259,7 +218,7 @@ async def update_usuario(
     summary="Eliminar un usuario",
     description="Elimina un usuario de la base de datos (desactivación lógica recomendada)"
 )
-async def delete_usuario(usuario_id: int, db: Session = Depends(get_db)):
+async def delete_usuario(usuario_id: int):
     """
     Elimina un usuario de la base de datos.
     
@@ -272,17 +231,13 @@ async def delete_usuario(usuario_id: int, db: Session = Depends(get_db)):
     ```
     """
     try:
-        usuario = db.query(Usuario).filter(Usuario.id_usuario == usuario_id).first()
+        usuario = usuario_service.obtener_usuario(usuario_id)
         if not usuario:
             raise HTTPException(status_code=404, detail=f"Usuario con ID {usuario_id} no encontrado")
         
-        db.delete(usuario)
-        db.commit()
+        usuario_service.eliminar_usuario(usuario_id)
         return None
-    except HTTPException:
-        raise
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al eliminar usuario: {str(e)}")
 
 
@@ -295,7 +250,6 @@ async def delete_usuario(usuario_id: int, db: Session = Depends(get_db)):
 async def update_usuario_estado(
     usuario_id: int,
     activo: bool = Query(..., description="Estado del usuario (true=activo, false=inactivo)"),
-    db: Session = Depends(get_db)
 ):
     """
     Cambia el estado de un usuario entre activo e inactivo.
@@ -306,18 +260,12 @@ async def update_usuario_estado(
     ```
     """
     try:
-        usuario = db.query(Usuario).filter(Usuario.id_usuario == usuario_id).first()
+        usuario = usuario_service.obtener_usuario(usuario_id)
         if not usuario:
             raise HTTPException(status_code=404, detail=f"Usuario con ID {usuario_id} no encontrado")
         
-        usuario.activo = activo
-        db.commit()
-        db.refresh(usuario)
-        return UsuarioResponse.from_orm(usuario)
-    except HTTPException:
-        raise
+        return usuario_service.actualizar_usuario(usuario_id, {"activo": activo})
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al actualizar estado: {str(e)}")
 
 
@@ -330,7 +278,6 @@ async def cambiar_password(
     usuario_id: int,
     password_actual: str = Query(..., description="Contraseña actual del usuario"),
     password_nueva: str = Query(..., description="Nueva contraseña"),
-    db: Session = Depends(get_db)
 ):
     """
     Cambia la contraseña de un usuario verificando la contraseña actual.
@@ -345,14 +292,14 @@ async def cambiar_password(
     ```
     """
     try:
-        usuario = db.query(Usuario).filter(Usuario.id_usuario == usuario_id).first()
+        usuario = usuario_service.obtener_usuario(usuario_id)
         if not usuario:
             raise HTTPException(status_code=404, detail=f"Usuario con ID {usuario_id} no encontrado")
         
         # Validar contraseña actual
         from hashlib import sha256
         hash_actual = sha256(password_actual.encode()).hexdigest()
-        if hash_actual != usuario.hash_password:
+        if hash_actual != usuario.get('hash_password'):
             raise HTTPException(status_code=401, detail="Contraseña actual incorrecta")
         
         # Validar nueva contraseña
@@ -360,14 +307,13 @@ async def cambiar_password(
             raise HTTPException(status_code=400, detail="La nueva contraseña debe tener mínimo 8 caracteres")
         
         # Actualizar contraseña
-        usuario.hash_password = sha256(password_nueva.encode()).hexdigest()
-        db.commit()
+        hash_nueva = sha256(password_nueva.encode()).hexdigest()
+        usuario_service.actualizar_usuario(usuario_id, {"hash_password": hash_nueva})
         
         return {"mensaje": "Contraseña actualizada exitosamente"}
     except HTTPException:
         raise
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al cambiar contraseña: {str(e)}")
 
 
@@ -381,7 +327,6 @@ async def get_usuarios_por_rol(
     rol_id: str,
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
-    db: Session = Depends(get_db)
 ):
     """
     Obtiene todos los usuarios que tienen un rol específico.
@@ -398,13 +343,11 @@ async def get_usuarios_por_rol(
         if rol_id not in roles_validos:
             raise HTTPException(status_code=400, detail=f"Rol inválido. Debe ser uno de: {', '.join(roles_validos)}")
         
-        query = db.query(Usuario).filter(Usuario.rol == rol_id)
-        total = query.count()
-        usuarios = query.offset(skip).limit(limit).all()
+        usuarios, total = usuario_service.obtener_usuarios_por_rol(rol_id, skip, limit)
         
         return {
             "rol": rol_id,
-            "data": [UsuarioResponse.from_orm(u) for u in usuarios],
+            "data": usuarios,
             "total": total,
             "skip": skip,
             "limit": limit

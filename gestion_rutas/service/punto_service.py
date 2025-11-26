@@ -1,13 +1,13 @@
 """
 Service Layer para Puntos de Entrega
+Usando PostgreSQL directo sin SQLAlchemy
 """
 
-from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List, Optional, Dict
 from datetime import datetime
-from ..models.base import Punto
-from ..schemas.schemas import PuntoCreate, PuntoUpdate
+from ..database.db import execute_query, execute_query_one, execute_insert_returning, execute_insert_update_delete
 import logging
+import math
 
 logger = logging.getLogger(__name__)
 
@@ -16,77 +16,110 @@ class PuntoService:
     """Servicio para operaciones con Puntos de Entrega"""
 
     @staticmethod
-    def crear_punto(db: Session, punto_data: PuntoCreate) -> Punto:
+    def crear_punto(punto_data: Dict) -> Optional[Dict]:
         """Crear un nuevo punto de entrega"""
         try:
-            nuevo_punto = Punto(
-                nombre=punto_data.nombre,
-                descripcion=punto_data.descripcion,
-                latitud=punto_data.latitud,
-                longitud=punto_data.longitud,
-                tipo_punto=punto_data.tipo_punto,
-                estado_activo=punto_data.estado_activo
+            query = """
+                INSERT INTO punto_recoleccion 
+                (nombre, descripcion, latitud, longitud, tipo_punto, estado_activo)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                RETURNING id, nombre, descripcion, latitud, longitud, tipo_punto, estado_activo, fecha_creacion
+            """
+            params = (
+                punto_data.get('nombre'),
+                punto_data.get('descripcion'),
+                punto_data.get('latitud'),
+                punto_data.get('longitud'),
+                punto_data.get('tipo_punto', 'recoleccion'),
+                punto_data.get('estado_activo', True)
             )
-            db.add(nuevo_punto)
-            db.commit()
-            db.refresh(nuevo_punto)
-            logger.info(f"Punto {nuevo_punto.id} creado: {nuevo_punto.nombre}")
-            return nuevo_punto
+            resultado = execute_insert_returning(query, params)
+            logger.info(f"Punto creado: {resultado.get('nombre')}")
+            return resultado
         except Exception as e:
-            db.rollback()
             logger.error(f"Error al crear punto: {str(e)}")
             raise
 
     @staticmethod
-    def obtener_punto(db: Session, punto_id: int) -> Optional[Punto]:
+    def obtener_punto(punto_id: int) -> Optional[Dict]:
         """Obtener punto por ID"""
-        return db.query(Punto).filter(Punto.id == punto_id).first()
+        query = "SELECT * FROM punto_recoleccion WHERE id = %s"
+        return execute_query_one(query, (punto_id,))
 
     @staticmethod
     def obtener_puntos(
-        db: Session,
         tipo_punto: Optional[str] = None,
         estado_activo: Optional[bool] = None,
         skip: int = 0,
         limit: int = 10
-    ) -> tuple[List[Punto], int]:
+    ) -> tuple[List[Dict], int]:
         """Obtener puntos con filtros opcionales"""
-        query = db.query(Punto)
+        where_conditions = []
+        params = []
 
         if tipo_punto:
-            query = query.filter(Punto.tipo_punto == tipo_punto)
+            where_conditions.append("tipo_punto = %s")
+            params.append(tipo_punto)
         if estado_activo is not None:
-            query = query.filter(Punto.estado_activo == estado_activo)
+            where_conditions.append("estado_activo = %s")
+            params.append(estado_activo)
 
-        total = query.count()
-        puntos = query.offset(skip).limit(limit).all()
+        where_clause = " AND ".join(where_conditions) if where_conditions else "1=1"
+
+        count_query = f"SELECT COUNT(*) as total FROM punto_recoleccion WHERE {where_clause}"
+        total_result = execute_query_one(count_query, tuple(params))
+        total = total_result.get('total', 0) if total_result else 0
+
+        query = f"SELECT * FROM punto_recoleccion WHERE {where_clause} LIMIT %s OFFSET %s"
+        params.extend([limit, skip])
+        puntos = execute_query(query, tuple(params))
         return puntos, total
 
     @staticmethod
-    def actualizar_punto(db: Session, punto_id: int, punto_data: PuntoUpdate) -> Optional[Punto]:
+    def actualizar_punto(punto_id: int, punto_data: Dict) -> Optional[Dict]:
         """Actualizar punto de entrega"""
         try:
-            punto = db.query(Punto).filter(Punto.id == punto_id).first()
-            if not punto:
-                return None
+            if not punto_data:
+                return PuntoService.obtener_punto(punto_id)
 
-            for campo, valor in punto_data.dict(exclude_unset=True).items():
-                setattr(punto, campo, valor)
+            set_clauses = []
+            params = []
+            for key, value in punto_data.items():
+                if key not in ['id', 'fecha_creacion']:
+                    set_clauses.append(f"{key} = %s")
+                    params.append(value)
 
-            punto.fecha_actualizacion = datetime.utcnow()
-            db.commit()
-            db.refresh(punto)
+            if not set_clauses:
+                return PuntoService.obtener_punto(punto_id)
+
+            params.append(datetime.utcnow())
+            params.append(punto_id)
+
+            query = f"UPDATE punto_recoleccion SET {', '.join(set_clauses)}, fecha_actualizacion = %s WHERE id = %s RETURNING *"
+            resultado = execute_insert_returning(query, tuple(params))
             logger.info(f"Punto {punto_id} actualizado")
-            return punto
+            return resultado
         except Exception as e:
-            db.rollback()
             logger.error(f"Error al actualizar punto: {str(e)}")
             raise
 
     @staticmethod
-    def obtener_puntos_activos(db: Session) -> List[Punto]:
+    def eliminar_punto(punto_id: int) -> bool:
+        """Eliminar punto de entrega"""
+        try:
+            query = "DELETE FROM punto_recoleccion WHERE id = %s"
+            rowcount = execute_insert_update_delete(query, (punto_id,))
+            logger.info(f"Punto {punto_id} eliminado")
+            return rowcount > 0
+        except Exception as e:
+            logger.error(f"Error al eliminar punto: {str(e)}")
+            raise
+
+    @staticmethod
+    def obtener_puntos_activos() -> List[Dict]:
         """Obtener solo puntos activos"""
-        return db.query(Punto).filter(Punto.estado_activo == True).all()
+        query = "SELECT * FROM punto_recoleccion WHERE estado_activo = TRUE ORDER BY nombre"
+        return execute_query(query, ())
 
     @staticmethod
     def calcular_distancia(
@@ -99,8 +132,6 @@ class PuntoService:
         Calcular distancia entre dos puntos usando fórmula Haversine
         Retorna distancia en kilómetros
         """
-        import math
-        
         R = 6371  # Radio de la Tierra en km
         lat1_rad = math.radians(lat1)
         lat2_rad = math.radians(lat2)
@@ -114,23 +145,22 @@ class PuntoService:
 
     @staticmethod
     def obtener_puntos_cercanos(
-        db: Session,
         latitud: float,
         longitud: float,
         radio_km: float = 5.0
-    ) -> List[Punto]:
+    ) -> List[Dict]:
         """Obtener puntos cercanos a una coordenada (aproximado)"""
-        puntos_activos = PuntoService.obtener_puntos_activos(db)
+        puntos_activos = PuntoService.obtener_puntos_activos()
         puntos_cercanos = []
 
         for punto in puntos_activos:
             distancia = PuntoService.calcular_distancia(
                 latitud, longitud,
-                punto.latitud, punto.longitud
+                punto['latitud'], punto['longitud']
             )
             if distancia <= radio_km:
                 puntos_cercanos.append(punto)
 
         return sorted(puntos_cercanos, key=lambda p: PuntoService.calcular_distancia(
-            latitud, longitud, p.latitud, p.longitud
+            latitud, longitud, p['latitud'], p['longitud']
         ))

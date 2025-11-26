@@ -8,6 +8,11 @@ from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass, field
 from .dvrptw_env import DVRPTWEnv, Cliente, Camion
 
+try:
+    from stable_baselines3 import PPO
+except ImportError:
+    PPO = None
+
 
 @dataclass
 class DecisionAgente:
@@ -31,34 +36,140 @@ class AgenteRecolector:
     - Considera capacidad restante
     """
     
-    def __init__(self, camion: Camion, env: DVRPTWEnv):
+    def __init__(self, camion: Camion, env: DVRPTWEnv, modelo_ppo=None):
         self.camion = camion
         self.env = env
         self.memoria_decisiones: List[DecisionAgente] = []
+        self.modelo_ppo = modelo_ppo
         
         # Parámetros de decisión
         self.peso_distancia = 0.4
         self.peso_demanda = 0.3
         self.peso_prioridad = 0.3
+
+    def seleccionar_accion_ppo(self) -> Optional[int]:
+        """
+        Usa el modelo PPO para seleccionar el próximo cliente.
+        """
+        if self.modelo_ppo is None:
+            return None
+
+        # 1. Obtener observación
+        # Asegurarse de que el entorno tenga el método (por si acaso)
+        if hasattr(self.env, 'get_agent_observation'):
+            obs = self.env.get_agent_observation(self.camion.id)
+        else:
+            return None
         
+        # 2. Predecir acción
+        try:
+            action, _ = self.modelo_ppo.predict(obs, deterministic=True)
+            
+            # Convertir numpy int a python int
+            action = int(action)
+        except Exception as e:
+            print(f"Error predicción PPO: {e}")
+            return None
+        
+        # 3. Interpretar acción (0=Depot, 1..K=Vecino)
+        if action == 0:
+            return 0 # Depot
+            
+        # Reconstruir lista de vecinos para saber cuál es el elegido
+        clientes_info = []
+        for cliente in self.env.clientes:
+            if not cliente.servido:
+                dist = self.env._calcular_distancia_haversine(
+                    self.camion.latitud, self.camion.longitud,
+                    cliente.latitud, cliente.longitud
+                )
+                clientes_info.append({'dist': dist, 'cliente': cliente})
+        
+        clientes_info.sort(key=lambda x: x['dist'])
+        vecinos = clientes_info[:self.env.max_clientes_visibles]
+        
+        vecino_idx = action - 1
+        if vecino_idx < len(vecinos):
+            cliente_elegido = vecinos[vecino_idx]['cliente']
+            # El sistema MAS usa IDs 1-based para clientes, 0 para depot
+            # Cliente.id ya es el ID correcto (1..N)
+            return cliente_elegido.id
+        else:
+            # Acción inválida (ej: eligió vecino 5 pero solo hay 2)
+            return 0
+
     def seleccionar_proximo_cliente(
         self, 
         clientes_disponibles: List[Cliente],
         decisiones_otros_agentes: List[DecisionAgente] = None
     ) -> Optional[int]:
         """
-        Selecciona el próximo cliente a visitar de forma inteligente
-        
-        Criterios:
-        1. Proximidad geográfica (minimizar distancia)
-        2. Demanda de residuos (priorizar alta demanda)
-        3. Prioridad del cliente (urgencia)
-        4. Capacidad disponible del camión
-        5. Evitar conflictos con otros agentes
-        
-        Returns:
-            ID del cliente seleccionado o None si debe regresar al depósito
+        Selecciona el próximo cliente a visitar.
+        Si hay modelo PPO cargado, usa IA. Si no, usa heurística.
         """
+        # --- INTENTO CON PPO ---
+        if self.modelo_ppo:
+            cliente_id_ppo = self.seleccionar_accion_ppo()
+            
+            # SANITY CHECK MEJORADO: Evitar retornos prematuros al depósito
+            # Si el PPO sugiere volver (0), verificamos si realmente es necesario.
+            if cliente_id_ppo == 0:
+                # 1. Si está vacío, prohibido volver
+                if self.camion.carga_actual_kg == 0:
+                    print(f"⚠️ PPO sugirió Depot para camión {self.camion.id} (vacío). Forzando heurística.")
+                    cliente_id_ppo = None 
+                
+                # 2. Si tiene carga pero es menos del 90% y hay clientes factibles, prohibido volver
+                else:
+                    porcentaje_carga = (self.camion.carga_actual_kg / self.camion.capacidad_kg) * 100
+                    clientes_factibles_check = [
+                        c for c in clientes_disponibles 
+                        if not c.servido and c.demanda_kg <= self.camion.capacidad_disponible
+                    ]
+                    
+                    if porcentaje_carga < 90 and len(clientes_factibles_check) > 0:
+                        print(f"⚠️ PPO sugirió Depot para camión {self.camion.id} (Carga: {porcentaje_carga:.1f}%). Muy pronto. Forzando heurística.")
+                        cliente_id_ppo = None
+            
+            if cliente_id_ppo is not None:
+                # Caso 1: PPO decide ir al Depot (y no estamos vacíos)
+                if cliente_id_ppo == 0:
+                    dist_depot = self.env._calcular_distancia_haversine(
+                        self.camion.latitud, self.camion.longitud,
+                        self.env.depot_lat, self.env.depot_lon
+                    )
+                    decision = DecisionAgente(
+                        camion_id=self.camion.id,
+                        cliente_objetivo_id=0,
+                        razonamiento="🤖 IA PPO decidió ir al Depot",
+                        prioridad_decision=8.0,
+                        distancia_estimada=dist_depot,
+                        beneficio_estimado=0.0
+                    )
+                    self.memoria_decisiones.append(decision)
+                    return 0
+                
+                # Caso 2: PPO decide ir a un cliente
+                # Buscar objeto cliente
+                cliente = next((c for c in clientes_disponibles if c.id == cliente_id_ppo), None)
+                
+                # Validar que el cliente existe, no ha sido servido y cabe en el camión
+                if cliente and not cliente.servido and cliente.demanda_kg <= self.camion.capacidad_disponible:
+                    # Registrar decisión PPO
+                    decision = DecisionAgente(
+                        camion_id=self.camion.id,
+                        cliente_objetivo_id=cliente_id_ppo,
+                        razonamiento=f"🤖 IA PPO (Acción {cliente_id_ppo})",
+                        prioridad_decision=10.0, # Alta prioridad a la IA
+                        distancia_estimada=self._calcular_distancia_a(cliente),
+                        beneficio_estimado=cliente.demanda_kg
+                    )
+                    self.memoria_decisiones.append(decision)
+                    return cliente_id_ppo
+                else:
+                    print(f"⚠️ PPO sugirió cliente {cliente_id_ppo} no válido/factible. Usando heurística.")
+
+        # --- FALLBACK HEURÍSTICA ---
         if not clientes_disponibles:
             return None
         
@@ -76,6 +187,19 @@ class AgenteRecolector:
         
         if not clientes_factibles:
             # Si no hay clientes factibles, regresar al depósito
+            dist_depot = self.env._calcular_distancia_haversine(
+                self.camion.latitud, self.camion.longitud,
+                self.env.depot_lat, self.env.depot_lon
+            )
+            decision = DecisionAgente(
+                camion_id=self.camion.id,
+                cliente_objetivo_id=0,
+                razonamiento="Heurística: Sin clientes factibles (Retorno)",
+                prioridad_decision=5.0,
+                distancia_estimada=dist_depot,
+                beneficio_estimado=0.0
+            )
+            self.memoria_decisiones.append(decision)
             return 0
         
         # Evaluar cada cliente
@@ -93,7 +217,7 @@ class AgenteRecolector:
         # Registrar decisión
         decision = DecisionAgente(
             camion_id=self.camion.id,
-            cliente_objetivo_id=mejor_cliente_id,
+            cliente_objetivo_id=mejor_cliente_id,  # ID ya es 1-based
             razonamiento=f"Score: {mejor_score:.2f} | Distancia: {self._calcular_distancia_a(mejor_cliente):.2f}km",
             prioridad_decision=mejor_score,
             distancia_estimada=self._calcular_distancia_a(mejor_cliente),
@@ -101,7 +225,7 @@ class AgenteRecolector:
         )
         self.memoria_decisiones.append(decision)
         
-        return mejor_cliente_id + 1  # +1 porque acción 0 es depot
+        return mejor_cliente_id
     
     def _evaluar_cliente(
         self, 
@@ -138,10 +262,20 @@ class AgenteRecolector:
         # 5. Bonus si el camión está casi lleno y el cliente está cerca del depósito
         bonus_retorno = 0.0
         if self.camion.porcentaje_carga > 80:
-            distancia_cliente_depot = self.env._calcular_distancia(
-                cliente.latitud, cliente.longitud,
-                self.env.depot_lat, self.env.depot_lon
-            )
+            # Usar Haversine para estimación rápida
+            R = 6371.0
+            lat1_rad = np.radians(cliente.latitud)
+            lon1_rad = np.radians(cliente.longitud)
+            lat2_rad = np.radians(self.env.depot_lat)
+            lon2_rad = np.radians(self.env.depot_lon)
+            
+            dlat = lat2_rad - lat1_rad
+            dlon = lon2_rad - lon1_rad
+            
+            a = np.sin(dlat / 2)**2 + np.cos(lat1_rad) * np.cos(lat2_rad) * np.sin(dlon / 2)**2
+            c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
+            distancia_cliente_depot = R * c
+            
             if distancia_cliente_depot < 2.0:  # Muy cerca del depósito
                 bonus_retorno = 0.15
         
@@ -157,11 +291,24 @@ class AgenteRecolector:
         return max(0, score)  # Score no puede ser negativo
     
     def _calcular_distancia_a(self, cliente: Cliente) -> float:
-        """Calcula distancia desde posición actual del camión al cliente"""
-        return self.env._calcular_distancia(
-            self.camion.latitud, self.camion.longitud,
-            cliente.latitud, cliente.longitud
-        )
+        """
+        Calcula distancia ESTIMADA (Haversine) desde posición actual del camión al cliente.
+        NOTA: Usamos Haversine aquí para evitar miles de llamadas a OSRM durante la evaluación.
+        """
+        R = 6371.0  # Radio de la Tierra en km
+        
+        lat1_rad = np.radians(self.camion.latitud)
+        lon1_rad = np.radians(self.camion.longitud)
+        lat2_rad = np.radians(cliente.latitud)
+        lon2_rad = np.radians(cliente.longitud)
+        
+        dlat = lat2_rad - lat1_rad
+        dlon = lon2_rad - lon1_rad
+        
+        a = np.sin(dlat / 2)**2 + np.cos(lat1_rad) * np.cos(lat2_rad) * np.sin(dlon / 2)**2
+        c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
+        
+        return R * c
     
     def debe_regresar_depot(self) -> bool:
         """Determina si el camión debe regresar al depósito"""
@@ -205,8 +352,17 @@ class CoordinadorMAS:
     - Monitorear rendimiento global
     """
     
-    def __init__(self, env: DVRPTWEnv):
+    def __init__(self, env: DVRPTWEnv, modelo_ppo_path: str = None):
         self.env = env
+        self.modelo_ppo = None
+        
+        if modelo_ppo_path and PPO:
+            try:
+                self.modelo_ppo = PPO.load(modelo_ppo_path)
+                print(f"✅ Modelo PPO cargado en CoordinadorMAS: {modelo_ppo_path}")
+            except Exception as e:
+                print(f"⚠️ Error cargando modelo PPO: {e}")
+                
         self.agentes: List[AgenteRecolector] = []
         self._inicializar_agentes()
         
@@ -218,7 +374,7 @@ class CoordinadorMAS:
     def _inicializar_agentes(self):
         """Crea un agente por cada camión en el entorno"""
         for camion in self.env.camiones:
-            agente = AgenteRecolector(camion, self.env)
+            agente = AgenteRecolector(camion, self.env, self.modelo_ppo)
             self.agentes.append(agente)
     
     def ejecutar_paso_cooperativo(self) -> Tuple[List, Dict]:
@@ -242,10 +398,12 @@ class CoordinadorMAS:
         
         for agente in self.agentes:
             if not agente.camion.activo:
+                print(f"⚠️ Agente {agente.camion.id} inactivo")
                 continue
             
             # Verificar si debe regresar al depósito
             if agente.debe_regresar_depot():
+                print(f"🔙 Agente {agente.camion.id} decide regresar a depot")
                 decision = DecisionAgente(
                     camion_id=agente.camion.id,
                     cliente_objetivo_id=0,  # 0 = depot
@@ -265,9 +423,12 @@ class CoordinadorMAS:
                 )
                 
                 if cliente_id is not None:
+                    print(f"✅ Agente {agente.camion.id} seleccionó cliente {cliente_id}")
                     # Usar la última decisión del agente
                     if agente.memoria_decisiones:
                         decisiones_propuestas.append(agente.memoria_decisiones[-1])
+                else:
+                    print(f"❌ Agente {agente.camion.id} NO seleccionó cliente (None)")
         
         # 2. Detectar y resolver conflictos
         conflictos = self._detectar_conflictos(decisiones_propuestas)
@@ -282,13 +443,12 @@ class CoordinadorMAS:
             agente = next(a for a in self.agentes if a.camion.id == decision.camion_id)
             
             # Determinar acción (0=depot, 1-N=clientes)
-            if decision.cliente_objetivo_id == 0:
-                action = 0
-            else:
-                action = decision.cliente_objetivo_id + 1
+            action = decision.cliente_objetivo_id
             
             # Ejecutar acción
-            obs, reward, done, info = self.env.step(action)
+            # obs, reward, done, info = self.env.step(action)
+            # FIX: Usar step_agent para mover el camión correcto
+            obs, reward, done, info = self.env.step_agent(action, decision.camion_id)
             rewards.append(reward)
         
         # 4. Recopilar información

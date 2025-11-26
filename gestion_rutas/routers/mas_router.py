@@ -55,6 +55,7 @@ class EstadoCamion(BaseModel):
     posicion: Dict[str, float]  # {lat, lon}
     ruta: List[Dict[str, float]]  # Lista de posiciones visitadas
     ruta_geometria: Optional[List[List[float]]] = None  # Geometría completa OSRM [[lat,lon],...]
+    geometria_actual: Optional[List[List[float]]] = None # Geometría del último tramo
     clientes_servidos: List[int]
     carga_actual: float  # kg
     capacidad_total: float  # kg
@@ -219,6 +220,8 @@ def crear_clientes_con_datos_reales(config: ConfiguracionMAS) -> List[Cliente]:
     
     # Crear clientes
     clientes = []
+    contador_id = 1  # ID contiguo para la simulación
+    
     for i, (coord, demanda) in enumerate(zip(coordenadas, predicciones)):
         lat = coord['lat']
         lon = coord['lon']
@@ -231,8 +234,13 @@ def crear_clientes_con_datos_reales(config: ConfiguracionMAS) -> List[Cliente]:
             lon = max(-70.25, min(-70.05, lon))
             logger.info(f"   ✓ Ajustada a: ({lat}, {lon})")
         
+        # FILTRO DE NEGOCIO: Ignorar puntos con demanda BAJA (< 80 kg)
+        # Se dejan para el día siguiente para priorizar recolección crítica
+        if demanda < 80.0:
+            continue
+
         cliente = Cliente(
-            id=i+1,  # IDs empiezan en 1 (0 reservado para depot)
+            id=contador_id,  # IDs deben ser contiguos 1..N para el entorno Gym
             nombre=coord.get('nombre', f"Punto {i+1}"),
             latitud=lat,
             longitud=lon,
@@ -242,8 +250,9 @@ def crear_clientes_con_datos_reales(config: ConfiguracionMAS) -> List[Cliente]:
             ventana_fin=float('inf')  # Sin restricción de tiempo
         )
         clientes.append(cliente)
+        contador_id += 1
     
-    logger.info(f"✅ Creados {len(clientes)} clientes con coordenadas validadas")
+    logger.info(f"✅ Creados {len(clientes)} clientes con coordenadas validadas (Filtrados por demanda < 80kg)")
     return clientes
 
 
@@ -301,8 +310,14 @@ async def iniciar_simulacion(config: ConfiguracionMAS):
             seed=42
         )
         
+        # Ruta al modelo PPO
+        base_dir = Path(__file__).resolve().parent.parent
+        modelo_path = base_dir / "vrp" / "modelo_ppo_vrp.zip"
+        
+        logger.info(f"🤖 Buscando modelo PPO en: {modelo_path}")
+        
         # Crear coordinador MAS
-        coordinador = CoordinadorMAS(env)
+        coordinador = CoordinadorMAS(env, modelo_ppo_path=str(modelo_path))
         
         # Guardar estado de simulación
         simulaciones_activas[sim_id] = {
@@ -364,8 +379,10 @@ async def obtener_estado_simulacion(sim_id: str):
             
             # Si el camión tiene geometría de ruta calculada por OSRM, usarla
             if hasattr(camion, 'ruta_geometria') and camion.ruta_geometria:
-                # Convertir de [lon, lat] a [lat, lon] para Leaflet
-                ruta_geometria = [[coord[1], coord[0]] for coord in camion.ruta_geometria]
+                # La geometría ya viene en [lat, lon] desde dvrptw_env.py (OSRMService)
+                ruta_geometria = camion.ruta_geometria
+                if len(ruta_geometria) > 0:
+                    logger.debug(f"   📍 Geo Sample (Camión {i}): {ruta_geometria[0]}")
                 logger.info(f"Camión {i}: Enviando geometría OSRM con {len(ruta_geometria)} puntos")
             
             # Waypoints (puntos de destino planificados)
@@ -405,6 +422,10 @@ async def obtener_estado_simulacion(sim_id: str):
             if ruta_geometria:
                 dict_camion['ruta_geometria'] = ruta_geometria  # Ruta completa por calles
             
+            # Agregar geometría del tramo actual para animación
+            if hasattr(camion, 'geometria_actual') and camion.geometria_actual:
+                dict_camion['geometria_actual'] = camion.geometria_actual
+            
             estados_camiones.append(dict_camion)
         
         # Estadísticas globales
@@ -437,6 +458,8 @@ async def obtener_estado_simulacion(sim_id: str):
         clientes_servidos_ids = [
             i for i, cliente in enumerate(env.clientes) if cliente.servido
         ]
+        
+        logger.debug(f"📊 Stats enviadas: {estadisticas.dict()}") # LOG AÑADIDO
         
         return {
             'simulacion_id': sim_id,
@@ -471,8 +494,14 @@ async def ejecutar_paso_simulacion(sim_id: str):
         env = sim['env']
         coordinador = sim['coordinador']
         
-        # Ejecutar paso cooperativo
-        decisiones, info = coordinador.ejecutar_paso_cooperativo()
+        # Ejecutar paso cooperativo en un thread pool para no bloquear el event loop
+        # (especialmente importante por las llamadas a OSRM)
+        loop = asyncio.get_event_loop()
+        decisiones, info = await loop.run_in_executor(None, coordinador.ejecutar_paso_cooperativo)
+        
+        logger.info(f"🔄 Paso {sim['paso_actual']}: {len(decisiones)} decisiones tomadas")
+        for d in decisiones:
+            logger.info(f"   👉 Camión {d.camion_id} -> Objetivo {d.cliente_objetivo_id} ({d.razonamiento})")
         
         # Generar eventos para visualización
         eventos = []
@@ -504,7 +533,7 @@ async def ejecutar_paso_simulacion(sim_id: str):
                     camion_id=decision.camion_id,
                     datos={
                         'posicion': {'lat': env.depot_lat, 'lon': env.depot_lon},
-                        'carga_descargada': agente.camion.carga_actual
+                        'carga_descargada': agente.camion.carga_actual_kg
                     }
                 )
                 eventos.append(evento.dict())

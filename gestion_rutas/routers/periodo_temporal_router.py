@@ -1,20 +1,23 @@
 """
 Router para gestionar operaciones CRUD en la tabla PeriodoTemporal.
 Endpoints para crear, listar, actualizar y eliminar periodos temporales.
+Usando PostgreSQL directo sin SQLAlchemy
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException, Query
 from datetime import datetime
-from ..database.db import get_db
-from ..models.models import PeriodoTemporal
+from typing import Optional
+
 from ..schemas.schemas import (
     PeriodoTemporalCreate,
     PeriodoTemporalUpdate,
     PeriodoTemporalResponse
 )
+from ..service.periodo_temporal_service import PeriodoTemporalService
 
 router = APIRouter(prefix="/periodos-temporales", tags=["Periodos Temporales"])
+
+periodo_service = PeriodoTemporalService()
 
 
 @router.get(
@@ -26,9 +29,8 @@ router = APIRouter(prefix="/periodos-temporales", tags=["Periodos Temporales"])
 async def get_periodos_temporales(
     skip: int = Query(0, ge=0, description="Número de registros a saltar"),
     limit: int = Query(10, ge=1, le=100, description="Número máximo de registros a retornar"),
-    tipo_granularidad: str = Query(None, description="Filtrar por granularidad (diario, semanal, mensual, anual)"),
-    estacionalidad: str = Query(None, description="Filtrar por estacionalidad (verano, invierno, primavera, otoño, general)"),
-    db: Session = Depends(get_db)
+    tipo_granularidad: Optional[str] = Query(None, description="Filtrar por granularidad (diario, semanal, mensual, anual)"),
+    estacionalidad: Optional[str] = Query(None, description="Filtrar por estacionalidad (verano, invierno, primavera, otoño, general)"),
 ):
     """
     Obtiene una lista paginada de periodos temporales con filtros opcionales.
@@ -43,22 +45,9 @@ async def get_periodos_temporales(
     ```
     """
     try:
-        query = db.query(PeriodoTemporal)
-        
-        # Aplicar filtros
-        if tipo_granularidad:
-            query = query.filter(PeriodoTemporal.tipo_granularidad == tipo_granularidad)
-        if estacionalidad:
-            query = query.filter(PeriodoTemporal.estacionalidad == estacionalidad)
-        
-        # Obtener total
-        total = query.count()
-        
-        # Aplicar paginación
-        periodos = query.offset(skip).limit(limit).all()
-        
+        periodos, total = periodo_service.obtener_periodos(tipo_granularidad, estacionalidad, skip, limit)
         return {
-            "data": [PeriodoTemporalResponse.from_orm(p) for p in periodos],
+            "data": periodos,
             "total": total,
             "skip": skip,
             "limit": limit
@@ -73,7 +62,7 @@ async def get_periodos_temporales(
     summary="Obtener un periodo temporal por ID",
     description="Retorna los detalles de un periodo temporal específico"
 )
-async def get_periodo_temporal(periodo_id: int, db: Session = Depends(get_db)):
+async def get_periodo_temporal(periodo_id: int):
     """
     Obtiene los detalles de un periodo temporal específico por su ID.
     
@@ -83,12 +72,10 @@ async def get_periodo_temporal(periodo_id: int, db: Session = Depends(get_db)):
     ```
     """
     try:
-        periodo = db.query(PeriodoTemporal).filter(PeriodoTemporal.id_periodo == periodo_id).first()
+        periodo = periodo_service.obtener_periodo(periodo_id)
         if not periodo:
             raise HTTPException(status_code=404, detail=f"Periodo temporal con ID {periodo_id} no encontrado")
-        return PeriodoTemporalResponse.from_orm(periodo)
-    except HTTPException:
-        raise
+        return periodo
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener periodo temporal: {str(e)}")
 
@@ -100,7 +87,7 @@ async def get_periodo_temporal(periodo_id: int, db: Session = Depends(get_db)):
     summary="Crear un nuevo periodo temporal",
     description="Crea un nuevo registro de periodo temporal"
 )
-async def create_periodo_temporal(periodo: PeriodoTemporalCreate, db: Session = Depends(get_db)):
+async def create_periodo_temporal(periodo: PeriodoTemporalCreate):
     """
     Crea un nuevo periodo temporal.
     
@@ -122,41 +109,10 @@ async def create_periodo_temporal(periodo: PeriodoTemporalCreate, db: Session = 
     ```
     """
     try:
-        # Validar que fecha_inicio < fecha_fin
-        if periodo.fecha_inicio >= periodo.fecha_fin:
-            raise HTTPException(status_code=400, detail="Fecha inicio debe ser menor que fecha fin")
-        
-        # Validar tipo de granularidad
-        granularidades_validas = ["diario", "semanal", "mensual", "anual"]
-        if periodo.tipo_granularidad not in granularidades_validas:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Tipo de granularidad inválido. Debe ser uno de: {', '.join(granularidades_validas)}"
-            )
-        
-        # Validar estacionalidad (opcional)
-        if periodo.estacionalidad:
-            estacionalidades_validas = ["verano", "invierno", "primavera", "otoño", "general"]
-            if periodo.estacionalidad not in estacionalidades_validas:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Estacionalidad inválida. Debe ser una de: {', '.join(estacionalidades_validas)}"
-                )
-        
-        nuevo_periodo = PeriodoTemporal(
-            fecha_inicio=periodo.fecha_inicio,
-            fecha_fin=periodo.fecha_fin,
-            tipo_granularidad=periodo.tipo_granularidad,
-            estacionalidad=periodo.estacionalidad or "general"
-        )
-        db.add(nuevo_periodo)
-        db.commit()
-        db.refresh(nuevo_periodo)
-        return PeriodoTemporalResponse.from_orm(nuevo_periodo)
-    except HTTPException:
-        raise
+        return periodo_service.crear_periodo(periodo.dict())
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al crear periodo temporal: {str(e)}")
 
 
@@ -169,7 +125,6 @@ async def create_periodo_temporal(periodo: PeriodoTemporalCreate, db: Session = 
 async def update_periodo_temporal(
     periodo_id: int,
     periodo_data: PeriodoTemporalUpdate,
-    db: Session = Depends(get_db)
 ):
     """
     Actualiza un periodo temporal existente.
@@ -188,47 +143,14 @@ async def update_periodo_temporal(
     ```
     """
     try:
-        periodo = db.query(PeriodoTemporal).filter(PeriodoTemporal.id_periodo == periodo_id).first()
+        periodo = periodo_service.obtener_periodo(periodo_id)
         if not periodo:
             raise HTTPException(status_code=404, detail=f"Periodo temporal con ID {periodo_id} no encontrado")
         
-        # Validar fechas si se actualizan
-        fecha_inicio = periodo_data.fecha_inicio or periodo.fecha_inicio
-        fecha_fin = periodo_data.fecha_fin or periodo.fecha_fin
-        
-        if fecha_inicio >= fecha_fin:
-            raise HTTPException(status_code=400, detail="Fecha inicio debe ser menor que fecha fin")
-        
-        # Validar granularidad si se actualiza
-        if periodo_data.tipo_granularidad:
-            granularidades_validas = ["diario", "semanal", "mensual", "anual"]
-            if periodo_data.tipo_granularidad not in granularidades_validas:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Tipo de granularidad inválido. Debe ser uno de: {', '.join(granularidades_validas)}"
-                )
-        
-        # Validar estacionalidad si se actualiza
-        if periodo_data.estacionalidad:
-            estacionalidades_validas = ["verano", "invierno", "primavera", "otoño", "general"]
-            if periodo_data.estacionalidad not in estacionalidades_validas:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Estacionalidad inválida. Debe ser una de: {', '.join(estacionalidades_validas)}"
-                )
-        
-        # Actualizar campos
-        datos = periodo_data.dict(exclude_unset=True)
-        for campo, valor in datos.items():
-            setattr(periodo, campo, valor)
-        
-        db.commit()
-        db.refresh(periodo)
-        return PeriodoTemporalResponse.from_orm(periodo)
-    except HTTPException:
-        raise
+        return periodo_service.actualizar_periodo(periodo_id, periodo_data.dict(exclude_unset=True))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al actualizar periodo temporal: {str(e)}")
 
 
@@ -238,7 +160,7 @@ async def update_periodo_temporal(
     summary="Eliminar un periodo temporal",
     description="Elimina un periodo temporal de la base de datos"
 )
-async def delete_periodo_temporal(periodo_id: int, db: Session = Depends(get_db)):
+async def delete_periodo_temporal(periodo_id: int):
     """
     Elimina un periodo temporal existente.
     
@@ -250,17 +172,11 @@ async def delete_periodo_temporal(periodo_id: int, db: Session = Depends(get_db)
     ```
     """
     try:
-        periodo = db.query(PeriodoTemporal).filter(PeriodoTemporal.id_periodo == periodo_id).first()
-        if not periodo:
+        resultado = periodo_service.eliminar_periodo(periodo_id)
+        if not resultado:
             raise HTTPException(status_code=404, detail=f"Periodo temporal con ID {periodo_id} no encontrado")
-        
-        db.delete(periodo)
-        db.commit()
         return None
-    except HTTPException:
-        raise
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al eliminar periodo temporal: {str(e)}")
 
 
@@ -273,7 +189,6 @@ async def delete_periodo_temporal(periodo_id: int, db: Session = Depends(get_db)
 async def get_periodos_activos(
     fecha_inicio: datetime = Query(..., description="Fecha inicio del rango"),
     fecha_fin: datetime = Query(..., description="Fecha fin del rango"),
-    db: Session = Depends(get_db)
 ):
     """
     Obtiene los periodos que están activos en un rango de fechas específico.
@@ -289,22 +204,16 @@ async def get_periodos_activos(
         if fecha_inicio >= fecha_fin:
             raise HTTPException(status_code=400, detail="Fecha inicio debe ser menor que fecha fin")
         
-        # Buscar periodos que se solapan
-        periodos = db.query(PeriodoTemporal).filter(
-            PeriodoTemporal.fecha_inicio <= fecha_fin,
-            PeriodoTemporal.fecha_fin >= fecha_inicio
-        ).all()
+        periodos = periodo_service.obtener_periodos_activos(fecha_inicio, fecha_fin)
         
         return {
             "rango_consultado": {
                 "fecha_inicio": fecha_inicio,
                 "fecha_fin": fecha_fin
             },
-            "periodos_activos": [PeriodoTemporalResponse.from_orm(p) for p in periodos],
+            "periodos_activos": periodos,
             "cantidad": len(periodos)
         }
-    except HTTPException:
-        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener periodos activos: {str(e)}")
 
@@ -319,7 +228,6 @@ async def get_periodos_por_estacionalidad(
     estacionalidad: str,
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
-    db: Session = Depends(get_db)
 ):
     """
     Obtiene todos los periodos de una estacionalidad específica.
@@ -332,25 +240,79 @@ async def get_periodos_por_estacionalidad(
     ```
     """
     try:
-        estacionalidades_validas = ["verano", "invierno", "primavera", "otoño", "general"]
-        if estacionalidad not in estacionalidades_validas:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Estacionalidad inválida. Debe ser una de: {', '.join(estacionalidades_validas)}"
-            )
-        
-        query = db.query(PeriodoTemporal).filter(PeriodoTemporal.estacionalidad == estacionalidad)
-        total = query.count()
-        periodos = query.offset(skip).limit(limit).all()
+        periodos, total = periodo_service.obtener_periodos_por_estacionalidad(estacionalidad, skip, limit)
         
         return {
             "estacionalidad": estacionalidad,
-            "data": [PeriodoTemporalResponse.from_orm(p) for p in periodos],
+            "data": periodos,
             "total": total,
             "skip": skip,
             "limit": limit
         }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/{periodo_id}", summary="Eliminar periodo temporal")
+def delete_periodo_temporal(periodo_id: int):
+    """
+    Elimina un periodo temporal existente.
+    
+    **Advertencia:** Esta operación no se puede deshacer.
+    
+    **Ejemplo de uso:**
+    ```
+    DELETE /periodos-temporales/1
+    ```
+    """
+    try:
+        success = periodo_service.eliminar_periodo(periodo_id)
+        if not success:
+            raise HTTPException(status_code=404, detail=f"Periodo temporal con ID {periodo_id} no encontrado")
+        return {"mensaje": f"Periodo {periodo_id} eliminado exitosamente"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get(
+    "/activos/en-rango",
+    response_model=dict,
+    summary="Obtener periodos activos en un rango de fechas",
+    description="Retorna periodos temporales que se solapan con el rango especificado"
+)
+def get_periodos_activos(
+    fecha_inicio: str = Query(..., description="Fecha inicio del rango (YYYY-MM-DD)"),
+    fecha_fin: str = Query(..., description="Fecha fin del rango (YYYY-MM-DD)")
+):
+    """
+    Obtiene los periodos que están activos en un rango de fechas específico.
+    
+    Un periodo se considera activo si se solapa con el rango especificado.
+    
+    **Ejemplo de uso:**
+    ```
+    GET /periodos-temporales/activos/en-rango?fecha_inicio=2024-01-01&fecha_fin=2024-01-31
+    ```
+    """
+    try:
+        from datetime import datetime
+        f_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
+        f_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
+        
+        if f_inicio >= f_fin:
+            raise HTTPException(status_code=400, detail="Fecha inicio debe ser menor que fecha fin")
+        
+        periodos = periodo_service.obtener_periodos_por_rango(f_inicio, f_fin)
+        
+        return {
+            "rango_consultado": {
+                "fecha_inicio": fecha_inicio,
+                "fecha_fin": fecha_fin
+            },
+            "periodos_activos": periodos,
+            "cantidad": len(periodos)
+        }
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al listar periodos por estacionalidad: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

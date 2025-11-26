@@ -1,0 +1,32 @@
+{
+  "timestamp": "2025-10-22T23:54:41.479947",
+  "total_registros": 750,
+  "total_secuencias": 726,
+  "sequence_length": 14,
+  "num_features": 11,
+  "features": [
+    "punto_encoded",
+    "clima_encoded",
+    "evento_encoded",
+    "combustible_encoded",
+    "dia_mes",
+    "mes",
+    "semana_a\u00f1o",
+    "dia_semana_num",
+    "es_fin_semana",
+    "capacidad_kg",
+    "consumo_km_l"
+  ],
+  "X_shape": [
+    726,
+    14,
+    11
+  ],
+  "y_shape": [
+    726
+  ],
+  "y_min": 0.0,
+  "y_max": 0.7435897588729858,
+  "y_mean": 0.3197546601295471,
+  "y_std": 0.14667193591594696
+}
