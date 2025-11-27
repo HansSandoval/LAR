@@ -31,9 +31,12 @@ except ImportError:
     from vrp.dvrptw_env import DVRPTWEnv, Cliente
     from vrp.mas_cooperativo import AgenteRecolector, CoordinadorMAS
 
+from ..service.ruta_planificada_service import RutaPlanificadaService
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/mas", tags=["Multi-Agent System"])
+ruta_service = RutaPlanificadaService()
 
 
 # ==================== MODELOS PYDANTIC ====================
@@ -72,8 +75,9 @@ class EstadisticasGlobales(BaseModel):
     clientes_totales: int
     camiones_activos: int
     camiones_totales: int
-    tiempo_simulacion: float  # segundos
+    tiempo_simulacion: float  # segundos (tiempo real de ejecución)
     eficiencia: float  # porcentaje (0-100)
+    tiempo_total_estimado: float = 0.0 # minutos (tiempo simulado de operación)
 
 
 class EventoMAS(BaseModel):
@@ -425,6 +429,7 @@ async def obtener_estado_simulacion(sim_id: str):
             # Agregar geometría del tramo actual para animación
             if hasattr(camion, 'geometria_actual') and camion.geometria_actual:
                 dict_camion['geometria_actual'] = camion.geometria_actual
+                dict_camion['es_fallback'] = getattr(camion, 'es_fallback', False)
             
             estados_camiones.append(dict_camion)
         
@@ -443,6 +448,11 @@ async def obtener_estado_simulacion(sim_id: str):
         
         tiempo_sim = (datetime.now() - sim['inicio']).total_seconds()
         
+        # Calcular tiempo total estimado (el máximo tiempo de operación de cualquier camión)
+        tiempo_total_estimado = 0.0
+        if coordinador.agentes:
+            tiempo_total_estimado = max(agente.camion.tiempo_actual for agente in coordinador.agentes)
+        
         estadisticas = EstadisticasGlobales(
             total_residuos_recolectados=total_residuos,
             total_distancia_recorrida=distancia_total,
@@ -451,7 +461,8 @@ async def obtener_estado_simulacion(sim_id: str):
             camiones_activos=camiones_activos,
             camiones_totales=len(coordinador.agentes),
             tiempo_simulacion=tiempo_sim,
-            eficiencia=eficiencia
+            eficiencia=eficiencia,
+            tiempo_total_estimado=tiempo_total_estimado
         )
         
         # Agregar lista de IDs de clientes servidos para actualizar visualización
@@ -590,6 +601,68 @@ async def ejecutar_simulacion_completa(sim_id: str, max_pasos: int = 500):
     except Exception as e:
         logger.error(f"❌ Error en simulación completa: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/simulacion/{sim_id}/guardar")
+async def guardar_simulacion(sim_id: str):
+    """
+    Guarda el estado actual de la simulación como rutas planificadas en la base de datos.
+    Genera una RutaPlanificada por cada camión activo.
+    """
+    if sim_id not in simulaciones_activas:
+        raise HTTPException(status_code=404, detail="Simulación no encontrada")
+    
+    sim = simulaciones_activas[sim_id]
+    env = sim['env']
+    rutas_guardadas = []
+    
+    try:
+        fecha_actual = datetime.now().date()
+        
+        for camion in env.camiones:
+            if not camion.activo:
+                continue
+                
+            # Recopilar secuencia de clientes visitados (IDs)
+            # Nota: En la simulación, 'ruta' es una lista de coordenadas, no IDs.
+            # Necesitamos reconstruir la secuencia de IDs si es posible, o usar la memoria del agente.
+            # El agente tiene 'memoria_decisiones'.
+            
+            agente = next((a for a in sim['coordinador'].agentes if a.camion.id == camion.id), None)
+            secuencia_ids = []
+            if agente:
+                secuencia_ids = [d.cliente_objetivo_id for d in agente.memoria_decisiones if d.cliente_objetivo_id > 0]
+            
+            # Si no hay secuencia, no guardar
+            if not secuencia_ids:
+                continue
+
+            # Obtener geometría completa acumulada
+            geometria = getattr(camion, 'ruta_geometria', [])
+            
+            # Crear ruta en BD
+            # FIX: Forzar id_zona=1 porque los sectores (0,1,2) generados por K-Means no existen en la tabla 'zona'
+            # y causan violación de llave foránea (y error de encoding al reportarlo).
+            nueva_ruta = ruta_service.crear_ruta(
+                id_zona=1, 
+                id_turno=1, # Default turno mañana
+                fecha=fecha_actual,
+                secuencia_puntos=secuencia_ids,
+                distancia_km=camion.distancia_recorrida_km,
+                duracion_min=camion.tiempo_actual,
+                version_vrp="MAS-LSTM-v2",
+                geometria_json=geometria
+            )
+            rutas_guardadas.append(nueva_ruta)
+            
+        return {
+            "mensaje": f"Se guardaron {len(rutas_guardadas)} rutas exitosamente",
+            "rutas": rutas_guardadas
+        }
+        
+    except Exception as e:
+        logger.error(f"Error guardando simulación: {e}")
+        raise HTTPException(status_code=500, detail=f"Error al guardar: {str(e)}")
 
 
 @router.delete("/simulacion/{sim_id}")

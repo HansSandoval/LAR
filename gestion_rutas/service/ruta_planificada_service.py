@@ -21,28 +21,119 @@ class RutaPlanificadaService:
         secuencia_puntos: List[int],
         distancia_km: Optional[float] = None,
         duracion_min: Optional[float] = None,
-        version_vrp: str = "v1.0"
+        version_vrp: str = "v1.0",
+        geometria_json: Optional[List[List[float]]] = None
     ) -> Dict:
         """Crear una nueva ruta planificada"""
         try:
+            # Convertir geometría a JSON string si es necesario (psycopg2 suele manejar listas/dicts a JSONB automáticamente)
+            import json
+            import math
+            import numpy as np
+
+            def sanitize_for_json(obj):
+                if obj is None:
+                    return None
+                if isinstance(obj, (float, np.floating)):
+                    if math.isnan(obj) or math.isinf(obj):
+                        return 0.0
+                    return float(obj)
+                elif isinstance(obj, (int, np.integer)):
+                    return int(obj)
+                elif isinstance(obj, list) or isinstance(obj, np.ndarray):
+                    return [sanitize_for_json(x) for x in obj]
+                elif isinstance(obj, dict):
+                    return {k: sanitize_for_json(v) for k, v in obj.items()}
+                return obj
+            
+            # Log para depuración de datos antes de insertar
+            logger.info(f"Intentando guardar ruta: Zona={id_zona}, Turno={id_turno}, Puntos={len(secuencia_puntos) if secuencia_puntos else 0}")
+            logger.info(f"   Datos: Distancia={distancia_km}, Duracion={duracion_min}, Fecha={fecha}")
+            logger.info(f"   Geometria Puntos: {len(geometria_json) if geometria_json else 0}")
+            
+            # Sanitize geometry and sequence to avoid NaN/Inf which Postgres JSONB rejects
+            if geometria_json:
+                geometria_json = sanitize_for_json(geometria_json)
+            
+            if secuencia_puntos:
+                secuencia_puntos = sanitize_for_json(secuencia_puntos)
+
+            geometria_str = json.dumps(geometria_json) if geometria_json else None
+            secuencia_str = json.dumps(secuencia_puntos) if secuencia_puntos else "[]"
+
+            # Sanitize scalars
+            if distancia_km is not None:
+                if isinstance(distancia_km, (float, np.floating)):
+                     if math.isnan(distancia_km) or math.isinf(distancia_km):
+                        distancia_km = 0.0
+                     else:
+                        distancia_km = float(distancia_km)
+
+            if duracion_min is not None:
+                if isinstance(duracion_min, (float, np.floating)):
+                    if math.isnan(duracion_min) or math.isinf(duracion_min):
+                        duracion_min = 0
+                    else:
+                        duracion_min = int(duracion_min)
+            
+            # Truncate version string to fit VARCHAR(50)
+            if len(version_vrp) > 50:
+                version_vrp = version_vrp[:50]
+
+            # --- DEBUG: DUMP PAYLOAD TO FILE ---
+            try:
+                debug_payload = {
+                    "id_zona": id_zona,
+                    "id_turno": id_turno,
+                    "fecha": str(fecha),
+                    "secuencia_puntos": secuencia_puntos, # FULL DUMP
+                    "distancia_km": distancia_km,
+                    "tiempo_estimado_min": duracion_min,
+                    "version_modelo_vrp": version_vrp,
+                    "geometria_json": geometria_json # FULL DUMP
+                }
+                with open("debug_payload_last_attempt.json", "w", encoding="utf-8") as f:
+                    json.dump(debug_payload, f, indent=4, ensure_ascii=False)
+                logger.info("Payload dumped to debug_payload_last_attempt.json")
+            except Exception as e:
+                logger.error(f"Failed to dump debug payload: {e}")
+            # -----------------------------------
+
             query = """
                 INSERT INTO ruta_planificada 
                 (id_zona, id_turno, fecha, secuencia_puntos, 
-                 distancia_planificada_km, duracion_planificada_min, version_modelo_vrp)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                 distancia_km, tiempo_estimado_min, version_modelo_vrp, geometria_json)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id_ruta, id_zona, id_turno, fecha, secuencia_puntos,
-                          distancia_planificada_km, duracion_planificada_min, version_modelo_vrp
+                          distancia_km, tiempo_estimado_min, version_modelo_vrp, geometria_json
             """
             
-            resultado = execute_insert_returning(query, (
-                id_zona, id_turno, fecha, secuencia_puntos,
-                distancia_km, duracion_min, version_vrp
-            ))
-            
-            logger.info(f"Ruta {resultado['id_ruta']} creada exitosamente")
-            return resultado
+            try:
+                resultado = execute_insert_returning(query, (
+                    id_zona, id_turno, fecha, secuencia_str,
+                    distancia_km, duracion_min, version_vrp, geometria_str
+                ))
+                logger.info(f"Ruta {resultado['id_ruta']} creada exitosamente")
+                return resultado
+            except UnicodeDecodeError as ude:
+                logger.error(f"CRITICAL: UnicodeDecodeError in DB driver. Encoding issue persists.")
+                logger.error(f"Data: Zona={id_zona}, Turno={id_turno}, Fecha={fecha}")
+                raise Exception("Error de codificación en base de datos. Revise logs.")
+            except Exception as e:
+                # Try to extract Postgres error details if available
+                error_msg = str(e)
+                if hasattr(e, 'pgcode'):
+                    logger.error(f"DB Error Code: {e.pgcode}")
+                if hasattr(e, 'pgerror'):
+                    # pgerror might be bytes or string depending on psycopg2 version/encoding
+                    logger.error(f"DB Error Message: {e.pgerror}")
+                    error_msg = f"{e.pgerror} (Code: {e.pgcode})"
+                
+                logger.error(f"Error detallado al crear ruta: {error_msg}")
+                raise Exception(f"Error al guardar ruta: {error_msg}")
+                
         except Exception as e:
-            logger.error(f"Error al crear ruta: {str(e)}")
+            logger.error(f"Error general en crear_ruta: {str(e)}")
             raise
 
     @staticmethod
@@ -50,7 +141,7 @@ class RutaPlanificadaService:
         """Obtener ruta planificada por ID"""
         query = """
             SELECT id_ruta, id_zona, id_turno, fecha, secuencia_puntos,
-                   distancia_planificada_km, duracion_planificada_min, version_modelo_vrp
+                   distancia_km, tiempo_estimado_min, version_modelo_vrp, geometria_json
             FROM ruta_planificada
             WHERE id_ruta = %s
         """

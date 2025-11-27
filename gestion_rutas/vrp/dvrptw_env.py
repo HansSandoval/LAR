@@ -21,15 +21,47 @@ import time
 logger = logging.getLogger(__name__)
 
 # ==================== OSRM SERVICE INTERNO ====================
+import json
+import os
+
 class OSRMService:
     """Servicio OSRM simplificado integrado para evitar problemas de imports"""
     
-    OSRM_URL = "https://routing.openstreetmap.de/routed-car/route/v1/driving"
+    # Lista de servidores OSRM para redundancia
+    OSRM_SERVERS = [
+        "http://router.project-osrm.org/route/v1/driving",
+        "https://routing.openstreetmap.de/routed-car/route/v1/driving"
+    ]
+    CURRENT_SERVER_IDX = 0
+    
     _route_cache: Dict[str, Dict] = {}
+    _cache_file = "osrm_cache.json"
+    _cache_loaded = False
     _osrm_available = True
     _consecutive_failures = 0
     MAX_FAILURES = 50  # Aumentado para insistir en rutas reales
     
+    @classmethod
+    def _load_cache(cls):
+        if cls._cache_loaded:
+            return
+        try:
+            if os.path.exists(cls._cache_file):
+                with open(cls._cache_file, 'r', encoding='utf-8') as f:
+                    cls._route_cache = json.load(f)
+                logger.info(f"💾 Caché OSRM cargado: {len(cls._route_cache)} rutas")
+        except Exception as e:
+            logger.warning(f"⚠️ Error cargando caché OSRM: {e}")
+        cls._cache_loaded = True
+
+    @classmethod
+    def _save_cache(cls):
+        try:
+            with open(cls._cache_file, 'w', encoding='utf-8') as f:
+                json.dump(cls._route_cache, f)
+        except Exception as e:
+            logger.warning(f"⚠️ Error guardando caché OSRM: {e}")
+
     @staticmethod
     def _generar_ruta_lineal(lat1: float, lon1: float, lat2: float, lon2: float) -> Dict:
         """Genera una ruta lineal de respaldo (Haversine)"""
@@ -45,14 +77,46 @@ class OSRMService:
         return {
             "geometry": [[lat1, lon1], [lat2, lon2]], # Línea recta
             "distancia_km": round(distancia_km, 3),
-            "duracion_minutos": round(distancia_km * 2, 2) # Estimación: 30km/h = 0.5km/min -> 2 min/km
+            "duracion_minutos": round(distancia_km * 2, 2), # Estimación: 30km/h = 0.5km/min -> 2 min/km
+            "es_fallback": True
         }
 
+    @staticmethod
+    def _snap_coordinate(lat: float, lon: float) -> Optional[Tuple[float, float]]:
+        """Encuentra el punto más cercano en una calle válida usando OSRM nearest"""
+        try:
+            current_url = OSRMService.OSRM_SERVERS[OSRMService.CURRENT_SERVER_IDX]
+            # Ajustar URL para servicio nearest
+            if "route/v1" in current_url:
+                base_url = current_url.replace("route/v1", "nearest/v1")
+            else:
+                return None
+
+            response = requests.get(
+                f"{base_url}/{lon},{lat}",
+                params={"number": 1},
+                timeout=5
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("code") == "Ok" and data.get("waypoints"):
+                    location = data["waypoints"][0]["location"]
+                    # OSRM devuelve [lon, lat]
+                    return location[1], location[0]
+            return None
+        except Exception as e:
+            # logger.warning(f"⚠️ Error en snapping OSRM: {e}")
+            return None
+
+    @staticmethod
     @staticmethod
     def obtener_ruta(lat1: float, lon1: float, lat2: float, lon2: float) -> Optional[Dict]:
         """
         Obtener ruta real por calles entre dos puntos usando OSRM.
         """
+        OSRMService._load_cache()
+
         # Optimización: Si los puntos son casi idénticos, retornar distancia 0 sin llamar a API
         if abs(lat1 - lat2) < 0.0001 and abs(lon1 - lon2) < 0.0001:
             return {
@@ -85,48 +149,73 @@ class OSRMService:
             
             logger.debug(f"🌐 Consultando OSRM: {coords}")
             
-            # ⚠️ DELAY PARA EVITAR RATE LIMITING (REDUCIDO)
-            time.sleep(0.1) 
+            # ⚠️ DELAY PARA EVITAR RATE LIMITING
+            time.sleep(0.5) 
             
-            # Timeout aumentado para asegurar respuesta de OSRM
-            response = requests.get(
-                f"{OSRMService.OSRM_URL}/{coords}", 
-                params=params, 
-                headers=headers,
-                timeout=5  # Aumentado a 5s
-            )
+            # Intentar con el servidor actual
+            current_url = OSRMService.OSRM_SERVERS[OSRMService.CURRENT_SERVER_IDX]
             
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("code") == "Ok" and data.get("routes"):
-                    ruta = data["routes"][0]
-                    # Convertir geometría de [lon, lat] a [lat, lon] para Leaflet
-                    geometry_leaflet = [[coord[1], coord[0]] for coord in ruta["geometry"]["coordinates"]]
+            try:
+                # Timeout aumentado para asegurar respuesta de OSRM
+                response = requests.get(
+                    f"{current_url}/{coords}", 
+                    params=params, 
+                    headers=headers,
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("code") == "Ok" and data.get("routes"):
+                        ruta = data["routes"][0]
+                        # Convertir geometría de [lon, lat] a [lat, lon] para Leaflet
+                        geometry_leaflet = [[coord[1], coord[0]] for coord in ruta["geometry"]["coordinates"]]
+                        
+                        result = {
+                            "geometry": geometry_leaflet,
+                            "distancia_km": round(ruta["distance"] / 1000, 2),
+                            "duracion_minutos": round(ruta["duration"] / 60, 2),
+                            "es_fallback": False
+                        }
+                        
+                        # Guardar en caché y persistir
+                        OSRMService._route_cache[cache_key] = result
+                        if len(OSRMService._route_cache) % 10 == 0: # Guardar cada 10 nuevas rutas
+                            OSRMService._save_cache()
+                            
+                        OSRMService._consecutive_failures = 0
+                        return result
+                    else:
+                        logger.warning(f"⚠️ OSRM respuesta inválida: {data.get('code')}")
+                elif response.status_code == 429:
+                    logger.warning("⚠️ OSRM Rate Limit Exceeded. Cambiando servidor...")
+                    OSRMService.CURRENT_SERVER_IDX = (OSRMService.CURRENT_SERVER_IDX + 1) % len(OSRMService.OSRM_SERVERS)
+                    time.sleep(2)
+                else:
+                    logger.warning(f"⚠️ OSRM Error {response.status_code}")
                     
-                    result = {
-                        "geometry": geometry_leaflet,
-                        "distancia_km": round(ruta["distance"] / 1000, 2),
-                        "duracion_minutos": round(ruta["duration"] / 60, 2)
-                    }
-                    
-                    # Guardar en caché y resetear contador de fallos
-                    OSRMService._route_cache[cache_key] = result
-                    OSRMService._consecutive_failures = 0
-                    return result
-            
-            # Si falla la respuesta pero no es excepción, retornar lineal
+            except requests.Timeout:
+                logger.warning("⚠️ OSRM Timeout")
+            except Exception as e:
+                logger.warning(f"⚠️ OSRM Exception: {e}")
+                
+            # Si falló, incrementar contador
+            OSRMService._consecutive_failures += 1
+            if OSRMService._consecutive_failures > OSRMService.MAX_FAILURES:
+                logger.error("❌ Demasiados fallos OSRM. Desactivando servicio.")
+                OSRMService._osrm_available = False
+                
             return OSRMService._generar_ruta_lineal(lat1, lon1, lat2, lon2)
             
         except Exception as e:
-            OSRMService._consecutive_failures += 1
-            logger.warning(f"⚠️ Error OSRM ({OSRMService._consecutive_failures}/{OSRMService.MAX_FAILURES}): {str(e)[:100]}...")
-            
-            if OSRMService._consecutive_failures >= OSRMService.MAX_FAILURES:
-                logger.error("❌ OSRM desactivado por múltiples fallos. Usando distancia Haversine.")
-                OSRMService._osrm_available = False
-            
-            # Retornar ruta lineal en caso de error
+            logger.error(f"❌ Error crítico en OSRM: {e}")
             return OSRMService._generar_ruta_lineal(lat1, lon1, lat2, lon2)
+
+    @staticmethod
+    def _cambiar_servidor():
+        """Cambia al siguiente servidor OSRM disponible"""
+        OSRMService.CURRENT_SERVER_IDX = (OSRMService.CURRENT_SERVER_IDX + 1) % len(OSRMService.OSRM_SERVERS)
+        logger.info(f"🔄 Cambiando a servidor OSRM: {OSRMService.OSRM_SERVERS[OSRMService.CURRENT_SERVER_IDX]}")
 
 
 @dataclass
@@ -152,14 +241,15 @@ class Camion:
     id: int
     capacidad_kg: float
     carga_actual_kg: float = 0.0
-    latitud: float = -20.2693  # Posición inicial (centro Sector Sur)
-    longitud: float = -70.1703
+    latitud: float = -20.2132  # Posición inicial (Plaza Prat Iquique)
+    longitud: float = -70.1525
     tiempo_actual: float = 0.0
     ruta_actual: List[int] = field(default_factory=list)  # IDs de clientes a visitar
     ruta_geometria: List[List[float]] = field(default_factory=list)  # Geometría real ACUMULADA de la ruta
     geometria_actual: List[List[float]] = field(default_factory=list)  # Geometría del ÚLTIMO tramo (para animación)
     distancia_recorrida_km: float = 0.0
     activo: bool = True
+    nombre_ultimo_punto: str = "" # Para heurística de continuidad de calle
     
     @property
     def capacidad_disponible(self) -> float:
@@ -188,8 +278,8 @@ class DVRPTWEnv(gym.Env):
         num_camiones: int = 3,
         capacidad_camion_kg: float = 3500.0,
         clientes: Optional[List[Dict]] = None,
-        depot_lat: float = -20.2693,
-        depot_lon: float = -70.1703,
+        depot_lat: float = -20.2132,
+        depot_lon: float = -70.1525,
         max_steps: int = 500,
         penalizacion_distancia: float = 0.1,
         recompensa_servicio: float = 10.0,
@@ -255,8 +345,8 @@ class DVRPTWEnv(gym.Env):
                 clientes_data.append({
                     'id': i,
                     'nombre': f'Punto_{i}',
-                    'latitud': -20.2693 + np.random.uniform(-0.02, 0.02),
-                    'longitud': -70.1703 + np.random.uniform(-0.02, 0.02),
+                    'latitud': -20.2132 + np.random.uniform(-0.02, 0.02),
+                    'longitud': -70.1525 + np.random.uniform(-0.02, 0.02),
                     'demanda_kg': np.random.uniform(20, 150),
                     'prioridad': np.random.choice([1, 2, 3], p=[0.7, 0.2, 0.1])
                 })
@@ -530,6 +620,14 @@ class DVRPTWEnv(gym.Env):
                 camion.carga_actual_kg = 0.0
                 camion.ruta_geometria = [] # Reset al llegar al depot
                 
+                # Actualizar tiempo de retorno
+                tiempo_viaje = 0.0
+                if self.usar_routing_real and 'ruta_info' in locals() and ruta_info and 'duracion_minutos' in ruta_info:
+                    tiempo_viaje = ruta_info['duracion_minutos']
+                else:
+                    tiempo_viaje = distancia * 2.0
+                camion.tiempo_actual += tiempo_viaje
+                
                 reward -= distancia * self.penalizacion_distancia
                 evento = f"Camión {camion.id} retornó al depot"
             
@@ -558,26 +656,39 @@ class DVRPTWEnv(gym.Env):
                         )
                         if ruta_info and 'geometry' in ruta_info:
                             camion.geometria_actual = ruta_info['geometry']
+                            camion.es_fallback = ruta_info.get('es_fallback', False)
                             # NO acumular historial para evitar sobrecarga visual y de datos
                             # El frontend se encarga de dibujar el rastro si es necesario
                             camion.ruta_geometria = ruta_info['geometry']
                         else:
                             camion.geometria_actual = []
+                            camion.es_fallback = False
                             camion.ruta_geometria = []
                     
                     camion.latitud = cliente.latitud
                     camion.longitud = cliente.longitud
                     camion.distancia_recorrida_km += distancia
                     camion.carga_actual_kg += cliente.demanda_kg
+                    camion.nombre_ultimo_punto = cliente.nombre # Guardar nombre para heurística
                     cliente.servido = True
                     self.clientes_servidos += 1
+                    
+                    # Actualizar tiempo (viaje + servicio)
+                    tiempo_viaje = 0.0
+                    if self.usar_routing_real and 'ruta_info' in locals() and ruta_info and 'duracion_minutos' in ruta_info:
+                        tiempo_viaje = ruta_info['duracion_minutos']
+                    else:
+                        # Estimación: 30km/h = 0.5 km/min -> 2 min/km
+                        tiempo_viaje = distancia * 2.0
+                    
+                    camion.tiempo_actual += tiempo_viaje + cliente.tiempo_servicio
                     
                     recompensa_base = self.recompensa_servicio * cliente.prioridad
                     penalizacion_dist = distancia * self.penalizacion_distancia
                     reward = recompensa_base - penalizacion_dist
                     
                     evento = f"Camión {camion.id} sirvió a cliente {cliente.id}"
-                    logger.info(f"🚛 Camión {camion.id} → Cliente '{cliente.nombre}' ({distancia:.2f} km)")
+                    logger.info(f"🚛 Camión {camion.id} → Cliente '{cliente.nombre}' ({distancia:.2f} km | {tiempo_viaje:.1f} min)")
             
             return reward, evento
             

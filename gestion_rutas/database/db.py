@@ -16,11 +16,12 @@ class Base:
     pass
 
 # PostgreSQL 17 - Configuración para Iquique
-POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
-POSTGRES_DB = os.getenv("POSTGRES_DB", "gestion_rutas")
+# Intentar leer variables con prefijo POSTGRES_ y si no, DB_ (compatibilidad con .env)
+POSTGRES_USER = os.getenv("POSTGRES_USER") or os.getenv("DB_USER") or "postgres"
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD") or os.getenv("DB_PASSWORD") or "postgres"
+POSTGRES_HOST = os.getenv("POSTGRES_HOST") or os.getenv("DB_HOST") or "localhost"
+POSTGRES_PORT = os.getenv("POSTGRES_PORT") or os.getenv("DB_PORT") or "5432"
+POSTGRES_DB = os.getenv("POSTGRES_DB") or os.getenv("DB_NAME") or "gestion_rutas"
 
 print(f"[DB] Usando PostgreSQL directo: {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}")
 
@@ -38,14 +39,20 @@ class PostgresDB:
     def get_connection(self):
         """Obtiene conexión a PostgreSQL"""
         try:
+            # Conectar usando configuración estándar
+            # Usamos options='-c client_encoding=LATIN1' para asegurar que incluso los mensajes
+            # de error de conexión (FATAL) se puedan decodificar si vienen en español/win1252.
             conn = psycopg2.connect(
                 host=self.host,
                 port=self.port,
                 database=self.database,
                 user=self.user,
                 password=self.password,
-                client_encoding='utf8'
+                options="-c client_encoding=LATIN1"
             )
+            # Ya no es necesario set_client_encoding explícito si se pasa en options,
+            # pero lo dejamos por seguridad o lo quitamos.
+            # conn.set_client_encoding('UTF8') <--- NO USAR UTF8 si el servidor manda basura
             return conn
         except psycopg2.Error as e:
             logger.error(f"Error conectando a PostgreSQL: {e}")

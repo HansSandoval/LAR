@@ -6,7 +6,9 @@ Camiones cooperativos que toman decisiones inteligentes basadas en predicciones 
 import numpy as np
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass, field
-from .dvrptw_env import DVRPTWEnv, Cliente, Camion
+import random
+import math
+from .dvrptw_env import DVRPTWEnv, Cliente, Camion, OSRMService
 
 try:
     from stable_baselines3 import PPO
@@ -36,11 +38,12 @@ class AgenteRecolector:
     - Considera capacidad restante
     """
     
-    def __init__(self, camion: Camion, env: DVRPTWEnv, modelo_ppo=None):
+    def __init__(self, camion: Camion, env: DVRPTWEnv, modelo_ppo=None, sector_id: int = -1):
         self.camion = camion
         self.env = env
         self.memoria_decisiones: List[DecisionAgente] = []
         self.modelo_ppo = modelo_ppo
+        self.sector_id = sector_id
         
         # Parámetros de decisión
         self.peso_distancia = 0.4
@@ -112,11 +115,9 @@ class AgenteRecolector:
             cliente_id_ppo = self.seleccionar_accion_ppo()
             
             # SANITY CHECK MEJORADO: Evitar retornos prematuros al depósito
-            # Si el PPO sugiere volver (0), verificamos si realmente es necesario.
             if cliente_id_ppo == 0:
                 # 1. Si está vacío, prohibido volver
                 if self.camion.carga_actual_kg == 0:
-                    print(f"⚠️ PPO sugirió Depot para camión {self.camion.id} (vacío). Forzando heurística.")
                     cliente_id_ppo = None 
                 
                 # 2. Si tiene carga pero es menos del 90% y hay clientes factibles, prohibido volver
@@ -128,11 +129,10 @@ class AgenteRecolector:
                     ]
                     
                     if porcentaje_carga < 90 and len(clientes_factibles_check) > 0:
-                        print(f"⚠️ PPO sugirió Depot para camión {self.camion.id} (Carga: {porcentaje_carga:.1f}%). Muy pronto. Forzando heurística.")
                         cliente_id_ppo = None
             
             if cliente_id_ppo is not None:
-                # Caso 1: PPO decide ir al Depot (y no estamos vacíos)
+                # Caso 1: PPO decide ir al Depot
                 if cliente_id_ppo == 0:
                     dist_depot = self.env._calcular_distancia_haversine(
                         self.camion.latitud, self.camion.longitud,
@@ -141,7 +141,7 @@ class AgenteRecolector:
                     decision = DecisionAgente(
                         camion_id=self.camion.id,
                         cliente_objetivo_id=0,
-                        razonamiento="🤖 IA PPO decidió ir al Depot",
+                        razonamiento="IA PPO decidió ir al Depot",
                         prioridad_decision=8.0,
                         distancia_estimada=dist_depot,
                         beneficio_estimado=0.0
@@ -150,43 +150,32 @@ class AgenteRecolector:
                     return 0
                 
                 # Caso 2: PPO decide ir a un cliente
-                # Buscar objeto cliente
                 cliente = next((c for c in clientes_disponibles if c.id == cliente_id_ppo), None)
                 
-                # Validar que el cliente existe, no ha sido servido y cabe en el camión
                 if cliente and not cliente.servido and cliente.demanda_kg <= self.camion.capacidad_disponible:
-                    # Registrar decisión PPO
                     decision = DecisionAgente(
                         camion_id=self.camion.id,
                         cliente_objetivo_id=cliente_id_ppo,
-                        razonamiento=f"🤖 IA PPO (Acción {cliente_id_ppo})",
-                        prioridad_decision=10.0, # Alta prioridad a la IA
-                        distancia_estimada=self._calcular_distancia_a(cliente),
+                        razonamiento=f"IA PPO (Acción {cliente_id_ppo})",
+                        prioridad_decision=10.0,
+                        distancia_estimada=self._calcular_distancia_a(cliente, usar_osrm=False),
                         beneficio_estimado=cliente.demanda_kg
                     )
                     self.memoria_decisiones.append(decision)
                     return cliente_id_ppo
-                else:
-                    print(f"⚠️ PPO sugirió cliente {cliente_id_ppo} no válido/factible. Usando heurística.")
 
         # --- FALLBACK HEURÍSTICA ---
         if not clientes_disponibles:
             return None
         
-        # Filtrar clientes ya servidos
-        clientes_no_servidos = [c for c in clientes_disponibles if not c.servido]
-        
-        if not clientes_no_servidos:
-            return None
-        
-        # Filtrar clientes que exceden capacidad
+        # Filtrar clientes ya servidos y por capacidad
         clientes_factibles = [
-            c for c in clientes_no_servidos 
-            if c.demanda_kg <= self.camion.capacidad_disponible
+            c for c in clientes_disponibles 
+            if not c.servido and c.demanda_kg <= self.camion.capacidad_disponible
         ]
         
         if not clientes_factibles:
-            # Si no hay clientes factibles, regresar al depósito
+            # Regresar al depósito
             dist_depot = self.env._calcular_distancia_haversine(
                 self.camion.latitud, self.camion.longitud,
                 self.env.depot_lat, self.env.depot_lon
@@ -202,22 +191,39 @@ class AgenteRecolector:
             self.memoria_decisiones.append(decision)
             return 0
         
-        # Evaluar cada cliente
-        evaluaciones = []
+        # OPTIMIZACIÓN: Pre-filtrado con Haversine para reducir llamadas a OSRM
+        # Calcular distancia Haversine a todos los factibles
+        candidatos_preliminares = []
         for cliente in clientes_factibles:
+            dist_h = self.env._calcular_distancia_haversine(
+                self.camion.latitud, self.camion.longitud,
+                cliente.latitud, cliente.longitud
+            )
+            candidatos_preliminares.append((cliente, dist_h))
+        
+        # Ordenar por distancia Haversine y tomar los top 15
+        candidatos_preliminares.sort(key=lambda x: x[1])
+        top_candidatos = [c[0] for c in candidatos_preliminares[:15]]
+        
+        # Evaluar solo los top candidatos con OSRM completo
+        evaluaciones = []
+        for cliente in top_candidatos:
             score = self._evaluar_cliente(cliente, decisiones_otros_agentes)
             evaluaciones.append((cliente.id, score, cliente))
         
         # Ordenar por score descendente
         evaluaciones.sort(key=lambda x: x[1], reverse=True)
         
+        if not evaluaciones:
+            return None
+
         # Seleccionar el mejor
         mejor_cliente_id, mejor_score, mejor_cliente = evaluaciones[0]
         
         # Registrar decisión
         decision = DecisionAgente(
             camion_id=self.camion.id,
-            cliente_objetivo_id=mejor_cliente_id,  # ID ya es 1-based
+            cliente_objetivo_id=mejor_cliente_id,
             razonamiento=f"Score: {mejor_score:.2f} | Distancia: {self._calcular_distancia_a(mejor_cliente):.2f}km",
             prioridad_decision=mejor_score,
             distancia_estimada=self._calcular_distancia_a(mejor_cliente),
@@ -237,78 +243,108 @@ class AgenteRecolector:
         
         Score más alto = mejor opción
         """
-        # 1. Factor de distancia (invertido: menor distancia = mejor)
-        distancia = self._calcular_distancia_a(cliente)
-        max_distancia = 10.0  # km (normalización)
-        score_distancia = max(0, 1 - (distancia / max_distancia))
+        # 1. Factor de distancia (Calculada con OSRM)
+        distancia = self._calcular_distancia_a(cliente, usar_osrm=True)
+        max_distancia = 5.0
+        score_distancia = pow(max(0, 1 - (distancia / max_distancia)), 3)
         
-        # 2. Factor de demanda (normalizado)
+        # 2. Factor de demanda
         score_demanda = cliente.demanda_kg / self.camion.capacidad_kg
         
-        # 3. Factor de prioridad (normalizado)
+        # 3. Factor de prioridad
         score_prioridad = cliente.prioridad / 3.0
         
-        # 4. Penalización si otro agente ya lo tiene como objetivo
+        # 4. Penalización conflicto
         penalizacion_conflicto = 0.0
         if decisiones_otros_agentes:
             for decision in decisiones_otros_agentes:
                 if decision.cliente_objetivo_id == cliente.id:
-                    # Comparar prioridades: si el otro agente está más cerca, penalizar más
                     if decision.distancia_estimada < distancia:
-                        penalizacion_conflicto = 0.5
+                        penalizacion_conflicto = 0.8
                     else:
-                        penalizacion_conflicto = 0.2
+                        penalizacion_conflicto = 0.4
         
-        # 5. Bonus si el camión está casi lleno y el cliente está cerca del depósito
+        # 5. Bonus retorno
         bonus_retorno = 0.0
         if self.camion.porcentaje_carga > 80:
-            # Usar Haversine para estimación rápida
-            R = 6371.0
-            lat1_rad = np.radians(cliente.latitud)
-            lon1_rad = np.radians(cliente.longitud)
-            lat2_rad = np.radians(self.env.depot_lat)
-            lon2_rad = np.radians(self.env.depot_lon)
-            
-            dlat = lat2_rad - lat1_rad
-            dlon = lon2_rad - lon1_rad
-            
-            a = np.sin(dlat / 2)**2 + np.cos(lat1_rad) * np.cos(lat2_rad) * np.sin(dlon / 2)**2
-            c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
-            distancia_cliente_depot = R * c
-            
-            if distancia_cliente_depot < 2.0:  # Muy cerca del depósito
+            # Usar Haversine para estimación rápida al depot
+            dist_depot = self.env._calcular_distancia_haversine(
+                cliente.latitud, cliente.longitud,
+                self.env.depot_lat, self.env.depot_lon
+            )
+            if dist_depot < 2.0:
                 bonus_retorno = 0.15
+
+        # 6. Lógica de Pasajes
+        penalizacion_pasaje = 0.0
+        es_pasaje = "Pasaje" in cliente.nombre or "Interior" in cliente.nombre
+        if es_pasaje:
+            if distancia > 0.15:
+                penalizacion_pasaje = 0.15
+            else:
+                penalizacion_pasaje = -0.05 
+
+        # 7. Lógica de Continuidad de Calle
+        bonus_misma_calle = 0.0
+        penalizacion_cambio_calle = 0.0
         
-        # Calcular score ponderado
+        if self.camion.nombre_ultimo_punto:
+            nombre_origen = self.camion.nombre_ultimo_punto.lower()
+            nombre_destino = cliente.nombre.lower()
+            calles_origen = [c.strip() for c in nombre_origen.split(" con ")]
+            calles_destino = [c.strip() for c in nombre_destino.split(" con ")]
+            hay_calle_comun = any(c in calles_destino for c in calles_origen)
+            
+            if hay_calle_comun:
+                if distancia < 0.5:
+                    bonus_misma_calle = 0.8  # Aumentado de 0.5
+            else:
+                if distancia < 0.15: 
+                    penalizacion_cambio_calle = 0.8  # Aumentado de 0.6
+                elif distancia < 0.3:
+                    penalizacion_cambio_calle = 0.4  # Aumentado de 0.3
+
+        # 8. Factor de Cluster (Proximidad inmediata)
+        bonus_cluster = 0.0
+        if distancia < 0.03: # 30 metros
+            bonus_cluster = 0.6
+
         score = (
-            self.peso_distancia * score_distancia +
+            (self.peso_distancia * 2.0) * score_distancia +
             self.peso_demanda * score_demanda +
             self.peso_prioridad * score_prioridad +
-            bonus_retorno -
-            penalizacion_conflicto
+            bonus_retorno +
+            bonus_misma_calle +
+            bonus_cluster -
+            penalizacion_conflicto -
+            penalizacion_pasaje -
+            penalizacion_cambio_calle
         )
         
-        return max(0, score)  # Score no puede ser negativo
+        return max(0, score)
     
-    def _calcular_distancia_a(self, cliente: Cliente) -> float:
+    def _calcular_distancia_a(self, cliente: Cliente, usar_osrm: bool = True) -> float:
         """
-        Calcula distancia ESTIMADA (Haversine) desde posición actual del camión al cliente.
-        NOTA: Usamos Haversine aquí para evitar miles de llamadas a OSRM durante la evaluación.
+        Calcula distancia REAL (OSRM) o Haversine.
         """
-        R = 6371.0  # Radio de la Tierra en km
-        
-        lat1_rad = np.radians(self.camion.latitud)
-        lon1_rad = np.radians(self.camion.longitud)
-        lat2_rad = np.radians(cliente.latitud)
-        lon2_rad = np.radians(cliente.longitud)
-        
-        dlat = lat2_rad - lat1_rad
-        dlon = lon2_rad - lon1_rad
-        
-        a = np.sin(dlat / 2)**2 + np.cos(lat1_rad) * np.cos(lat2_rad) * np.sin(dlon / 2)**2
-        c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
-        
-        return R * c
+        if usar_osrm:
+            try:
+                ruta = OSRMService.obtener_ruta(
+                    self.camion.latitud, self.camion.longitud,
+                    cliente.latitud, cliente.longitud
+                )
+                if ruta and not ruta.get('es_fallback', False):
+                    return ruta['distancia_km']
+            except Exception:
+                pass
+
+        # Fallback: Haversine con factor de tortuosidad
+        # Multiplicamos por 1.4 para estimar la distancia real en calle vs línea recta
+        dist_haversine = self.env._calcular_distancia_haversine(
+            self.camion.latitud, self.camion.longitud,
+            cliente.latitud, cliente.longitud
+        )
+        return dist_haversine * 1.4
     
     def debe_regresar_depot(self) -> bool:
         """Determina si el camión debe regresar al depósito"""
@@ -355,6 +391,7 @@ class CoordinadorMAS:
     def __init__(self, env: DVRPTWEnv, modelo_ppo_path: str = None):
         self.env = env
         self.modelo_ppo = None
+        self.mapa_sectores = {} # Mapa id_cliente -> sector_id
         
         if modelo_ppo_path and PPO:
             try:
@@ -365,6 +402,7 @@ class CoordinadorMAS:
                 
         self.agentes: List[AgenteRecolector] = []
         self._inicializar_agentes()
+        self._inicializar_sectores() # Sectorización inicial
         
         # Estadísticas
         self.pasos_totales = 0
@@ -373,9 +411,56 @@ class CoordinadorMAS:
     
     def _inicializar_agentes(self):
         """Crea un agente por cada camión en el entorno"""
-        for camion in self.env.camiones:
-            agente = AgenteRecolector(camion, self.env, self.modelo_ppo)
+        for i, camion in enumerate(self.env.camiones):
+            # Asignar sector_id preliminar (se confirmará en _inicializar_sectores)
+            agente = AgenteRecolector(camion, self.env, self.modelo_ppo, sector_id=i)
             self.agentes.append(agente)
+
+    def _inicializar_sectores(self):
+        """Asigna sectores a los clientes usando K-Means simple"""
+        if not self.env.clientes:
+            return
+
+        print("🧩 Iniciando sectorización K-Means...")
+        # Puntos de clientes
+        puntos = [(c.latitud, c.longitud) for c in self.env.clientes]
+        k = len(self.env.camiones)
+        
+        # Inicializar centroides aleatorios
+        centroides = random.sample(puntos, k)
+        
+        asignaciones = [-1] * len(puntos)
+        
+        # Iterar (pocas veces es suficiente para esto)
+        for _ in range(10):
+            # Asignar puntos al centroide más cercano
+            nuevas_asignaciones = []
+            clusters = [[] for _ in range(k)]
+            
+            for i, p in enumerate(puntos):
+                distancias = [math.sqrt((p[0]-c[0])**2 + (p[1]-c[1])**2) for c in centroides]
+                cluster_idx = distancias.index(min(distancias))
+                nuevas_asignaciones.append(cluster_idx)
+                clusters[cluster_idx].append(p)
+            
+            if nuevas_asignaciones == asignaciones:
+                break
+            asignaciones = nuevas_asignaciones
+            
+            # Recalcular centroides
+            for i in range(k):
+                if clusters[i]:
+                    lat_mean = sum(p[0] for p in clusters[i]) / len(clusters[i])
+                    lon_mean = sum(p[1] for p in clusters[i]) / len(clusters[i])
+                    centroides[i] = (lat_mean, lon_mean)
+        
+        # Guardar asignación en mapa
+        self.mapa_sectores = {self.env.clientes[i].id: asignaciones[i] for i in range(len(self.env.clientes))}
+        
+        # Reporte
+        for i in range(k):
+            count = asignaciones.count(i)
+            print(f"🗺️ Sector {i}: {count} clientes asignados")
     
     def ejecutar_paso_cooperativo(self) -> Tuple[List, Dict]:
         """
@@ -417,8 +502,19 @@ class CoordinadorMAS:
                 # Cada agente considera las decisiones de otros
                 decisiones_otros = [d for d in decisiones_propuestas if d.camion_id != agente.camion.id]
                 
+                # --- SECTORIZACIÓN ---
+                # Filtrar clientes por sector del agente
+                clientes_sector = [
+                    c for c in clientes_disponibles 
+                    if self.mapa_sectores.get(c.id) == agente.sector_id
+                ]
+                
+                # Si quedan clientes en su sector, priorizarlos estrictamente
+                # Si no, ayudar a otros sectores (fallback)
+                candidates = clientes_sector if clientes_sector else clientes_disponibles
+                
                 cliente_id = agente.seleccionar_proximo_cliente(
-                    clientes_disponibles,
+                    candidates,
                     decisiones_otros
                 )
                 
@@ -446,10 +542,23 @@ class CoordinadorMAS:
             action = decision.cliente_objetivo_id
             
             # Ejecutar acción
-            # obs, reward, done, info = self.env.step(action)
-            # FIX: Usar step_agent para mover el camión correcto
-            obs, reward, done, info = self.env.step_agent(action, decision.camion_id)
-            rewards.append(reward)
+            try:
+                # FIX: Usar step_agent para mover el camión correcto
+                obs, reward, done, info = self.env.step_agent(action, decision.camion_id)
+                rewards.append(reward)
+                
+                # VERIFICACIÓN DE ESTADO
+                if action > 0:
+                    cliente_idx = action - 1
+                    if 0 <= cliente_idx < len(self.env.clientes):
+                        cliente = self.env.clientes[cliente_idx]
+                        if not cliente.servido:
+                            print(f"⚠️ ALERTA: Cliente {cliente.id} NO fue marcado como servido tras step_agent!")
+                            # Forzar servido para evitar bucle infinito
+                            cliente.servido = True
+                            self.env.clientes_servidos += 1
+            except Exception as e:
+                print(f"❌ Error crítico ejecutando acción para agente {decision.camion_id}: {e}")
         
         # 4. Recopilar información
         info_paso = {

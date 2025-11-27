@@ -280,6 +280,10 @@
         <button class="btn btn-danger" id="btnDetener" onclick="detenerSimulacion()" disabled>
             Detener Simulación
         </button>
+
+        <button class="btn btn-primary" id="btnGuardar" onclick="guardarSimulacion()" disabled style="margin-top: 10px; background: #8e44ad;">
+            💾 Guardar Rutas Planificadas
+        </button>
         
         <div id="estadoSimulacion"></div>
         
@@ -318,8 +322,8 @@
                 <div class="stat-label">Puntos Servidos</div>
             </div>
             <div class="stat-box orange">
-                <div class="stat-value" id="eficiencia">0%</div>
-                <div class="stat-label">Eficiencia</div>
+                <div class="stat-value" id="tiempoTotal">00:00</div>
+                <div class="stat-label">Tiempo Total</div>
             </div>
             <div class="stat-box">
                 <div class="stat-value" id="paso">0</div>
@@ -503,6 +507,7 @@
                 
                 document.getElementById('btnIniciar').disabled = true;
                 document.getElementById('btnDetener').disabled = false;
+                document.getElementById('btnGuardar').disabled = false;
                 
                 // Iniciar actualización automática
                 iniciarActualizacionAutomatica();
@@ -512,6 +517,36 @@
                 estadoDiv.innerHTML = `<div class="alert alert-warning">
                     <strong>Error:</strong> ${error.message}
                 </div>`;
+            }
+        }
+
+        // ==================== FUNCIÓN: GUARDAR SIMULACIÓN ====================
+        async function guardarSimulacion() {
+            if (!simulacionId) return;
+            
+            const btn = document.getElementById('btnGuardar');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '💾 Guardando...';
+            
+            try {
+                const response = await fetch(`/api/mas/simulacion/${simulacionId}/guardar`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert(`✅ ${data.mensaje}`);
+                } else {
+                    throw new Error(data.detail || 'Error al guardar');
+                }
+            } catch (error) {
+                console.error('Error guardando:', error);
+                alert(`❌ Error: ${error.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         }
         
@@ -607,13 +642,19 @@
             const kg = (stats.total_residuos_recolectados || 0).toFixed(0);
             const servidos = stats.clientes_servidos || 0;
             const totales = stats.clientes_totales || 0;
-            const efic = (stats.eficiencia || 0).toFixed(1);
+            
+            // Calcular tiempo total (HH:MM)
+            const tiempoMin = stats.tiempo_total_estimado || 0;
+            const horas = Math.floor(tiempoMin / 60);
+            const minutos = Math.floor(tiempoMin % 60);
+            const tiempoStr = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+            
             const paso = data.paso || 0;
             
             // Actualizar DOM
             document.getElementById('kgRecolectados').textContent = kg;
             document.getElementById('puntosServidos').textContent = `${servidos}/${totales}`;
-            document.getElementById('eficiencia').textContent = `${efic}%`;
+            document.getElementById('tiempoTotal').textContent = tiempoStr;
             document.getElementById('paso').textContent = paso;
             
             // 2. Actualizar Mapa (Camiones)
@@ -627,10 +668,23 @@
                 if (ultimaPosicionCamiones[idx]) {
                     const posAnterior = ultimaPosicionCamiones[idx];
                     if (map.distance(posAnterior, nuevaPos) > 5) {
-                        L.polyline([posAnterior, nuevaPos], {
-                            color: camion.color || '#e74c3c',
-                            weight: 3, opacity: 0.6
+                        const esFallback = camion.es_fallback;
+                        
+                        // FIX: Usar geometría real para el rastro si existe
+                        let puntosRastro = [posAnterior, nuevaPos];
+                        if (camion.geometria_actual && camion.geometria_actual.length > 1) {
+                            puntosRastro = camion.geometria_actual;
+                        }
+
+                        const rastro = L.polyline(puntosRastro, {
+                            color: esFallback ? '#ff0000' : (camion.color || '#e74c3c'),
+                            weight: esFallback ? 2 : 3, 
+                            opacity: 0.6,
+                            dashArray: esFallback ? '5, 10' : null
                         }).addTo(map);
+                        
+                        // Guardar referencia para limpiar si es necesario (opcional)
+                        // rastrosCamiones.push(rastro); 
                     }
                 }
                 ultimaPosicionCamiones[idx] = nuevaPos;

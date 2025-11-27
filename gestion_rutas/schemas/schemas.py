@@ -436,6 +436,7 @@ class RutaPlanificadaBase(BaseModel):
     distancia_planificada_km: Optional[float] = Field(None, ge=0)
     duracion_estimada_minutos: Optional[float] = Field(None, ge=0)
     algoritmo_vrp: Optional[str] = Field("2opt", max_length=100)
+    geometria_json: Optional[List[List[float]]] = None # [[lat,lon], ...]
 
 
 class RutaPlanificadaCreate(RutaPlanificadaBase):
@@ -453,11 +454,17 @@ class RutaPlanificadaUpdate(BaseModel):
     distancia_planificada_km: Optional[float] = None
     duracion_estimada_minutos: Optional[float] = None
     algoritmo_vrp: Optional[str] = None
+    geometria_json: Optional[List[List[float]]] = None
 
 
 class RutaPlanificadaResponse(RutaPlanificadaBase):
     """Schema para respuesta de RutaPlanificada"""
     id_ruta_planificada: int
+    # Campos adicionales para compatibilidad con DB
+    id_ruta: Optional[int] = None
+    fecha: Optional[date] = None
+    duracion_planificada_min: Optional[float] = None
+    version_modelo_vrp: Optional[str] = None
 
     class Config:
         from_attributes = True

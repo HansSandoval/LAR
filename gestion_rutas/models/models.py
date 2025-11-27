@@ -63,6 +63,7 @@ class RutaPlanificada(Base):
     distancia_planificada_km = Column(Float)
     duracion_planificada_min = Column(Float)
     secuencia_puntos = Column(JSON)  # Lista de IDs de puntos
+    geometria_json = Column(JSON)    # Geometría completa de la ruta [[lat,lon],...]
     version_modelo_vrp = Column(String)
     zona = relationship('Zona', back_populates='rutas')
     turno = relationship('Turno', back_populates='rutas')
