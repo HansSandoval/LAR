@@ -428,14 +428,15 @@ class CamionResponse(CamionBase):
 
 class RutaPlanificadaBase(BaseModel):
     """Base schema para RutaPlanificada"""
-    id_zona: int
+    id_zona: Optional[int] = None
+    id_turno: Optional[int] = None
     id_camion: Optional[int] = None
-    fecha_planificacion: date
-    secuencia_puntos: List[int] = Field(..., min_items=1)
+    fecha: Optional[date] = None
+    secuencia_puntos: Optional[List[int]] = None
     estado: Optional[str] = Field("planificada", max_length=50)
-    distancia_planificada_km: Optional[float] = Field(None, ge=0)
-    duracion_estimada_minutos: Optional[float] = Field(None, ge=0)
-    algoritmo_vrp: Optional[str] = Field("2opt", max_length=100)
+    distancia_km: Optional[float] = Field(None, ge=0)
+    tiempo_estimado_min: Optional[float] = Field(None, ge=0)
+    version_modelo_vrp: Optional[str] = Field("2opt", max_length=100)
     geometria_json: Optional[List[List[float]]] = None # [[lat,lon], ...]
 
 
@@ -447,24 +448,22 @@ class RutaPlanificadaCreate(RutaPlanificadaBase):
 class RutaPlanificadaUpdate(BaseModel):
     """Schema para actualizar RutaPlanificada"""
     id_zona: Optional[int] = None
+    id_turno: Optional[int] = None
     id_camion: Optional[int] = None
-    fecha_planificacion: Optional[date] = None
+    fecha: Optional[date] = None
     secuencia_puntos: Optional[List[int]] = None
     estado: Optional[str] = None
-    distancia_planificada_km: Optional[float] = None
-    duracion_estimada_minutos: Optional[float] = None
-    algoritmo_vrp: Optional[str] = None
+    distancia_km: Optional[float] = None
+    tiempo_estimado_min: Optional[float] = None
+    version_modelo_vrp: Optional[str] = None
     geometria_json: Optional[List[List[float]]] = None
 
 
 class RutaPlanificadaResponse(RutaPlanificadaBase):
     """Schema para respuesta de RutaPlanificada"""
-    id_ruta_planificada: int
-    # Campos adicionales para compatibilidad con DB
-    id_ruta: Optional[int] = None
-    fecha: Optional[date] = None
-    duracion_planificada_min: Optional[float] = None
-    version_modelo_vrp: Optional[str] = None
+    id_ruta: int
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True

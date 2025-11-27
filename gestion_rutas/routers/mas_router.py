@@ -32,11 +32,13 @@ except ImportError:
     from vrp.mas_cooperativo import AgenteRecolector, CoordinadorMAS
 
 from ..service.ruta_planificada_service import RutaPlanificadaService
+from ..service.camion_service import CamionService # Importar CamionService
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/mas", tags=["Multi-Agent System"])
 ruta_service = RutaPlanificadaService()
+camion_service = CamionService() # Instanciar CamionService
 
 
 # ==================== MODELOS PYDANTIC ====================
@@ -619,6 +621,16 @@ async def guardar_simulacion(sim_id: str):
     try:
         fecha_actual = datetime.now().date()
         
+        # Obtener camiones reales de la BD para mapear IDs
+        camiones_db, _ = camion_service.obtener_camiones(limit=100)
+        # Crear mapa de índice simulación -> ID real BD
+        # Si hay menos camiones en BD que en simulación, se reutilizan o se asigna None
+        mapa_camiones = {}
+        if camiones_db:
+            for i in range(len(env.camiones)):
+                idx_db = i % len(camiones_db)
+                mapa_camiones[i] = camiones_db[idx_db]['id_camion']
+        
         for camion in env.camiones:
             if not camion.activo:
                 continue
@@ -638,7 +650,13 @@ async def guardar_simulacion(sim_id: str):
                 continue
 
             # Obtener geometría completa acumulada
-            geometria = getattr(camion, 'ruta_geometria', [])
+            geometria = getattr(camion, 'historial_geometria', [])
+            if not geometria:
+                 # Fallback si no hay historial (ej. simulación antigua en memoria)
+                 geometria = getattr(camion, 'ruta_geometria', [])
+            
+            # Obtener ID real de camión
+            id_camion_real = mapa_camiones.get(camion.id)
             
             # Crear ruta en BD
             # FIX: Forzar id_zona=1 porque los sectores (0,1,2) generados por K-Means no existen en la tabla 'zona'
@@ -648,6 +666,7 @@ async def guardar_simulacion(sim_id: str):
                 id_turno=1, # Default turno mañana
                 fecha=fecha_actual,
                 secuencia_puntos=secuencia_ids,
+                id_camion=id_camion_real,
                 distancia_km=camion.distancia_recorrida_km,
                 duracion_min=camion.tiempo_actual,
                 version_vrp="MAS-LSTM-v2",

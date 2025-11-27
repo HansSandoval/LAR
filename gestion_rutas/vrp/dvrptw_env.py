@@ -245,7 +245,8 @@ class Camion:
     longitud: float = -70.1525
     tiempo_actual: float = 0.0
     ruta_actual: List[int] = field(default_factory=list)  # IDs de clientes a visitar
-    ruta_geometria: List[List[float]] = field(default_factory=list)  # Geometría real ACUMULADA de la ruta
+    ruta_geometria: List[List[float]] = field(default_factory=list)  # Geometría real ACUMULADA de la ruta (para visualización)
+    historial_geometria: List[List[float]] = field(default_factory=list)  # Historial COMPLETO de la ruta (para guardar en BD)
     geometria_actual: List[List[float]] = field(default_factory=list)  # Geometría del ÚLTIMO tramo (para animación)
     distancia_recorrida_km: float = 0.0
     activo: bool = True
@@ -611,6 +612,10 @@ class DVRPTWEnv(gym.Env):
                         if not hasattr(camion, 'ruta_geometria') or not camion.ruta_geometria:
                             camion.ruta_geometria = []
                         camion.ruta_geometria.extend(ruta_info['geometry'])
+                        
+                        # ACUMULAR HISTORIAL COMPLETO
+                        if not hasattr(camion, 'historial_geometria'): camion.historial_geometria = []
+                        camion.historial_geometria.extend(ruta_info['geometry'])
                     else:
                         camion.geometria_actual = []
                 
@@ -618,7 +623,7 @@ class DVRPTWEnv(gym.Env):
                 camion.longitud = self.depot_lon
                 camion.distancia_recorrida_km += distancia
                 camion.carga_actual_kg = 0.0
-                camion.ruta_geometria = [] # Reset al llegar al depot
+                camion.ruta_geometria = [] # Reset al llegar al depot (visualización)
                 
                 # Actualizar tiempo de retorno
                 tiempo_viaje = 0.0
@@ -660,6 +665,10 @@ class DVRPTWEnv(gym.Env):
                             # NO acumular historial para evitar sobrecarga visual y de datos
                             # El frontend se encarga de dibujar el rastro si es necesario
                             camion.ruta_geometria = ruta_info['geometry']
+                            
+                            # ACUMULAR HISTORIAL COMPLETO
+                            if not hasattr(camion, 'historial_geometria'): camion.historial_geometria = []
+                            camion.historial_geometria.extend(ruta_info['geometry'])
                         else:
                             camion.geometria_actual = []
                             camion.es_fallback = False

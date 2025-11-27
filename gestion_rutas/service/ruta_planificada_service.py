@@ -19,6 +19,7 @@ class RutaPlanificadaService:
         id_turno: int,
         fecha: date,
         secuencia_puntos: List[int],
+        id_camion: Optional[int] = None,
         distancia_km: Optional[float] = None,
         duracion_min: Optional[float] = None,
         version_vrp: str = "v1.0",
@@ -101,16 +102,16 @@ class RutaPlanificadaService:
 
             query = """
                 INSERT INTO ruta_planificada 
-                (id_zona, id_turno, fecha, secuencia_puntos, 
+                (id_zona, id_turno, fecha, secuencia_puntos, id_camion,
                  distancia_km, tiempo_estimado_min, version_modelo_vrp, geometria_json)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                RETURNING id_ruta, id_zona, id_turno, fecha, secuencia_puntos,
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id_ruta, id_zona, id_turno, fecha, secuencia_puntos, id_camion,
                           distancia_km, tiempo_estimado_min, version_modelo_vrp, geometria_json
             """
             
             try:
                 resultado = execute_insert_returning(query, (
-                    id_zona, id_turno, fecha, secuencia_str,
+                    id_zona, id_turno, fecha, secuencia_str, id_camion,
                     distancia_km, duracion_min, version_vrp, geometria_str
                 ))
                 logger.info(f"Ruta {resultado['id_ruta']} creada exitosamente")

@@ -18,9 +18,24 @@
             flex-direction: column;
             padding: 20px;
             overflow-y: auto;
+            z-index: 1000; /* Ensure sidebar is above map */
         }
         
-        #map { flex: 1; }
+        #map-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #ddd;
+        }
+
+        #map { 
+            width: 150%; 
+            height: 150%; 
+            position: absolute;
+            top: -25%;
+            left: -25%;
+            transition: transform 0.5s linear;
+        }
         
         h2 { color: #2c3e50; margin-bottom: 20px; font-size: 20px; }
         
@@ -65,12 +80,98 @@
             border-radius: 8px;
             border: 1px solid #ddd;
         }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 12px;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .btn-bulk-delete {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            flex: 1;
+        }
+
+        .btn-bulk-delete:hover {
+            background: #c0392b;
+        }
+
+        .route-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .route-checkbox {
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .btn-start {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 13px;
+            width: 100%;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .btn-start:hover {
+            background: #27ae60;
+        }
+
+        .truck-icon {
+            font-size: 30px;
+            line-height: 30px;
+            text-align: center;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+        }
     </style>
 </head>
 <body>
 
 <div id="sidebar">
     <h2>Rutas Asignadas</h2>
+    
+    <div class="bulk-actions">
+        <input type="checkbox" id="select-all" onchange="toggleSelectAll()" class="route-checkbox">
+        <label for="select-all" style="font-size: 14px; color: #555;">Todos</label>
+        <button class="btn-bulk-delete" onclick="deleteSelectedRoutes()">🗑️ Borrar Seleccionadas</button>
+    </div>
+
     <div id="routes-list">
         <p>Cargando rutas...</p>
     </div>
@@ -84,7 +185,15 @@
     </div>
 </div>
 
-<div id="map"></div>
+<div id="map-wrapper">
+    <div id="map"></div>
+    <div id="navigation-controls" style="position: absolute; top: 20px; right: 20px; z-index: 1000; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.2); display: none;">
+        <label style="display: flex; align-items: center; gap: 5px; font-size: 14px; cursor: pointer;">
+            <input type="checkbox" id="follow-mode" checked onchange="toggleFollowMode()"> 
+            🔄 Modo Seguimiento (2D)
+        </label>
+    </div>
+</div>
 
 <script>
     // Inicializar mapa
@@ -95,11 +204,265 @@
 
     let currentPolyline = null;
     let markers = [];
+    
+    // Variables para simulación/GPS
+    let simulationInterval = null;
+    let simulationMarker = null;
+    let watchId = null;
+    let isFollowMode = true;
+    let currentBearing = 0;
+
+    function toggleFollowMode() {
+        isFollowMode = document.getElementById('follow-mode').checked;
+        if (!isFollowMode) {
+            rotateMap(0);
+        } else {
+            rotateMap(currentBearing);
+        }
+    }
+
+    function rotateMap(bearing) {
+        const mapDiv = document.getElementById('map');
+        if (isFollowMode) {
+            // Rotar el mapa en sentido contrario al bearing para que el camión apunte arriba
+            mapDiv.style.transform = `rotate(${-bearing}deg)`;
+            
+            // Rotar los marcadores (especialmente el camión) para que se vean "derechos" relativo al mapa
+            // Pero espera, si rotamos el mapa, el icono del camión rota con él.
+            // Si el camión va al Este (90deg), rotamos mapa -90deg. El Norte queda a la izquierda.
+            // El icono del camión (si no lo rotamos) apuntaría "Arriba" (Norte del mapa) que ahora es Izquierda.
+            // Queremos que el camión apunte Arriba de la PANTALLA.
+            // Así que el icono debe rotar +90deg relativo al mapa (para apuntar al Este del mapa, que es Arriba de la pantalla).
+            
+            // En Leaflet, podemos rotar el icono usando CSS en el divIcon
+            if (simulationMarker) {
+                const iconDiv = simulationMarker.getElement();
+                if (iconDiv) {
+                    // El icono debe rotar según el bearing REAL (para alinearse con la calle)
+                    // Si el mapa rota -bearing, y el icono rota +bearing, el icono queda visualmente en 0deg (Arriba).
+                    // Perfecto.
+                    iconDiv.style.transform += ` rotate(${bearing}deg)`;
+                    // Nota: Leaflet ya aplica transform translate3d. Necesitamos añadir rotate sin borrar translate.
+                    // Mejor usamos una clase interna o modificamos el HTML del icono.
+                    
+                    // Solución más limpia: Rotar el contenido del icono
+                    const inner = iconDiv.querySelector('.truck-icon-inner');
+                    if (inner) {
+                        inner.style.transform = `rotate(${bearing}deg)`;
+                    }
+                }
+            }
+        } else {
+            mapDiv.style.transform = 'rotate(0deg)';
+            // Resetear rotación icono si es necesario, aunque en modo Norte Arriba, 
+            // queremos que el camión apunte a su dirección real (bearing).
+             if (simulationMarker) {
+                const iconDiv = simulationMarker.getElement();
+                if (iconDiv) {
+                    const inner = iconDiv.querySelector('.truck-icon-inner');
+                    if (inner) {
+                        inner.style.transform = `rotate(${bearing}deg)`;
+                    }
+                }
+            }
+        }
+    }
+
+    function getBearing(lat1, lng1, lat2, lng2) {
+        const toRad = (deg) => deg * Math.PI / 180;
+        const toDeg = (rad) => rad * 180 / Math.PI;
+        
+        const y = Math.sin(toRad(lng2 - lng1)) * Math.cos(toRad(lat2));
+        const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+                  Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(toRad(lng2 - lng1));
+        
+        let brng = toDeg(Math.atan2(y, x));
+        return (brng + 360) % 360;
+    }
+
+    async function startRoute(id) {
+        stopSimulation(); // Detener cualquier proceso anterior
+
+        try {
+            // Obtener datos frescos de la ruta
+            const response = await fetch(`/rutas-planificadas/${id}`);
+            if (!response.ok) throw new Error("Error cargando ruta");
+            const ruta = await response.json();
+
+            if (!ruta.geometria_json || ruta.geometria_json.length === 0) {
+                alert("Esta ruta no tiene geometría válida para navegar.");
+                return;
+            }
+
+            // Visualizar ruta en el mapa
+            if (currentPolyline) map.removeLayer(currentPolyline);
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+            
+            currentPolyline = L.polyline(ruta.geometria_json, {
+                color: '#2ecc71',
+                weight: 6,
+                opacity: 0.8
+            }).addTo(map);
+            map.fitBounds(currentPolyline.getBounds());
+
+            // Selección de modo
+            if (confirm("¿Desea iniciar la navegación con GPS Real?\n\n[Aceptar] = GPS Real\n[Cancelar] = Simulación (Velocidad Camión)")) {
+                startGPSMode();
+            } else {
+                startSimulationMode(ruta.geometria_json);
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert("Error al iniciar la ruta: " + error.message);
+        }
+    }
+
+    function stopSimulation() {
+        if (simulationInterval) clearInterval(simulationInterval);
+        if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+        if (simulationMarker) map.removeLayer(simulationMarker);
+        simulationMarker = null;
+        watchId = null;
+        simulationInterval = null;
+        
+        // Resetear UI
+        document.getElementById('navigation-controls').style.display = 'none';
+        rotateMap(0); // Resetear rotación
+        const mapDiv = document.getElementById('map');
+        mapDiv.style.transform = 'none';
+    }
+
+    function startGPSMode() {
+        if (!navigator.geolocation) {
+            alert("Tu navegador no soporta geolocalización.");
+            return;
+        }
+
+        document.getElementById('navigation-controls').style.display = 'block';
+
+        const truckIcon = L.divIcon({
+            html: '<div class="truck-icon-inner" style="transition: transform 0.3s;">🚛</div>',
+            className: 'truck-icon',
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+        });
+
+        simulationMarker = L.marker([0,0], {icon: truckIcon}).addTo(map);
+
+        let lastPos = null;
+
+        watchId = navigator.geolocation.watchPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const newLatLng = [lat, lng];
+                
+                // Calcular bearing si tenemos posición anterior
+                if (lastPos) {
+                    const bearing = getBearing(lastPos.lat, lastPos.lng, lat, lng);
+                    // Solo actualizar si se movió suficiente distancia para evitar ruido
+                    if (L.latLng(lastPos).distanceTo(newLatLng) > 2) {
+                        currentBearing = bearing;
+                        rotateMap(currentBearing);
+                    }
+                } else if (position.coords.heading) {
+                    currentBearing = position.coords.heading;
+                    rotateMap(currentBearing);
+                }
+
+                lastPos = {lat, lng};
+                
+                simulationMarker.setLatLng(newLatLng);
+                map.setView(newLatLng, 18);
+                simulationMarker.bindPopup(`📍 Tu Ubicación<br>Vel: ${(position.coords.speed || 0).toFixed(1)} m/s`).openPopup();
+            },
+            (error) => {
+                console.error("Error GPS:", error);
+                alert("No se pudo obtener la ubicación GPS: " + error.message);
+                stopSimulation();
+            },
+            {
+                enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 5000
+            }
+        );
+        
+        alert("📡 GPS Activado. Esperando señal...");
+    }
+
+    function startSimulationMode(path) {
+        if (!path || path.length < 2) return;
+
+        document.getElementById('navigation-controls').style.display = 'block';
+
+        const truckIcon = L.divIcon({
+            html: '<div class="truck-icon-inner" style="transition: transform 0.1s;">🚛</div>',
+            className: 'truck-icon',
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+        });
+
+        simulationMarker = L.marker(path[0], {icon: truckIcon}).addTo(map);
+        
+        // Velocidad promedio camión basura: ~20 km/h
+        const speedKmH = 20; 
+        const speedMS = (speedKmH * 1000) / 3600; // ~5.55 m/s
+        
+        let currentSegment = 0;
+        let progress = 0; // 0.0 to 1.0
+        const updateRate = 50; // ms
+        
+        alert(`🚀 Iniciando simulación a ${speedKmH} km/h`);
+
+        simulationInterval = setInterval(() => {
+            if (currentSegment >= path.length - 1) {
+                stopSimulation();
+                alert("🏁 Ruta completada");
+                return;
+            }
+
+            const p1 = L.latLng(path[currentSegment]);
+            const p2 = L.latLng(path[currentSegment + 1]);
+            
+            const dist = p1.distanceTo(p2); // metros
+            
+            if (dist === 0) {
+                currentSegment++;
+                progress = 0;
+                return;
+            }
+
+            // Calcular bearing del segmento actual
+            currentBearing = getBearing(p1.lat, p1.lng, p2.lat, p2.lng);
+            rotateMap(currentBearing);
+
+            const moveDist = speedMS * (updateRate / 1000);
+            const deltaProgress = moveDist / dist;
+            
+            progress += deltaProgress;
+
+            if (progress >= 1) {
+                progress = 0;
+                currentSegment++;
+                simulationMarker.setLatLng(p2);
+                map.setView(p2, 18); // Mantener centrado
+            } else {
+                const lat = p1.lat + (p2.lat - p1.lat) * progress;
+                const lng = p1.lng + (p2.lng - p1.lng) * progress;
+                const newPos = [lat, lng];
+                simulationMarker.setLatLng(newPos);
+                map.setView(newPos, 18); // Mantener centrado
+            }
+        }, updateRate);
+    }
 
     // Cargar lista de rutas
     async function loadRoutes() {
         try {
-            const response = await fetch('/api/rutas-planificadas/?limit=20');
+            const response = await fetch('/rutas-planificadas/?limit=20');
             const data = await response.json();
             
             const container = document.getElementById('routes-list');
@@ -113,15 +476,33 @@
             data.forEach(ruta => {
                 const card = document.createElement('div');
                 card.className = 'route-card';
+                const id = ruta.id_ruta || ruta.id_ruta_planificada;
+                const fecha = ruta.fecha || ruta.fecha_planificacion;
+                const distancia = ruta.distancia_km || ruta.distancia_planificada_km || 0;
                 card.innerHTML = `
-                    <div class="route-id">Ruta #${ruta.id_ruta}</div>
-                    <div class="route-info">📅 ${ruta.fecha}</div>
+                    <div class="route-header">
+                        <div class="route-id">Ruta #${id}</div>
+                        <input type="checkbox" class="route-checkbox item-checkbox" value="${id}" onclick="event.stopPropagation()">
+                    </div>
+                    <div class="route-info">📅 ${fecha}</div>
                     <div class="route-info">📍 Zona ${ruta.id_zona}</div>
-                    <div class="route-info">📏 ${ruta.distancia_planificada_km?.toFixed(2) || '?'} km</div>
+                    <div class="route-info">📏 ${distancia.toFixed(2)} km</div>
+                    <button class="btn-start" onclick="event.stopPropagation(); startRoute(${id})">
+                        <span>▶️</span> Iniciar Ruta
+                    </button>
+                    <button class="btn-delete" onclick="event.stopPropagation(); deleteRoute(${id})">🗑️ Eliminar</button>
                 `;
-                card.onclick = () => selectRoute(ruta.id_ruta, card);
+                card.onclick = (e) => {
+                    // Prevent triggering if clicking checkbox or button (already handled by stopPropagation, but good to be safe)
+                    if (e.target.type !== 'checkbox' && e.target.tagName !== 'BUTTON') {
+                        selectRoute(id, card);
+                    }
+                };
                 container.appendChild(card);
             });
+            
+            // Reset select all checkbox
+            document.getElementById('select-all').checked = false;
         } catch (error) {
             console.error('Error cargando rutas:', error);
             document.getElementById('routes-list').innerHTML = '<p>Error al cargar rutas.</p>';
@@ -135,14 +516,14 @@
         cardElement.classList.add('active');
         
         try {
-            const response = await fetch(`/api/rutas-planificadas/${id}`);
+            const response = await fetch(`/rutas-planificadas/${id}`);
             const ruta = await response.json();
             
             // Mostrar estadísticas
             document.getElementById('current-route-stats').style.display = 'block';
             document.getElementById('stat-id').textContent = ruta.id_ruta || ruta.id_ruta_planificada;
-            document.getElementById('stat-dist').textContent = (ruta.distancia_planificada_km || 0).toFixed(2);
-            document.getElementById('stat-dur').textContent = (ruta.duracion_planificada_min || ruta.duracion_estimada_minutos || 0).toFixed(0);
+            document.getElementById('stat-dist').textContent = (ruta.distancia_km || ruta.distancia_planificada_km || 0).toFixed(2);
+            document.getElementById('stat-dur').textContent = (ruta.tiempo_estimado_min || ruta.duracion_planificada_min || ruta.duracion_estimada_minutos || 0).toFixed(0);
             document.getElementById('stat-pts').textContent = ruta.secuencia_puntos ? ruta.secuencia_puntos.length : 0;
             
             // Dibujar ruta
@@ -174,6 +555,102 @@
         } catch (error) {
             console.error("Error fetching route details", error);
             alert("Error al cargar detalles de la ruta");
+        }
+    }
+
+    async function deleteRoute(id) {
+        if (!confirm(`¿Estás seguro de eliminar la ruta #${id}?`)) return;
+        
+        try {
+            const response = await fetch(`/rutas-planificadas/${id}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                alert('Ruta eliminada correctamente');
+                loadRoutes(); // Recargar lista
+                // Limpiar mapa si la ruta eliminada era la actual
+                const currentId = document.getElementById('stat-id').textContent;
+                if (currentId == id) {
+                    document.getElementById('current-route-stats').style.display = 'none';
+                    if (currentPolyline) map.removeLayer(currentPolyline);
+                    markers.forEach(m => map.removeLayer(m));
+                    markers = [];
+                }
+            } else {
+                const err = await response.json();
+                alert('Error al eliminar ruta: ' + (err.detail || 'Error desconocido'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error de conexión al eliminar ruta');
+        }
+    }
+
+    function toggleSelectAll() {
+        const selectAll = document.getElementById('select-all');
+        const checkboxes = document.querySelectorAll('.item-checkbox');
+        checkboxes.forEach(cb => cb.checked = selectAll.checked);
+    }
+
+    async function deleteSelectedRoutes() {
+        const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+        if (checkboxes.length === 0) {
+            alert('Por favor selecciona al menos una ruta para eliminar.');
+            return;
+        }
+
+        if (!confirm(`¿Estás seguro de eliminar las ${checkboxes.length} rutas seleccionadas?`)) return;
+
+        let deletedCount = 0;
+        let errors = 0;
+
+        // Mostrar indicador de carga simple
+        const btn = document.querySelector('.btn-bulk-delete');
+        const originalText = btn.textContent;
+        btn.textContent = 'Eliminando...';
+        btn.disabled = true;
+
+        for (const cb of checkboxes) {
+            const id = cb.value;
+            try {
+                const response = await fetch(`/rutas-planificadas/${id}`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    deletedCount++;
+                } else {
+                    errors++;
+                    console.error(`Error eliminando ruta ${id}`);
+                }
+            } catch (error) {
+                errors++;
+                console.error(`Error de conexión eliminando ruta ${id}`, error);
+            }
+        }
+
+        btn.textContent = originalText;
+        btn.disabled = false;
+
+        let msg = `Se eliminaron ${deletedCount} rutas.`;
+        if (errors > 0) msg += ` Hubo ${errors} errores.`;
+        alert(msg);
+
+        loadRoutes();
+        
+        // Limpiar mapa si la ruta actual fue eliminada
+        const currentId = document.getElementById('stat-id').textContent;
+        // Verificar si el ID actual estaba entre los seleccionados
+        let currentDeleted = false;
+        checkboxes.forEach(cb => {
+            if (cb.value == currentId) currentDeleted = true;
+        });
+
+        if (currentDeleted) {
+            document.getElementById('current-route-stats').style.display = 'none';
+            if (currentPolyline) map.removeLayer(currentPolyline);
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
         }
     }
     

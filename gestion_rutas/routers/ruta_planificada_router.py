@@ -83,8 +83,8 @@ def create_ruta_planificada(ruta: RutaPlanificadaCreate):
             id_turno=ruta.id_turno,
             fecha=ruta.fecha,
             secuencia_puntos=ruta.secuencia_puntos,
-            distancia_km=ruta.distancia_planificada_km,
-            duracion_min=ruta.duracion_planificada_min
+            distancia_km=ruta.distancia_km,
+            duracion_min=ruta.tiempo_estimado_min
         )
         return nueva_ruta
     except Exception as e:
