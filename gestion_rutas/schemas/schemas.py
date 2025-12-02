@@ -661,6 +661,13 @@ class UsuarioResponse(UsuarioBase):
         from_attributes = True
 
 
+class LoginRequest(BaseModel):
+    """Schema para login"""
+    correo: str
+    password: str
+
+
+
 # ============================================================================
 # PUNTO DISPOSICION - SCHEMAS
 # ============================================================================
@@ -725,5 +732,37 @@ class PeriodoTemporalResponse(PeriodoTemporalBase):
     """Schema para respuesta de PeriodoTemporal"""
     id_periodo: int
 
+    class Config:
+        from_attributes = True
+
+
+# ============================================================================
+# OPERADOR - SCHEMAS
+# ============================================================================
+
+class OperadorBase(BaseModel):
+    """Base schema para Operador"""
+    nombre: str = Field(..., min_length=1, max_length=255)
+    email: Optional[str] = Field(None, max_length=255)
+    telefono: Optional[str] = Field(None, max_length=50)
+    estado: Optional[str] = Field("activo", max_length=50)
+    id_usuario: Optional[int] = None
+
+class OperadorCreate(OperadorBase):
+    """Schema para crear Operador"""
+    pass
+
+class OperadorUpdate(BaseModel):
+    """Schema para actualizar Operador"""
+    nombre: Optional[str] = None
+    email: Optional[str] = None
+    telefono: Optional[str] = None
+    estado: Optional[str] = None
+    id_usuario: Optional[int] = None
+
+class OperadorResponse(OperadorBase):
+    """Schema para respuesta de Operador"""
+    id_operador: int
+    
     class Config:
         from_attributes = True

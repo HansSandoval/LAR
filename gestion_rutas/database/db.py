@@ -27,7 +27,6 @@ print(f"[DB] Usando PostgreSQL directo: {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRE
 
 
 class PostgresDB:
-    """Conexión directa a PostgreSQL sin SQLAlchemy"""
     
     def __init__(self):
         self.host = POSTGRES_HOST

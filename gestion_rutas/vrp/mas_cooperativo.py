@@ -263,7 +263,7 @@ class AgenteRecolector:
                         penalizacion_conflicto = 0.8
                     else:
                         penalizacion_conflicto = 0.4
-        
+         
         # 5. Bonus retorno
         bonus_retorno = 0.0
         if self.camion.porcentaje_carga > 80:
@@ -396,9 +396,9 @@ class CoordinadorMAS:
         if modelo_ppo_path and PPO:
             try:
                 self.modelo_ppo = PPO.load(modelo_ppo_path)
-                print(f"✅ Modelo PPO cargado en CoordinadorMAS: {modelo_ppo_path}")
+                print(f"Modelo PPO cargado en CoordinadorMAS: {modelo_ppo_path}")
             except Exception as e:
-                print(f"⚠️ Error cargando modelo PPO: {e}")
+                print(f"Error cargando modelo PPO: {e}")
                 
         self.agentes: List[AgenteRecolector] = []
         self._inicializar_agentes()

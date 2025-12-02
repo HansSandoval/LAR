@@ -24,13 +24,23 @@ class UsuarioService:
         """Crear nuevo usuario"""
         try:
             hash_password = sha256(password.encode()).hexdigest()
+            estado = 'activo' if activo else 'inactivo'
+            
+            # Mapeo de columnas:
+            # correo -> email
+            # hash_password -> contraseña
+            # activo -> estado
+            
             query = """
-                INSERT INTO usuario (nombre, correo, rol, hash_password, activo)
+                INSERT INTO usuario (nombre, email, rol, contraseña, estado)
                 VALUES (%s, %s, %s, %s, %s)
-                RETURNING id_usuario, nombre, correo, rol, activo
+                RETURNING id_usuario, nombre, email as correo, rol, estado
             """
-            resultado = execute_insert_returning(query, (nombre, correo, rol, hash_password, activo))
+            resultado = execute_insert_returning(query, (nombre, correo, rol, hash_password, estado))
+            
             if resultado:
+                # Normalizar respuesta para que coincida con el esquema (activo bool)
+                resultado['activo'] = (resultado['estado'] == 'activo')
                 logger.info(f"Usuario {resultado.get('id_usuario')} creado: {correo}")
             return resultado
         except Exception as e:
@@ -40,14 +50,34 @@ class UsuarioService:
     @staticmethod
     def obtener_usuario(usuario_id: int) -> Optional[Dict]:
         """Obtener usuario por ID"""
-        query = "SELECT id_usuario, nombre, correo, rol, activo FROM usuario WHERE id_usuario = %s"
-        return execute_query_one(query, (usuario_id,))
+        query = "SELECT id_usuario, nombre, email as correo, rol, estado FROM usuario WHERE id_usuario = %s"
+        usuario = execute_query_one(query, (usuario_id,))
+        if usuario:
+            usuario['activo'] = (usuario['estado'] == 'activo')
+        return usuario
 
     @staticmethod
     def obtener_usuario_por_correo(correo: str) -> Optional[Dict]:
         """Obtener usuario por correo"""
-        query = "SELECT id_usuario, nombre, correo, rol, activo FROM usuario WHERE correo = %s"
-        return execute_query_one(query, (correo,))
+        query = "SELECT id_usuario, nombre, email as correo, rol, estado, contraseña as hash_password FROM usuario WHERE email = %s"
+        usuario = execute_query_one(query, (correo,))
+        if usuario:
+            usuario['activo'] = (usuario['estado'] == 'activo')
+        return usuario
+
+    @staticmethod
+    def autenticar_usuario(correo: str, password: str) -> Optional[Dict]:
+        """Verificar credenciales de usuario"""
+        usuario = UsuarioService.obtener_usuario_por_correo(correo)
+        if not usuario:
+            return None
+        
+        hash_input = sha256(password.encode()).hexdigest()
+        if hash_input == usuario['hash_password']:
+            # No devolver el hash
+            usuario.pop('hash_password', None)
+            return usuario
+        return None
 
     @staticmethod
     def obtener_usuarios(

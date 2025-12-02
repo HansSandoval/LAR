@@ -20,9 +20,9 @@ def entrenar_agente():
     )
     
     # 2. Verificar que el entorno cumple con la API de Gym
-    print("🔍 Verificando entorno...")
+    print(" Verificando entorno...")
     check_env(env)
-    print("✅ Entorno verificado correctamente.")
+    print("Entorno verificado correctamente.")
     
     # 3. Crear modelo PPO
     # MlpPolicy es adecuado para vectores de características (no imágenes)
@@ -38,7 +38,7 @@ def entrenar_agente():
     
     # 4. Entrenar (Pocos pasos solo para demostración/inicialización)
     # En un caso real, esto serían 100,000+ pasos
-    print("🏋️ Entrenando modelo (esto puede tardar unos segundos)...")
+    print("Entrenando modelo (esto puede tardar unos segundos)...")
     model.learn(total_timesteps=5000)
     
     # 5. Guardar modelo
