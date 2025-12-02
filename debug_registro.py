@@ -24,13 +24,13 @@ def test_crear_usuario():
         )
         
         if user:
-            print("✅ Usuario creado exitosamente:")
+            print(" Usuario creado exitosamente:")
             print(user)
         else:
-            print("❌ Falló la creación del usuario (retornó None/Empty)")
+            print(" Falló la creación del usuario (retornó None/Empty)")
             
     except Exception as e:
-        print("\n❌ EXCEPCIÓN CAPTURADA:")
+        print("\n EXCEPCIÓN CAPTURADA:")
         print(str(e))
         print("\nTraceback completo:")
         traceback.print_exc()

@@ -17,7 +17,7 @@ print("=" * 80)
 # Cargar CSV con datos reales
 print("\n1. Cargando datos...")
 df = pd.read_csv('datos_residuos_iquique.csv')
-print(f"   ✓ Cargados {len(df)} registros")
+print(f"    Cargados {len(df)} registros")
 print(f"   Columnas: {list(df.columns)[:10]}...")
 
 # Convertir fecha a datetime
@@ -25,7 +25,7 @@ df['fecha'] = pd.to_datetime(df['fecha'])
 
 # Ordenar por punto de recolección y fecha (IMPORTANTE para secuencias)
 df = df.sort_values(by=['punto_recoleccion', 'fecha']).reset_index(drop=True)
-print(f"   ✓ Datos ordenados por ubicación y fecha")
+print(f"    Datos ordenados por ubicación y fecha")
 
 # FEATURE ENGINEERING
 print("\n2. Ingeniería de características...")
@@ -61,7 +61,7 @@ encoders = {
 with open('encoders.pkl', 'wb') as f:
     pickle.dump(encoders, f)
 
-print("   ✓ Encoders guardados en encoders.pkl")
+print("    Encoders guardados en encoders.pkl")
 
 # Normalizar features con estrategia mejorada
 print("   Normalizando características...")
@@ -89,8 +89,8 @@ scalers = {
 with open('scalers.pkl', 'wb') as f:
     pickle.dump(scalers, f)
 
-print("   ✓ Scaler input guardado con", len(input_features), "características")
-print("   ✓ Scaler target guardado (para inversión de predicciones)")
+print("    Scaler input guardado con", len(input_features), "características")
+print("    Scaler target guardado (para inversión de predicciones)")
 
 # CREAR SECUENCIAS TEMPORALES
 print("\n3. Creando secuencias temporales...")
@@ -132,7 +132,7 @@ def create_sequences(X_data, y_data, seq_length):
 
 X, y = create_sequences(data_input, y_target, sequence_length)
 
-print(f"   ✓ Secuencias creadas")
+print(f"    Secuencias creadas")
 print(f"   X shape: {X.shape}  (muestras, timesteps, features)")
 print(f"   y shape: {y.shape}  (muestras,)")
 print(f"   Número de features: {X.shape[2]}")
@@ -152,7 +152,7 @@ X_clean = X[mask]
 y_clean = y[mask]
 
 outliers_removed = len(y) - len(y_clean)
-print(f"   ✓ {outliers_removed} outliers removidos")
+print(f"    {outliers_removed} outliers removidos")
 print(f"   Datos después de limpieza: {len(y_clean)} muestras")
 
 # GUARDAR DATOS
@@ -179,12 +179,12 @@ info = {
 with open('preprocessing_info.json', 'w') as f:
     json.dump(info, f, indent=2)
 
-print(f"   ✓ X.npy guardado - shape: {X_clean.shape}")
-print(f"   ✓ y.npy guardado - shape: {y_clean.shape}")
-print(f"   ✓ preprocessing_info.json guardado")
+print(f"    X.npy guardado - shape: {X_clean.shape}")
+print(f"    y.npy guardado - shape: {y_clean.shape}")
+print(f"    preprocessing_info.json guardado")
 
 print("\n" + "=" * 80)
-print("✓ PREPROCESAMIENTO COMPLETADO EXITOSAMENTE")
+print(" PREPROCESAMIENTO COMPLETADO EXITOSAMENTE")
 print("=" * 80)
 print(f"\nEstadísticas del target (y):")
 print(f"  Min: {y_clean.min():.4f}")

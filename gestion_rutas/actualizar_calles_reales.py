@@ -57,7 +57,7 @@ def obtener_intersecciones_reales_iquique():
                         'longitud': coords[1]
                     })
                     count += 1
-                    print(f"    ✓ Encontrado: [{coords[0]:.6f}, {coords[1]:.6f}]")
+                    print(f"     Encontrado: [{coords[0]:.6f}, {coords[1]:.6f}]")
                 else:
                     # Si no encuentra la intersección exacta, usar coordenada de la primera calle
                     coords_calle = geocodificar_calle_simple(calle1)
@@ -112,7 +112,7 @@ def geocodificar_interseccion(nombre_interseccion):
         
         return None
     except Exception as e:
-        print(f"    ✗ Error: {e}")
+        print(f"     Error: {e}")
         return None
 
 def geocodificar_calle_simple(nombre_calle):
@@ -152,8 +152,8 @@ def actualizar_csv_con_intersecciones_reales():
     csv_path = 'c:/Users/Usuario/Desktop/LAR-master/gestion_rutas/lstm/datos_residuos_iquique.csv'
     df = pd.read_csv(csv_path)
     
-    print(f"✓ CSV cargado: {len(df)} registros")
-    print(f"✓ Puntos únicos actuales: {df['punto_recoleccion'].nunique()}")
+    print(f" CSV cargado: {len(df)} registros")
+    print(f" Puntos únicos actuales: {df['punto_recoleccion'].nunique()}")
     
     # Obtener puntos únicos actuales (74 calles ficticias)
     puntos_actuales = df['punto_recoleccion'].unique()
@@ -165,7 +165,7 @@ def actualizar_csv_con_intersecciones_reales():
     intersecciones_reales = obtener_intersecciones_reales_iquique()
     
     if len(intersecciones_reales) < len(puntos_actuales):
-        print(f"\n⚠ ADVERTENCIA: Solo se encontraron {len(intersecciones_reales)} intersecciones")
+        print(f"\n ADVERTENCIA: Solo se encontraron {len(intersecciones_reales)} intersecciones")
         print(f"   Se necesitan {len(puntos_actuales)} para reemplazar todos los puntos")
         return
     
@@ -195,7 +195,7 @@ def actualizar_csv_con_intersecciones_reales():
         df_actualizado.loc[mask, 'latitud_punto_recoleccion'] = datos_reales['latitud']
         df_actualizado.loc[mask, 'longitud_punto_recoleccion'] = datos_reales['longitud']
     
-    print(f"✓ CSV actualizado con {len(mapeo)} intersecciones reales")
+    print(f" CSV actualizado con {len(mapeo)} intersecciones reales")
     
     print("\n" + "="*80)
     print("PASO 5: GUARDAR CSV ACTUALIZADO")
@@ -205,19 +205,19 @@ def actualizar_csv_con_intersecciones_reales():
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     backup_path = f'c:/Users/Usuario/Desktop/LAR-master/gestion_rutas/lstm/datos_residuos_iquique_backup_{timestamp}.csv'
     df.to_csv(backup_path, index=False)
-    print(f"✓ Backup guardado: {backup_path}")
+    print(f" Backup guardado: {backup_path}")
     
     # Guardar CSV actualizado
     output_path = 'c:/Users/Usuario/Desktop/LAR-master/gestion_rutas/lstm/datos_residuos_iquique.csv'
     df_actualizado.to_csv(output_path, index=False)
-    print(f"✓ CSV actualizado guardado: {output_path}")
+    print(f" CSV actualizado guardado: {output_path}")
     
     # Guardar también mapeo para referencia
     mapeo_path = 'c:/Users/Usuario/Desktop/LAR-master/gestion_rutas/lstm/mapeo_calles_reales.json'
     with open(mapeo_path, 'w', encoding='utf-8') as f:
         mapeo_json = {k: v for k, v in mapeo.items()}
         json.dump(mapeo_json, f, indent=2, ensure_ascii=False)
-    print(f"✓ Mapeo guardado: {mapeo_path}")
+    print(f" Mapeo guardado: {mapeo_path}")
     
     print("\n" + "="*80)
     print("VERIFICACIÓN FINAL")
@@ -234,7 +234,7 @@ def actualizar_csv_con_intersecciones_reales():
     print(f"  Longitud: {puntos_nuevos['longitud_punto_recoleccion'].min():.6f} a {puntos_nuevos['longitud_punto_recoleccion'].max():.6f}")
     
     print("\n" + "="*80)
-    print("✓ PROCESO COMPLETADO EXITOSAMENTE")
+    print(" PROCESO COMPLETADO EXITOSAMENTE")
     print("="*80)
     print("\nEl CSV ahora contiene:")
     print("  - Nombres de intersecciones REALES de Iquique")

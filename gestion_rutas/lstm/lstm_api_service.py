@@ -103,7 +103,7 @@ class LSTMTrainer:
             self.df[f'{col}_encoded'] = le.fit_transform(self.df[col].astype(str))
             self.encoders[col] = le
         
-        print(f"   ✓ Codificadas {len(categorical_cols)} variables categóricas")
+        print(f"    Codificadas {len(categorical_cols)} variables categóricas")
         
         # Identificar columna target
         target_col = None
@@ -119,10 +119,10 @@ class LSTMTrainer:
         numeric_cols = self.df.select_dtypes(include=[np.number]).columns.tolist()
         self.input_features = [c for c in numeric_cols if c != target_col]
         
-        print(f"   ✓ Features de entrada: {len(self.input_features)}")
+        print(f"    Features de entrada: {len(self.input_features)}")
         
         # MEJORA: Remover outliers ANTES de normalizar
-        print("   ✓ Removiendo outliers agresivos...")
+        print("    Removiendo outliers agresivos...")
         y_data = self.df[target_col].values
         
         # Usar percentiles más estrictos
@@ -136,7 +136,7 @@ class LSTMTrainer:
         mask = (self.df[target_col] >= lower_bound) & (self.df[target_col] <= upper_bound)
         self.df = self.df[mask].reset_index(drop=True)
         
-        print(f"   ✓ Muestras después de remover outliers: {len(self.df)}")
+        print(f"    Muestras después de remover outliers: {len(self.df)}")
         
         # Normalizar inputs y target
         self.scaler_input = MinMaxScaler(feature_range=(0, 1))
@@ -145,7 +145,7 @@ class LSTMTrainer:
         self.scaler_target = MinMaxScaler(feature_range=(0, 1))
         self.df[target_col] = self.scaler_target.fit_transform(self.df[[target_col]]).flatten()
         
-        print(f"   ✓ Features normalizados (min-max scaler)")
+        print(f"    Features normalizados (min-max scaler)")
         
         # Crear secuencias
         data_input = self.df[self.input_features].values
@@ -162,7 +162,7 @@ class LSTMTrainer:
         self.X = np.array(xs, dtype=np.float32)
         self.y = np.array(ys, dtype=np.float32)
         
-        print(f"   ✓ Secuencias creadas: X {self.X.shape}, y {self.y.shape}")
+        print(f"    Secuencias creadas: X {self.X.shape}, y {self.y.shape}")
         
         # Verificar si tenemos suficientes datos
         min_samples = 30
@@ -180,8 +180,8 @@ class LSTMTrainer:
             self.X_train, self.y_train, test_size=val_size, random_state=42, shuffle=False
         )
         
-        print(f"   ✓ Train: {len(self.y_train)}, Val: {len(self.y_val)}, Test: {len(self.y_test)}")
-        print("[PREPROCESAMIENTO] Completado ✓\n")
+        print(f"    Train: {len(self.y_train)}, Val: {len(self.y_val)}, Test: {len(self.y_test)}")
+        print("[PREPROCESAMIENTO] Completado \n")
     
     def build_model(self):
         """Construir modelo LSTM - Versión simplificada y más robusta"""
@@ -205,7 +205,7 @@ class LSTMTrainer:
         optimizer = Adam(learning_rate=0.001)
         self.model.compile(optimizer=optimizer, loss='mse', metrics=['mae', 'mse'])
         
-        print("[MODELO] Compilado ✓\n")
+        print("[MODELO] Compilado \n")
     
     def train(self, epochs=100, batch_size=16):
         """Entrenar modelo con configuración mejorada"""
@@ -236,7 +236,7 @@ class LSTMTrainer:
             verbose=0
         )
         
-        print(f"[ENTRENAMIENTO] Completado: {len(self.history.history['loss'])} épocas ✓\n")
+        print(f"[ENTRENAMIENTO] Completado: {len(self.history.history['loss'])} épocas \n")
     
     def evaluate(self):
         """Evaluar modelo y calcular métricas"""
@@ -261,7 +261,7 @@ class LSTMTrainer:
         
         print(f"   Train R²: {self.metrics['train']['r2']:.4f}")
         print(f"   Val R²:   {self.metrics['val']['r2']:.4f}")
-        print(f"   Test R²:  {self.metrics['test']['r2']:.4f} ✓\n")
+        print(f"   Test R²:  {self.metrics['test']['r2']:.4f} \n")
     
     def generate_visualization(self, output_path='predicciones.png'):
         """Generar gráfico de predicciones vs reales"""
@@ -290,13 +290,13 @@ class LSTMTrainer:
         plt.savefig(output_path, dpi=300, bbox_inches='tight')
         plt.close()
         
-        print(f"   ✓ Gráfico guardado: {output_path}\n")
+        print(f"    Gráfico guardado: {output_path}\n")
         return output_path
     
     def save_model(self, output_path='modelo_lstm.keras'):
         """Guardar modelo entrenado"""
         self.model.save(output_path)
-        print(f"[GUARDADO] Modelo guardado: {output_path} ✓\n")
+        print(f"[GUARDADO] Modelo guardado: {output_path} \n")
         return output_path
     
     def save_report(self, output_path='reporte_lstm.json'):
@@ -322,7 +322,7 @@ class LSTMTrainer:
         with open(output_path, 'w') as f:
             json.dump(report, f, indent=2)
         
-        print(f"[GUARDADO] Reporte guardado: {output_path} ✓\n")
+        print(f"[GUARDADO] Reporte guardado: {output_path} \n")
         return output_path
     
     def get_results_dict(self):

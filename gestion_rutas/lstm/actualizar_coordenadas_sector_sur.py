@@ -156,7 +156,7 @@ def procesar_calles(data):
                 'coords_totales': [],
                 'way_ids': []
             }
-            print(f"    ✓ Encontrada: {nombre_real:<50} (Lat: {lat_avg:.6f}, Lon: {lon_avg:.6f})")
+            print(f"     Encontrada: {nombre_real:<50} (Lat: {lat_avg:.6f}, Lon: {lon_avg:.6f})")
         
         calles_agrupadas[nombre_real]['coords_totales'].extend(coords)
         calles_agrupadas[nombre_real]['way_ids'].append(way_id)
@@ -408,7 +408,7 @@ def actualizar_csv(puntos_reales, csv_path='datos_residuos_iquique.csv'):
     # Guardar
     df_nuevo.to_csv(csv_path, index=False)
     
-    print(f"\n  ✓ CSV actualizado con TODOS los puntos")
+    print(f"\n   CSV actualizado con TODOS los puntos")
     
     return df_nuevo
 
@@ -433,7 +433,7 @@ if Path(backup_file).exists():
 data = obtener_calles_overpass()
 
 if not data:
-    print("\n⚠️  API no disponible, cargando desde archivo de respaldo...")
+    print("\n  API no disponible, cargando desde archivo de respaldo...")
     
     if Path(backup_file).exists():
         with open(backup_file, 'r', encoding='utf-8') as f:
@@ -443,7 +443,7 @@ if not data:
         calles = [p for p in puntos_backup if p.get('tipo') != 'interseccion']
         intersecciones = [p for p in puntos_backup if p.get('tipo') == 'interseccion']
         
-        print(f"  ✓ Cargados desde respaldo:")
+        print(f"   Cargados desde respaldo:")
         print(f"    - Calles: {len(calles)}")
         print(f"    - Intersecciones: {len(intersecciones)}")
         
@@ -462,7 +462,7 @@ if not data:
         print(df_actualizado.groupby('punto_recoleccion')[['latitud_punto_recoleccion', 'longitud_punto_recoleccion']].first().head(20))
         
         print(f"\n{'='*100}")
-        print("✓ COMPLETADO")
+        print(" COMPLETADO")
         print(f"{'='*100}")
         print(f"El archivo datos_residuos_iquique.csv ahora contiene:")
         print(f"  - Nombres REALES de calles del Sector Sur de Iquique")
@@ -471,7 +471,7 @@ if not data:
         print(f"\nRecarga el mapa y entrena el modelo LSTM con el nuevo CSV")
         exit(0)
     else:
-        print("\n❌ ERROR: No se pudieron obtener datos ni desde API ni desde archivo de respaldo")
+        print("\n ERROR: No se pudieron obtener datos ni desde API ni desde archivo de respaldo")
         print("Posibles causas:")
         print("  - Servidor sobrecargado (intenta en unos minutos)")
         print("  - Problema de conexión")
@@ -483,12 +483,12 @@ print("\n[2/3] Procesando vías y encontrando intersecciones REALES...")
 calles, intersecciones = procesar_calles(data)
 
 if not calles:
-    print("\n❌ ERROR: No se encontraron calles en el área")
+    print("\n ERROR: No se encontraron calles en el área")
     print("El Sector Sur podría no tener calles registradas en OpenStreetMap")
     exit(1)
 
-print(f"  ✓ Calles extraídas: {len(calles)}")
-print(f"  ✓ Intersecciones REALES: {len(intersecciones)}")
+print(f"   Calles extraídas: {len(calles)}")
+print(f"   Intersecciones REALES: {len(intersecciones)}")
 
 # 3. Combinar y actualizar CSV
 puntos_totales = calles + intersecciones
@@ -497,7 +497,7 @@ print(f"\n[3/3] Total de puntos: {len(puntos_totales)}")
 # Guardar JSON de respaldo
 with open('calles_sector_sur_real.json', 'w', encoding='utf-8') as f:
     json.dump(puntos_totales, f, indent=2, ensure_ascii=False)
-print("  ✓ Respaldo guardado: calles_sector_sur_real.json")
+print("   Respaldo guardado: calles_sector_sur_real.json")
 
 # Actualizar CSV
 df_nuevo = actualizar_csv(puntos_totales)
@@ -512,7 +512,7 @@ print(f"\nPrimeras 20 calles reales del Sector Sur:\n")
 print(puntos_df.head(20).to_string())
 
 print("\n" + "="*100)
-print("✓ COMPLETADO")
+print(" COMPLETADO")
 print("="*100)
 print("El archivo datos_residuos_iquique.csv ahora contiene:")
 print("  - Nombres REALES de calles del Sector Sur de Iquique")

@@ -30,7 +30,7 @@ class LSTMPredictionService:
                 return None
             
             df = pd.read_csv(LSTMPredictionService.PREDICCIONES_CSV)
-            logger.info(f"✓ Predicciones cargadas: {len(df)} registros")
+            logger.info(f" Predicciones cargadas: {len(df)} registros")
             return df
         except Exception as e:
             logger.error(f"Error al cargar predicciones: {str(e)}")
@@ -79,7 +79,7 @@ class LSTMPredictionService:
                 "calidad": LSTMPredictionService._evaluar_calidad(mape, r2)
             }
 
-            logger.info(f"✓ Métricas LSTM calculadas: MAPE={mape:.2f}%, R²={r2:.4f}")
+            logger.info(f" Métricas LSTM calculadas: MAPE={mape:.2f}%, R²={r2:.4f}")
             return metricas
 
         except Exception as e:

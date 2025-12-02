@@ -33,7 +33,7 @@ X_train, X_val, y_train, y_val = train_test_split(
 
 # Cargar mejor modelo
 model = load_model('modelo_lstm_mejor.keras')
-print("   ✓ Modelo cargado")
+print("    Modelo cargado")
 
 # HACER PREDICCIONES
 print("\n2. Haciendo predicciones...")
@@ -41,7 +41,7 @@ y_pred_train = model.predict(X_train, verbose=0).flatten()
 y_pred_val = model.predict(X_val, verbose=0).flatten()
 y_pred_test = model.predict(X_test, verbose=0).flatten()
 
-print("   ✓ Predicciones generadas")
+print("    Predicciones generadas")
 
 # GUARDAR RESULTADOS EN CSV
 print("\n3. Guardando resultados...")
@@ -56,7 +56,7 @@ resultados['Error'] = resultados['Real'] - resultados['Predicho']
 resultados['Error_Porcentaje'] = (np.abs(resultados['Error']) / resultados['Real'] * 100)
 
 resultados.to_csv('predicciones_lstm.csv', index=False)
-print("   ✓ Resultados guardados en predicciones_lstm.csv")
+print("    Resultados guardados en predicciones_lstm.csv")
 
 # CALCULAR MÉTRICAS DETALLADAS
 print("\n4. Calculando métricas...")
@@ -123,7 +123,7 @@ ax.text(0.98, 0.97, textstr, transform=ax.transAxes, fontsize=11,
 
 plt.tight_layout()
 plt.savefig('predicciones_visualizacion.png', dpi=300, bbox_inches='tight')
-print("   ✓ Gráfico guardado en predicciones_visualizacion.png")
+print("    Gráfico guardado en predicciones_visualizacion.png")
 plt.close()
 
 # Calcular errores para el reporte
@@ -159,11 +159,11 @@ reporte = {
 with open('reporte_predicciones.json', 'w') as f:
     json.dump(reporte, f, indent=2)
 
-print("   ✓ Reporte guardado en reporte_predicciones.json")
+print("    Reporte guardado en reporte_predicciones.json")
 
 # RESUMEN FINAL
 print("\n" + "=" * 80)
-print("✓ GENERACIÓN DE PREDICCIONES COMPLETADA")
+print(" GENERACIÓN DE PREDICCIONES COMPLETADA")
 print("=" * 80)
 print(f"\nArchivos generados:")
 print(f"  • predicciones_lstm.csv - Resultados detallados")
@@ -177,8 +177,8 @@ print(f"  MAE: {metricas_test['mae']:.6f}")
 print(f"  MAPE: {metricas_test['mape']:.2f}%")
 
 if metricas_test['r2'] > 0.7:
-    print(f"\n✓ El modelo tiene buen desempeño predictivo (R² > 0.7)")
+    print(f"\n El modelo tiene buen desempeño predictivo (R² > 0.7)")
 elif metricas_test['r2'] > 0.5:
-    print(f"\n⚠ El modelo tiene desempeño moderado (R² > 0.5)")
+    print(f"\n El modelo tiene desempeño moderado (R² > 0.5)")
 else:
-    print(f"\n✗ El modelo necesita mejora (R² < 0.5)")
+    print(f"\n El modelo necesita mejora (R² < 0.5)")

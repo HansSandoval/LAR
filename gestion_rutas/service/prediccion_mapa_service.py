@@ -50,7 +50,7 @@ class PrediccionMapaService:
                             self.scaler = scalers_dict
                             print(f"Scaler cargado desde {self.scaler_path}")
                 else:
-                    print(f"⚠️ Scaler no encontrado en {self.scaler_path}, predicciones sin ajustar")
+                    print(f" Scaler no encontrado en {self.scaler_path}, predicciones sin ajustar")
                     self.scaler = None
                 
                 return True
@@ -67,23 +67,23 @@ class PrediccionMapaService:
             if self.datos_path.exists():
                 self.df = pd.read_csv(str(self.datos_path))
                 self.df['fecha'] = pd.to_datetime(self.df['fecha'])
-                print(f"✓ CSV cargado: {len(self.df)} registros")
-                print(f"✓ Columnas: {self.df.columns.tolist()}")
-                print(f"✓ Puntos únicos: {self.df['punto_recoleccion'].nunique()}")
-                print(f"✓ Promedio residuos_kg: {self.df['residuos_kg'].mean():.2f}")
-                print(f"✓ Primeros 3 valores residuos_kg: {self.df['residuos_kg'].head(3).tolist()}")
+                print(f" CSV cargado: {len(self.df)} registros")
+                print(f" Columnas: {self.df.columns.tolist()}")
+                print(f" Puntos únicos: {self.df['punto_recoleccion'].nunique()}")
+                print(f" Promedio residuos_kg: {self.df['residuos_kg'].mean():.2f}")
+                print(f" Primeros 3 valores residuos_kg: {self.df['residuos_kg'].head(3).tolist()}")
                 return True
             else:
-                print(f"✗ CSV no encontrado en: {self.datos_path}")
+                print(f" CSV no encontrado en: {self.datos_path}")
                 return False
         except Exception as e:
-            print(f"✗ Error cargando CSV: {e}")
+            print(f" Error cargando CSV: {e}")
             return False
     
     def obtener_puntos_recoleccion_unicos(self) -> List[Dict]:
         """Extraer lista única de puntos con coordenadas reales del Sector Sur"""
         if self.df is None:
-            print("✗ DataFrame es None, no se pueden obtener puntos")
+            print(" DataFrame es None, no se pueden obtener puntos")
             return []
         
         # Agrupar por punto único
@@ -100,9 +100,9 @@ class PrediccionMapaService:
                 'registros_historicos': row['registros']
             })
         
-        print(f"✓ Puntos únicos extraídos: {len(puntos_lista)}")
+        print(f" Puntos únicos extraídos: {len(puntos_lista)}")
         if puntos_lista:
-            print(f"✓ Primer punto: {puntos_lista[0]['nombre']}")
+            print(f" Primer punto: {puntos_lista[0]['nombre']}")
         return puntos_lista
     
     def obtener_ultimos_dias(self, punto: str, n_dias: int = 3) -> Optional[np.ndarray]:
@@ -247,7 +247,7 @@ class PrediccionMapaService:
         
         # Obtener puntos únicos
         puntos = self.obtener_puntos_recoleccion_unicos()
-        print(f"⏱️ Generando predicciones para {len(puntos)} puntos...")
+        print(f"⏱ Generando predicciones para {len(puntos)} puntos...")
         
         # OPTIMIZACIÓN: Preparar todas las entradas primero
         if self.modelo is not None:
@@ -271,9 +271,9 @@ class PrediccionMapaService:
                 if self.scaler is not None:
                     try:
                         predicciones_lote = self.scaler.inverse_transform(predicciones_lote)
-                        print(f"✅ Scaler inverso aplicado a predicciones")
+                        print(f" Scaler inverso aplicado a predicciones")
                     except Exception as e:
-                        print(f"⚠️ Error aplicando scaler inverso: {e}")
+                        print(f" Error aplicando scaler inverso: {e}")
                 
                 # Procesar resultados
                 predicciones = []
@@ -317,7 +317,7 @@ class PrediccionMapaService:
                     }
                     predicciones.append(pred_completa)
                 
-                print(f"✅ {len(predicciones)} predicciones generadas por lote en modo optimizado")
+                print(f" {len(predicciones)} predicciones generadas por lote en modo optimizado")
                 return predicciones
         
         # Fallback: método tradicional si no hay modelo

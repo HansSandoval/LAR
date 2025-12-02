@@ -52,14 +52,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Título
-st.title("🚚 Visualizador de Planificador VRP")
+st.title(" Visualizador de Planificador VRP")
 st.markdown("**Sistema interactivo para optimización de rutas de recolección**")
 
 # ============================================================================
 # BARRA LATERAL - CONFIGURACIÓN
 # ============================================================================
 
-st.sidebar.header("⚙️ Configuración")
+st.sidebar.header(" Configuración")
 
 # Selector de escenario predefinido
 escenario = st.sidebar.radio(
@@ -131,7 +131,7 @@ else:  # Personalizado
             demand=np.random.randint(2, 8)
         ))
     
-    if st.sidebar.button("🔀 Generar aleatorio"):
+    if st.sidebar.button(" Generar aleatorio"):
         np.random.seed(np.random.randint(0, 10000))
         nodos = [NodeCoordinate(id='D', x=50, y=50, demand=0)]
         for i in range(num_puntos - 1):
@@ -145,7 +145,7 @@ else:  # Personalizado
 
 # Parámetros de optimización
 st.sidebar.markdown("---")
-st.sidebar.header("🔧 Parámetros")
+st.sidebar.header(" Parámetros")
 
 # Obtener del escenario o permitir personalización
 if escenario != "Personalizado":
@@ -194,10 +194,10 @@ def ids_a_indices(routes_ids):
 
 # Selección de algoritmo
 st.sidebar.markdown("---")
-algoritmo = st.sidebar.radio("🧠 Algoritmo de Planificación:", ["Heurística (NN + 2-opt)", "Agente IA (PPO - RL)"])
+algoritmo = st.sidebar.radio(" Algoritmo de Planificación:", ["Heurística (NN + 2-opt)", "Agente IA (PPO - RL)"])
 
 if algoritmo == "Agente IA (PPO - RL)":
-    with st.spinner("🤖 El Agente IA está explorando el entorno..."):
+    with st.spinner(" El Agente IA está explorando el entorno..."):
         rutas_ppo_ids = planificar_con_ppo(nodos, vehículos, capacidad)
     
     if rutas_ppo_ids:
@@ -206,9 +206,9 @@ if algoritmo == "Agente IA (PPO - RL)":
         print(f"DEBUG: Rutas IA (Indices): {routes_final}")
         # Calcular distancia usando la matriz de distancias existente
         distancia_final = sum(calcula_distancia_ruta(r, dist_matrix) for r in routes_final)
-        st.sidebar.success("✅ Ruta generada por IA")
+        st.sidebar.success(" Ruta generada por IA")
     else:
-        st.error("⚠️ No se pudo cargar el modelo PPO o falló la inferencia.")
+        st.error(" No se pudo cargar el modelo PPO o falló la inferencia.")
         routes_final = []
         distancia_final = 0.0
 else:
@@ -224,17 +224,17 @@ else:
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.metric("📍 Nodos", len(nodos) - 1)
+    st.metric(" Nodos", len(nodos) - 1)
 
 with col2:
-    st.metric("🚚 Vehículos", vehículos)
+    st.metric(" Vehículos", vehículos)
 
 with col3:
-    st.metric("📦 Capacidad Total", f"{vehículos * capacidad} kg")
+    st.metric(" Capacidad Total", f"{vehículos * capacidad} kg")
 
 with col4:
     demanda_total = sum(n.demand or 0 for n in nodos)
-    st.metric("📊 Demanda Total", f"{demanda_total} kg")
+    st.metric(" Demanda Total", f"{demanda_total} kg")
 
 # ============================================================================
 # COMPARATIVA
@@ -244,12 +244,12 @@ st.markdown("---")
 col_comparison_l, col_comparison_r = st.columns(2)
 
 with col_comparison_l:
-    st.subheader("📈 Nearest Neighbor (Inicial)")
+    st.subheader(" Nearest Neighbor (Inicial)")
     st.metric("Distancia", f"{distancia_nn:.2f} km", delta=f"(Inicial)")
 
 with col_comparison_r:
     if algoritmo == "Agente IA (PPO - RL)":
-        st.subheader("🤖 Agente IA (PPO)")
+        st.subheader(" Agente IA (PPO)")
         mejora = distancia_nn - distancia_final
         mejora_pct = (mejora / distancia_nn * 100) if distancia_nn > 0 else 0
         st.metric(
@@ -261,7 +261,7 @@ with col_comparison_r:
     elif aplicar_2opt:
         mejora = distancia_nn - distancia_final
         mejora_pct = (mejora / distancia_nn * 100) if distancia_nn > 0 else 0
-        st.subheader("✨ NN + 2-opt (Optimizado)")
+        st.subheader(" NN + 2-opt (Optimizado)")
         st.metric(
             "Distancia", 
             f"{distancia_final:.2f} km",
@@ -344,11 +344,11 @@ def crear_mapa_rutas(routes, dist_matrix, titulo):
     return fig
 
 with col_map_nn:
-    fig_nn = crear_mapa_rutas(routes_nn, dist_matrix, "🗺️ Nearest Neighbor (Inicial)")
+    fig_nn = crear_mapa_rutas(routes_nn, dist_matrix, " Nearest Neighbor (Inicial)")
     st.plotly_chart(fig_nn, use_container_width=True)
 
 with col_map_opt:
-    fig_opt = crear_mapa_rutas(routes_final, dist_matrix, "🗺️ Después de 2-opt (Optimizado)")
+    fig_opt = crear_mapa_rutas(routes_final, dist_matrix, " Después de 2-opt (Optimizado)")
     st.plotly_chart(fig_opt, use_container_width=True)
 
 # ============================================================================
@@ -356,7 +356,7 @@ with col_map_opt:
 # ============================================================================
 
 st.markdown("---")
-st.subheader("📋 Detalle de Rutas")
+st.subheader(" Detalle de Rutas")
 
 col_detail_nn, col_detail_opt = st.columns(2)
 
@@ -391,7 +391,7 @@ with col_detail_opt:
 # ============================================================================
 
 st.markdown("---")
-st.subheader("📊 Comparativa de Distancias por Ruta")
+st.subheader(" Comparativa de Distancias por Ruta")
 
 col_chart_dist = st.columns(1)[0]
 
@@ -428,7 +428,7 @@ st.plotly_chart(fig_dist, use_container_width=True)
 # ============================================================================
 
 st.markdown("---")
-st.subheader("🎯 Indicadores Clave")
+st.subheader(" Indicadores Clave")
 
 col_ind1, col_ind2, col_ind3, col_ind4 = st.columns(4)
 
@@ -459,7 +459,7 @@ with col_ind4:
 st.markdown("---")
 st.info(
     """
-    **ℹ️ Información:**
+    **ℹ Información:**
     - **Nearest Neighbor**: Heurística constructiva rápida (O(n²))
     - **2-opt**: Búsqueda local que intercambia aristas para mejorar la solución
     - **Mejora típica**: 5-20% de reducción de distancia
@@ -470,7 +470,7 @@ st.info(
 st.markdown(
     """
     <footer style='text-align: center; margin-top: 50px; color: gray;'>
-        <small>🚚 Visualizador VRP - Planificador de Rutas de Recolección</small><br>
+        <small> Visualizador VRP - Planificador de Rutas de Recolección</small><br>
         <small>Desarrollado con Streamlit + Plotly</small>
     </footer>
     """,

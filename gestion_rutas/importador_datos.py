@@ -47,7 +47,7 @@ class ImportadorDatos:
                     coordenadas_limite="[{-20.27, -70.14}]"  # Centro Iquique
                 )
                 self.session.add(zona)
-                logger.info(f"  ✓ Zona creada: {row['nombre_zona']}")
+                logger.info(f"   Zona creada: {row['nombre_zona']}")
         
         self.session.commit()
         logger.info(f"  Total de zonas insertadas")
@@ -83,7 +83,7 @@ class ImportadorDatos:
                     estado='activo'
                 )
                 self.session.add(punto)
-                logger.info(f"  ✓ Punto: {row['punto_recoleccion'][:40]}")
+                logger.info(f"   Punto: {row['punto_recoleccion'][:40]}")
         
         self.session.commit()
         logger.info(f"  Total puntos de recolección insertados")
@@ -112,7 +112,7 @@ class ImportadorDatos:
                     gps_id=row['gps_id']
                 )
                 self.session.add(camion)
-                logger.info(f"  ✓ Camión: {row['patente_camion']}")
+                logger.info(f"   Camión: {row['patente_camion']}")
         
         self.session.commit()
         logger.info(f"  Total camiones insertados")
@@ -140,7 +140,7 @@ class ImportadorDatos:
                     capacidad_diaria_ton=float(row['capacidad_diaria_ton'])
                 )
                 self.session.add(disposicion)
-                logger.info(f"  ✓ Disposición: {row['nombre_punto_disp']}")
+                logger.info(f"   Disposición: {row['nombre_punto_disp']}")
         
         self.session.commit()
         logger.info(f"  Total puntos disposición insertados")
@@ -189,7 +189,7 @@ class ImportadorDatos:
                     severidad=severidad
                 )
                 self.session.add(incidencia)
-                logger.info(f"  ✓ Incidencia: {row['evento']} (severidad {severidad})")
+                logger.info(f"   Incidencia: {row['evento']} (severidad {severidad})")
         
         self.session.commit()
         logger.info(f"  Total incidencias insertadas")
@@ -204,7 +204,7 @@ class ImportadorDatos:
             self.importar_incidencias_desde_contexto()
             
             print("\n" + "="*80)
-            print("✓ IMPORTACIÓN COMPLETADA EXITOSAMENTE")
+            print(" IMPORTACIÓN COMPLETADA EXITOSAMENTE")
             print("="*80)
             print(f"Tablas pobladas:")
             print(f"  - Zonas: {self.session.query(Zona).count()}")

@@ -133,7 +133,7 @@ def cargar_predicciones_lstm_csv(num_clientes: int = 50) -> List[float]:
         from gestion_rutas.service.prediccion_mapa_service import PrediccionMapaService
         from datetime import datetime, timedelta
         
-        logger.info(f"📊 Generando predicciones LSTM para {num_clientes} puntos...")
+        logger.info(f" Generando predicciones LSTM para {num_clientes} puntos...")
         servicio = PrediccionMapaService()
         fecha_prediccion = datetime.now() + timedelta(days=1)
         predicciones_completas = servicio.generar_predicciones_completas(fecha_prediccion)
@@ -141,17 +141,17 @@ def cargar_predicciones_lstm_csv(num_clientes: int = 50) -> List[float]:
         if predicciones_completas and len(predicciones_completas) > 0:
             # Extraer solo los valores de predicción en kg
             predicciones = [pred['prediccion_kg'] for pred in predicciones_completas[:num_clientes]]
-            logger.info(f"✅ {len(predicciones)} predicciones LSTM generadas correctamente")
+            logger.info(f" {len(predicciones)} predicciones LSTM generadas correctamente")
             return predicciones
         else:
-            logger.warning("⚠️ No se pudieron generar predicciones LSTM")
+            logger.warning(" No se pudieron generar predicciones LSTM")
     except Exception as e:
-        logger.error(f"❌ Error generando predicciones LSTM: {e}")
+        logger.error(f" Error generando predicciones LSTM: {e}")
         import traceback
         logger.error(traceback.format_exc())
     
     # Valores sintéticos si falla
-    logger.warning("⚠️ Usando valores sintéticos como fallback")
+    logger.warning(" Usando valores sintéticos como fallback")
     return [random.uniform(50, 150) for _ in range(num_clientes)]
 
 
@@ -168,15 +168,15 @@ def obtener_coordenadas_sector_sur(num_clientes: int = 50) -> List[Dict[str, Any
     """
     try:
         csv_path = Path(__file__).parent.parent / "lstm" / "datos_residuos_iquique.csv"
-        logger.info(f"🔍 Buscando CSV en: {csv_path}")
-        logger.info(f"📁 Archivo existe: {csv_path.exists()}")
+        logger.info(f" Buscando CSV en: {csv_path}")
+        logger.info(f" Archivo existe: {csv_path.exists()}")
         
         if csv_path.exists():
             import pandas as pd
             df = pd.read_csv(csv_path)
-            logger.info(f"📊 CSV cargado: {len(df)} registros totales")
+            logger.info(f" CSV cargado: {len(df)} registros totales")
             
-            # ✅ COLUMNAS CORRECTAS: latitud_punto_recoleccion, longitud_punto_recoleccion, punto_recoleccion
+            #  COLUMNAS CORRECTAS: latitud_punto_recoleccion, longitud_punto_recoleccion, punto_recoleccion
             if 'latitud_punto_recoleccion' in df.columns and 'longitud_punto_recoleccion' in df.columns:
                 # Columnas a seleccionar
                 cols = ['latitud_punto_recoleccion', 'longitud_punto_recoleccion', 'punto_recoleccion']
@@ -185,7 +185,7 @@ def obtener_coordenadas_sector_sur(num_clientes: int = 50) -> List[Dict[str, Any
                 
                 # Obtener coordenadas únicas
                 coords_unicas = df[cols].drop_duplicates(subset=['punto_recoleccion'])
-                logger.info(f"🎯 Coordenadas únicas encontradas: {len(coords_unicas)}")
+                logger.info(f" Coordenadas únicas encontradas: {len(coords_unicas)}")
                 
                 # Filtrar coordenadas válidas (rango amplio de Iquique)
                 coords_validas = coords_unicas[
@@ -194,7 +194,7 @@ def obtener_coordenadas_sector_sur(num_clientes: int = 50) -> List[Dict[str, Any
                     (coords_unicas['latitud_punto_recoleccion'].between(-20.35, -20.15)) &
                     (coords_unicas['longitud_punto_recoleccion'].between(-70.25, -70.05))
                 ]
-                logger.info(f"✅ Coordenadas válidas después de filtrar: {len(coords_validas)}")
+                logger.info(f" Coordenadas válidas después de filtrar: {len(coords_validas)}")
                 
                 if len(coords_validas) > 0:
                     # Tomar hasta num_clientes coordenadas
@@ -218,19 +218,19 @@ def obtener_coordenadas_sector_sur(num_clientes: int = 50) -> List[Dict[str, Any
                             
                         coordenadas.append(coord_data)
                     
-                    logger.info(f"✅ Cargadas {len(coordenadas)} coordenadas REALES desde CSV")
-                    logger.info(f"📍 Ejemplo: {coordenadas[0]}")
+                    logger.info(f" Cargadas {len(coordenadas)} coordenadas REALES desde CSV")
+                    logger.info(f" Ejemplo: {coordenadas[0]}")
                     return coordenadas
                 else:
-                    logger.warning(f"⚠️ No hay coordenadas válidas después del filtro")
+                    logger.warning(f" No hay coordenadas válidas después del filtro")
             else:
-                logger.warning(f"⚠️ Columnas incorrectas. Disponibles: {df.columns.tolist()}")
+                logger.warning(f" Columnas incorrectas. Disponibles: {df.columns.tolist()}")
         else:
-            logger.warning(f"⚠️ Archivo CSV no existe en: {csv_path}")
+            logger.warning(f" Archivo CSV no existe en: {csv_path}")
         
-        logger.warning("⚠️ CSV no disponible, usando coordenadas sintéticas")
+        logger.warning(" CSV no disponible, usando coordenadas sintéticas")
     except Exception as e:
-        logger.error(f"❌ Error cargando coordenadas: {e}")
+        logger.error(f" Error cargando coordenadas: {e}")
         import traceback
         logger.error(traceback.format_exc())
     
@@ -268,11 +268,11 @@ def crear_clientes_con_datos_reales(config: ConfiguracionMAS) -> List[Cliente]:
         
         # VALIDACIÓN: Filtrar coordenadas fuera de Iquique
         if not (-20.35 <= lat <= -20.15) or not (-70.25 <= lon <= -70.05):
-            logger.warning(f"⚠️ Coordenada fuera de rango: {coord.get('nombre', f'Punto {i+1}')} ({lat}, {lon})")
+            logger.warning(f" Coordenada fuera de rango: {coord.get('nombre', f'Punto {i+1}')} ({lat}, {lon})")
             # Ajustar a coordenadas válidas del Sector Sur
             lat = max(-20.35, min(-20.15, lat))
             lon = max(-70.25, min(-70.05, lon))
-            logger.info(f"   ✓ Ajustada a: ({lat}, {lon})")
+            logger.info(f"    Ajustada a: ({lat}, {lon})")
         
         # FILTRO DE NEGOCIO: Ignorar puntos con demanda MUY BAJA (< 10 kg)
         # Se dejan para el día siguiente para priorizar recolección crítica
@@ -291,7 +291,7 @@ def crear_clientes_con_datos_reales(config: ConfiguracionMAS) -> List[Cliente]:
         )
         clientes.append(cliente)
     
-    logger.info(f"✅ Creados {len(clientes)} clientes con coordenadas validadas (Filtrados por demanda < 80kg)")
+    logger.info(f" Creados {len(clientes)} clientes con coordenadas validadas (Filtrados por demanda < 80kg)")
     return clientes
 
 
@@ -312,11 +312,11 @@ async def iniciar_simulacion(config: ConfiguracionMAS):
     try:
         sim_id = f"sim_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
-        logger.info(f"🚀 Iniciando simulación {sim_id}")
+        logger.info(f" Iniciando simulación {sim_id}")
         logger.info(f"   - Camiones: {config.num_camiones}")
         logger.info(f"   - Clientes: {config.num_clientes}")
         logger.info(f"   - Capacidad: {config.capacidad_camion}kg")
-        logger.info(f"   - LSTM: {'✓' if config.usar_predicciones_lstm else '✗'}")
+        logger.info(f"   - LSTM: {'' if config.usar_predicciones_lstm else ''}")
         
         # Crear clientes con datos reales
         clientes_objetos = crear_clientes_con_datos_reales(config)
@@ -342,8 +342,8 @@ async def iniciar_simulacion(config: ConfiguracionMAS):
         vertedero_lat = -20.19767564535899
         vertedero_lon = -70.06207963576485
         
-        logger.info(f"🏠 Base configurada en: ({base_lat}, {base_lon})")
-        logger.info(f"🗑️ Vertedero configurado en: ({vertedero_lat}, {vertedero_lon})")
+        logger.info(f" Base configurada en: ({base_lat}, {base_lon})")
+        logger.info(f" Vertedero configurado en: ({vertedero_lat}, {vertedero_lon})")
         
         env = DVRPTWEnv(
             num_camiones=config.num_camiones,
@@ -353,7 +353,7 @@ async def iniciar_simulacion(config: ConfiguracionMAS):
             depot_lon=vertedero_lon,
             base_lat=base_lat,       # Inicio en la base
             base_lon=base_lon,
-            usar_routing_real=True,  # ✅ ACTIVADO - rutas por calles reales OSRM
+            usar_routing_real=True,  #  ACTIVADO - rutas por calles reales OSRM
             penalizacion_distancia=0.1,
             recompensa_servicio=10.0,
             max_steps=3000,
@@ -364,7 +364,7 @@ async def iniciar_simulacion(config: ConfiguracionMAS):
         base_dir = Path(__file__).resolve().parent.parent
         modelo_path = base_dir / "vrp" / "modelo_ppo_vrp.zip"
         
-        logger.info(f"🤖 Buscando modelo PPO en: {modelo_path}")
+        logger.info(f" Buscando modelo PPO en: {modelo_path}")
         
         # Crear coordinador MAS
         coordinador = CoordinadorMAS(env, modelo_ppo_path=str(modelo_path))
@@ -381,7 +381,7 @@ async def iniciar_simulacion(config: ConfiguracionMAS):
             'eventos': []
         }
         
-        logger.info(f"✅ Simulación {sim_id} creada exitosamente")
+        logger.info(f" Simulación {sim_id} creada exitosamente")
         
         return {
             'simulacion_id': sim_id,
@@ -394,7 +394,7 @@ async def iniciar_simulacion(config: ConfiguracionMAS):
         }
         
     except Exception as e:
-        logger.error(f"❌ Error iniciando simulación: {e}")
+        logger.error(f" Error iniciando simulación: {e}")
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
@@ -414,7 +414,7 @@ async def obtener_estado_simulacion(sim_id: str):
         env = sim['env']
         coordinador = sim['coordinador']
         
-        logger.info(f"📊 Obteniendo estado de simulación {sim_id}")
+        logger.info(f" Obteniendo estado de simulación {sim_id}")
         logger.info(f"   - Camiones: {len(coordinador.agentes)}")
         logger.info(f"   - Clientes: {len(env.clientes)}")
         
@@ -458,7 +458,7 @@ async def obtener_estado_simulacion(sim_id: str):
                              ruta_geometria.insert(0, [env.depot_lat, env.depot_lon])
                 
                 if len(ruta_geometria) > 0:
-                    logger.debug(f"   📍 Geo Sample (Camión {i}): {ruta_geometria[0]}")
+                    logger.debug(f"    Geo Sample (Camión {i}): {ruta_geometria[0]}")
                 logger.info(f"Camión {i}: Enviando geometría OSRM con {len(ruta_geometria)} puntos")
             
             # Waypoints (puntos de destino planificados)
@@ -541,7 +541,7 @@ async def obtener_estado_simulacion(sim_id: str):
         # CORRECCIÓN: Usar IDs reales del objeto cliente, NO índices
         clientes_servidos_ids = [cliente.id for cliente in env.clientes if cliente.servido]
         
-        logger.debug(f"📊 Stats enviadas: {estadisticas.dict()}") # LOG AÑADIDO
+        logger.debug(f" Stats enviadas: {estadisticas.dict()}") # LOG AÑADIDO
         
         return {
             'simulacion_id': sim_id,
@@ -553,7 +553,7 @@ async def obtener_estado_simulacion(sim_id: str):
         }
         
     except Exception as e:
-        logger.error(f"❌ Error obteniendo estado de simulación {sim_id}: {e}")
+        logger.error(f" Error obteniendo estado de simulación {sim_id}: {e}")
         logger.exception(e)
         raise HTTPException(status_code=500, detail=f"Error obteniendo estado: {str(e)}")
 
@@ -581,9 +581,9 @@ async def ejecutar_paso_simulacion(sim_id: str):
         loop = asyncio.get_event_loop()
         decisiones, info = await loop.run_in_executor(None, coordinador.ejecutar_paso_cooperativo)
         
-        logger.info(f"🔄 Paso {sim['paso_actual']}: {len(decisiones)} decisiones tomadas")
+        logger.info(f" Paso {sim['paso_actual']}: {len(decisiones)} decisiones tomadas")
         for d in decisiones:
-            logger.info(f"   👉 Camión {d.camion_id} -> Objetivo {d.cliente_objetivo_id} ({d.razonamiento})")
+            logger.info(f"    Camión {d.camion_id} -> Objetivo {d.cliente_objetivo_id} ({d.razonamiento})")
         
         # Generar eventos para visualización
         eventos = []
@@ -658,9 +658,9 @@ async def ejecutar_paso_simulacion(sim_id: str):
         # Verificar si terminó
         if len(env.clientes) > 0 and all(cliente.servido for cliente in env.clientes):
             sim['activa'] = False
-            logger.info(f"✅ Simulación {sim_id} completada: 100% clientes servidos ({len(env.clientes)}/{len(env.clientes)})")
+            logger.info(f" Simulación {sim_id} completada: 100% clientes servidos ({len(env.clientes)}/{len(env.clientes)})")
         elif len(env.clientes) == 0:
-             logger.warning(f"⚠️ Simulación {sim_id} tiene 0 clientes. Finalizando.")
+             logger.warning(f" Simulación {sim_id} tiene 0 clientes. Finalizando.")
              sim['activa'] = False
         
         return {
@@ -671,7 +671,7 @@ async def ejecutar_paso_simulacion(sim_id: str):
         }
         
     except Exception as e:
-        logger.error(f"❌ Error ejecutando paso: {e}")
+        logger.error(f" Error ejecutando paso: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -687,14 +687,14 @@ async def ejecutar_simulacion_completa(sim_id: str, max_pasos: int = 500):
     coordinador = sim['coordinador']
     
     try:
-        logger.info(f"🏁 Ejecutando simulación completa {sim_id}")
+        logger.info(f" Ejecutando simulación completa {sim_id}")
         
         resultado = coordinador.ejecutar_episodio_completo(max_pasos=max_pasos)
         
         sim['activa'] = False
         sim['resultado_final'] = resultado
         
-        logger.info(f"✅ Simulación {sim_id} completada:")
+        logger.info(f" Simulación {sim_id} completada:")
         logger.info(f"   - Clientes servidos: {resultado['clientes_servidos']}/{resultado['clientes_totales']}")
         logger.info(f"   - Recompensa total: {resultado['recompensa_total']:.2f}")
         logger.info(f"   - Pasos ejecutados: {resultado['pasos_ejecutados']}")
@@ -705,7 +705,7 @@ async def ejecutar_simulacion_completa(sim_id: str, max_pasos: int = 500):
         }
         
     except Exception as e:
-        logger.error(f"❌ Error en simulación completa: {e}")
+        logger.error(f" Error en simulación completa: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -797,7 +797,7 @@ async def detener_simulacion(sim_id: str):
         raise HTTPException(status_code=404, detail="Simulación no encontrada")
     
     del simulaciones_activas[sim_id]
-    logger.info(f"🛑 Simulación {sim_id} detenida y eliminada")
+    logger.info(f" Simulación {sim_id} detenida y eliminada")
     
     return {'mensaje': 'Simulación detenida', 'simulacion_id': sim_id}
 
@@ -835,7 +835,7 @@ async def websocket_endpoint(websocket: WebSocket, sim_id: str):
     await websocket.accept()
     websocket_connections.append(websocket)
     
-    logger.info(f"🔌 WebSocket conectado para simulación {sim_id}")
+    logger.info(f" WebSocket conectado para simulación {sim_id}")
     
     try:
         if sim_id not in simulaciones_activas:
@@ -876,9 +876,9 @@ async def websocket_endpoint(websocket: WebSocket, sim_id: str):
         })
         
     except WebSocketDisconnect:
-        logger.info(f"🔌 WebSocket desconectado para {sim_id}")
+        logger.info(f" WebSocket desconectado para {sim_id}")
     except Exception as e:
-        logger.error(f"❌ Error en WebSocket: {e}")
+        logger.error(f" Error en WebSocket: {e}")
     finally:
         if websocket in websocket_connections:
             websocket_connections.remove(websocket)
@@ -923,7 +923,7 @@ async def actualizar_posicion_camion(sim_id: str, update: ActualizacionPosicion)
                 agente.camion.last_update = datetime.now()
                 
             found = True
-            logger.info(f"📍 Posición actualizada Camión {update.camion_id}: {update.lat}, {update.lon}")
+            logger.info(f" Posición actualizada Camión {update.camion_id}: {update.lat}, {update.lon}")
             break
             
     if not found:
@@ -946,7 +946,7 @@ async def actualizar_ruta_camion(sim_id: str, update: ActualizacionRuta):
     for agente in coordinador.agentes:
         if agente.camion.id == update.camion_id:
             agente.camion.ruta_geometria_override = update.geometria
-            logger.info(f"🗺️ Ruta actualizada para Camión {update.camion_id} ({len(update.geometria)} puntos)")
+            logger.info(f" Ruta actualizada para Camión {update.camion_id} ({len(update.geometria)} puntos)")
             return {"status": "ok"}
             
     raise HTTPException(status_code=404, detail="Camión no encontrado")

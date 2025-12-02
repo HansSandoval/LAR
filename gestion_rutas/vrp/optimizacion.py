@@ -109,7 +109,7 @@ def optimiza_rutas_2opt(routes: List[List[int]], dist_matrix: List[List[float]],
     
     for idx_ruta, ruta in enumerate(routes):
         if time.time() - tiempo_inicio > timeout:
-            print(f"⚠️  Timeout alcanzado. Deteniendo optimización en ruta {idx_ruta}.")
+            print(f"  Timeout alcanzado. Deteniendo optimización en ruta {idx_ruta}.")
             rutas_optimizadas.append(ruta)
             continue
         

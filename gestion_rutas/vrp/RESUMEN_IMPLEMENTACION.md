@@ -1,12 +1,12 @@
-# 📋 RESUMEN TÉCNICO: Planificador VRP con 2-opt
+#  RESUMEN TÉCNICO: Planificador VRP con 2-opt
 
-## 🎯 Objetivo
+##  Objetivo
 
 Implementar un planificador VRP que utiliza **búsqueda local 2-opt** para optimizar rutas de recolección de residuos con restricciones de capacidad.
 
 ---
 
-## ✅ Componentes
+##  Componentes
 
 ### 1. Módulo de Optimización (`optimizacion.py`)
 - **Función `delta_2opt()`**: Calcula ganancia de intercambiar aristas
@@ -38,7 +38,7 @@ Salida (VRPOutput)
 
 ---
 
-## 📊 Resultados Demostrados
+##  Resultados Demostrados
 
 ### Test 1: Instancia con 9 nodos, 2 vehículos
 
@@ -55,7 +55,7 @@ Vehículo 1: D → 1 → 3 → 2 → 4 → D  [98.03 km]  ← Mejor orden
 Vehículo 2: D → 8 → 7 → 5 → D      [135.67 km] (óptimo ya)
 Distancia total: 233.70 km
 
-✅ MEJORA: 6.2% de reducción
+ MEJORA: 6.2% de reducción
    (de 249.12 a 233.70 km)
 ```
 
@@ -69,7 +69,7 @@ Mejora: 0% (caso donde NN ya convergió)
 
 ---
 
-## 🔧 Implementación Técnica
+##  Implementación Técnica
 
 ### Complejidad
 
@@ -106,7 +106,7 @@ planificar_vrp_api(
 
 ---
 
-## 📚 Documentación Generada
+##  Documentación Generada
 
 | Archivo | Contenido |
 |---------|----------|
@@ -116,7 +116,7 @@ planificar_vrp_api(
 
 ---
 
-## 🚀 Próximos Pasos (Roadmap)
+##  Próximos Pasos (Roadmap)
 
 ### Fase 2: Extensiones Sugeridas
 1. **Or-opt** (ya código en `optimizacion.py`, sin usar)
@@ -138,18 +138,18 @@ planificar_vrp_api(
 
 ---
 
-## ✨ Características Destacadas
+##  Características Destacadas
 
-✅ **Calidad**: Mejora típica 5-15% sobre heurística constructiva  
-✅ **Velocidad**: <1 segundo para instancias <200 nodos  
-✅ **Escalabilidad**: Tiempo limitado con timeout automático  
-✅ **Flexibilidad**: Parámetros ajustables vía API  
-✅ **Modularidad**: Fácil integración con otras heurísticas  
-✅ **Robustez**: Respeta todas las restricciones de capacidad  
+ **Calidad**: Mejora típica 5-15% sobre heurística constructiva  
+ **Velocidad**: <1 segundo para instancias <200 nodos  
+ **Escalabilidad**: Tiempo limitado con timeout automático  
+ **Flexibilidad**: Parámetros ajustables vía API  
+ **Modularidad**: Fácil integración con otras heurísticas  
+ **Robustez**: Respeta todas las restricciones de capacidad  
 
 ---
 
-## 🎓 Teoría Detrás de 2-opt
+##  Teoría Detrás de 2-opt
 
 ### Concepto
 2-opt elimina aristas cruzadas intercambiando dos aristas.
@@ -168,22 +168,22 @@ Después (no cruzadas): A-C  y  B-D
 - Combinación: Balance velocidad-calidad
 
 ### Garantías
-- ✅ Converge a **mínimo local**
-- ❌ No garantiza óptimo global
-- ✅ Determinista (resultado reproducible)
-- ✅ Siempre mejora o mantiene igual
+-  Converge a **mínimo local**
+-  No garantiza óptimo global
+-  Determinista (resultado reproducible)
+-  Siempre mejora o mantiene igual
 
 ---
 
-## 📝 Conclusión
+##  Conclusión
 
 Se ha implementado exitosamente **búsqueda local 2-opt** como componente de optimización del planificador VRP, demostrando mejoras de **6.2%** en instancias de prueba. El sistema está integrado en FastAPI y listo para producción, con todas las restricciones de capacidad respetadas y parámetros ajustables.
 
-**Estado**: ✅ Completado y Testeado
+**Estado**:  Completado y Testeado
 
 ---
 
-## 📞 Contacto / Soporte
+##  Contacto / Soporte
 
 Para preguntas sobre la implementación, consultar:
 - Código: `gestion_rutas/vrp/optimizacion.py`

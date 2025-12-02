@@ -31,7 +31,7 @@ def test_simple():
     print("=" * 60)
     print("TEST SIMPLE: Planificador VRP")
     print("=" * 60)
-    print(f"\n✓ Entrada creada:")
+    print(f"\n Entrada creada:")
     print(f"  - Nodos: {len(entrada.candidates)}")
     print(f"  - Vehículos: {entrada.vehicle_count}")
     print(f"  - Capacidad por vehículo: {entrada.capacity}")
@@ -39,13 +39,13 @@ def test_simple():
     # Ejecutar planificador
     salida: VRPOutput = planificar_vrp_api(entrada)
     
-    print(f"\n✓ Salida obtenida:")
+    print(f"\n Salida obtenida:")
     print(f"  - Rutas: {salida.routes}")
     print(f"  - No asignados: {salida.unassigned}")
     print(f"  - Distancia total: {salida.total_distance:.2f}")
     
     # Imprimir en JSON
-    print(f"\n✓ JSON Output:")
+    print(f"\n JSON Output:")
     print(json.dumps(json.loads(salida.model_dump_json()), indent=2, ensure_ascii=False))
     
     return salida
@@ -80,7 +80,7 @@ def test_con_matriz_personalizada():
     
     salida = planificar_vrp_api(entrada)
     
-    print(f"\n✓ Ruta obtenida: {salida.routes}")
+    print(f"\n Ruta obtenida: {salida.routes}")
     print(f"  Distancia: {salida.total_distance:.2f}")
     
     return salida
@@ -88,7 +88,7 @@ def test_con_matriz_personalizada():
 
 if __name__ == '__main__':
     try:
-        print("\n🚀 Iniciando pruebas del planificador VRP...\n")
+        print("\n Iniciando pruebas del planificador VRP...\n")
         
         # Test 1
         test_simple()
@@ -97,11 +97,11 @@ if __name__ == '__main__':
         test_con_matriz_personalizada()
         
         print("\n" + "=" * 60)
-        print("✅ TODAS LAS PRUEBAS COMPLETADAS EXITOSAMENTE")
+        print(" TODAS LAS PRUEBAS COMPLETADAS EXITOSAMENTE")
         print("=" * 60 + "\n")
         
     except Exception as e:
-        print(f"\n❌ ERROR durante la prueba:")
+        print(f"\n ERROR durante la prueba:")
         print(f"   {type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()

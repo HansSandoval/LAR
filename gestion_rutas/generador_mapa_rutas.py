@@ -190,7 +190,7 @@ def main():
             font-size:14px; padding: 10px">
     <b>Leyenda</b><br>
     <span style="color:blue">●</span> Puntos de Recolección (74)<br>
-    <span style="color:red">🗑</span> Puntos de Disposición (3)<br>
+    <span style="color:red"></span> Puntos de Disposición (3)<br>
     <span style="color:green">⭕</span> Zona de Cobertura (5km)<br>
     <br>
     <b>Rutas VRP:</b><br>

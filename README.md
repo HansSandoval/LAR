@@ -1,21 +1,21 @@
-# 🚚 Sistema de Gestión de Rutas Logísticas
+#  Sistema de Gestión de Rutas Logísticas
 
 Sistema de optimización de rutas para recolección de residuos con predicción de demanda LSTM e integración VRP con 2-opt.
 
 ---
 
-## 🎯 Características
+##  Características
 
-- ✅ **API FastAPI** - Endpoints REST completos
-- ✅ **PostgreSQL** - Base de datos centralizada
-- ✅ **LSTM** - Predicción de demanda (503 predicciones validadas)
-- ✅ **2-opt** - Optimización de rutas VRP
-- ✅ **12 Modelos ORM** - Relaciones configuradas
-- ✅ **5+ Servicios** - Lógica de negocio desacoplada
+-  **API FastAPI** - Endpoints REST completos
+-  **PostgreSQL** - Base de datos centralizada
+-  **LSTM** - Predicción de demanda (503 predicciones validadas)
+-  **2-opt** - Optimización de rutas VRP
+-  **12 Modelos ORM** - Relaciones configuradas
+-  **5+ Servicios** - Lógica de negocio desacoplada
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Componente | Tecnología |
 |-----------|-----------|
@@ -27,7 +27,7 @@ Sistema de optimización de rutas para recolección de residuos con predicción 
 
 ---
 
-## 📋 Documentación Rápida
+##  Documentación Rápida
 
 | Documento | Propósito |
 |-----------|----------|
@@ -37,7 +37,7 @@ Sistema de optimización de rutas para recolección de residuos con predicción 
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Instalación
 
@@ -74,7 +74,7 @@ API disponible en: `http://localhost:8000`
 
 ---
 
-## 📊 Endpoints Principales
+##  Endpoints Principales
 
 ### Rutas VRP
 - `GET /rutas/health` - Estado
@@ -88,7 +88,7 @@ API disponible en: `http://localhost:8000`
 
 ---
 
-## 📁 Estructura
+##  Estructura
 
 ```
 gestion_rutas/
@@ -104,37 +104,37 @@ gestion_rutas/
 
 ---
 
-## 📈 Estado del Proyecto
+##  Estado del Proyecto
 
-✅ **Completado:**
+ **Completado:**
 - Base de datos (PostgreSQL)
 - Modelos ORM (12 tablas)
 - Servicios (5+)
 - LSTM (503 predicciones)
 - 2-opt VRP
 
-🔄 **En Progreso:**
+ **En Progreso:**
 - Endpoints CRUD completos
 - Autenticación JWT
 
 ---
 
-## 🔗 Links Rápidos
+##  Links Rápidos
 
-- 📖 [Documentación API](http://localhost:8000/docs) - Swagger interactivo
-- 📝 [Guía de Instalación](GUIA_INSTALACION.md)
-- 🚀 [Guía de Ejecución](GUIA_EJECUCION_API.md)
-- 📊 [Resumen Ejecutivo](RESUMEN_EJECUTIVO.md)
+-  [Documentación API](http://localhost:8000/docs) - Swagger interactivo
+-  [Guía de Instalación](GUIA_INSTALACION.md)
+-  [Guía de Ejecución](GUIA_EJECUCION_API.md)
+-  [Resumen Ejecutivo](RESUMEN_EJECUTIVO.md)
 
 ---
 
-## 📝 Licencia
+##  Licencia
 
 Proyecto desarrollado para gestión de residuos en Iquique, Chile.
 
 ---
 
-## 👨‍💻 Desarrollo
+##  Desarrollo
 
 **Status**: En desarrollo activo  
 **Próximo**: Endpoints CRUD completos  

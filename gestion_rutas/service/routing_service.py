@@ -128,16 +128,16 @@ class RoutingService:
             }
             
             url = f"{RoutingService.OSRM_TRIP_URL}/{coords}"
-            logger.info(f"🚀 Optimizando ruta con {len(puntos)} puntos")
+            logger.info(f" Optimizando ruta con {len(puntos)} puntos")
             
             response = requests.get(url, params=params, timeout=30)
-            logger.info(f"📦 Respuesta OSRM: Status {response.status_code}")
+            logger.info(f" Respuesta OSRM: Status {response.status_code}")
             
             data = response.json()
-            logger.info(f"📋 Código OSRM: {data.get('code')}")
+            logger.info(f" Código OSRM: {data.get('code')}")
             
             if data.get('code') != 'Ok':
-                logger.warning(f"⚠️  OSRM Error - {data.get('message')}")
+                logger.warning(f"  OSRM Error - {data.get('message')}")
                 return None
             
             if data.get("trips"):
@@ -153,12 +153,12 @@ class RoutingService:
                     "num_puntos": len(puntos)
                 }
                 
-                logger.info(f"✅ Ruta optimizada: {result['distancia_km']} km")
+                logger.info(f" Ruta optimizada: {result['distancia_km']} km")
                 return result
             
             return None
         except Exception as e:
-            logger.error(f"❌ Error en optimización de ruta: {str(e)}")
+            logger.error(f" Error en optimización de ruta: {str(e)}")
             return None
     
     # @staticmethod
@@ -180,14 +180,14 @@ class RoutingService:
             params = {"annotations": "distance,duration"}
             url = f"{RoutingService.OSRM_TABLE_URL}/{coords}"
             
-            logger.info(f"📊 Calculando matriz para {len(puntos)} puntos")
+            logger.info(f" Calculando matriz para {len(puntos)} puntos")
             response = requests.get(url, params=params, timeout=60)
             data = response.json()
             
             if data.get("code") == "Ok" and data.get("distances"):
                 distancias_m = data["distances"]
                 distancias_km = [[d / 1000 if d else 0 for d in fila] for fila in distancias_m]
-                logger.info(f"✅ Matriz calculada: {len(distancias_km)}x{len(distancias_km[0])}")
+                logger.info(f" Matriz calculada: {len(distancias_km)}x{len(distancias_km[0])}")
                 return distancias_km
             
             return None

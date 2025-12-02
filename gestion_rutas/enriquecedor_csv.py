@@ -38,20 +38,20 @@ def enriquecer_csv_con_geocoding():
             if location:
                 lat, long = location.latitude, location.longitude
                 geocoding_cache[punto] = (lat, long)
-                logger.info(f"  ✓ Geocodificado: ({lat:.4f}, {long:.4f})")
+                logger.info(f"   Geocodificado: ({lat:.4f}, {long:.4f})")
             else:
                 # Si no encuentra, usar center de Iquique + variación aleatoria
                 import random
                 lat = -20.27 + random.uniform(-0.05, 0.05)  # ± 5.5 km
                 long = -70.14 + random.uniform(-0.05, 0.05)
                 geocoding_cache[punto] = (lat, long)
-                logger.warning(f"  ⚠ No geocodificado, usando aproximación: ({lat:.4f}, {long:.4f})")
+                logger.warning(f"   No geocodificado, usando aproximación: ({lat:.4f}, {long:.4f})")
             
             # Rate limit: 1 segundo entre requests (política Nominatim)
             time.sleep(1.1)
             
         except Exception as e:
-            logger.error(f"  ✗ Error geocodificando {punto}: {str(e)}")
+            logger.error(f"   Error geocodificando {punto}: {str(e)}")
             # Fallback: usar coordenada aproximada de Iquique
             import random
             lat = -20.27 + random.uniform(-0.05, 0.05)
@@ -98,5 +98,5 @@ if __name__ == "__main__":
     
     df, cache = enriquecer_csv_con_geocoding()
     
-    print("\n✓ Proceso completado exitosamente")
+    print("\n Proceso completado exitosamente")
     print(f"Archivo guardado: gestion_rutas/lstm/datos_residuos_iquique_enriquecido.csv")

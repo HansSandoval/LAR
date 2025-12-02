@@ -14,10 +14,10 @@ sys.path.insert(0, str(root_dir))
 import uvicorn
 
 if __name__ == "__main__":
-    print("🚀 Iniciando servidor FastAPI con Sistema Multi-Agente (MAS)")
-    print("📍 URL: http://localhost:8000")
-    print("📚 Docs: http://localhost:8000/docs")
-    print("🗺️ Mapa MAS: http://localhost:8000/static/mapa_mas_tiempo_real.html")
+    print(" Iniciando servidor FastAPI con Sistema Multi-Agente (MAS)")
+    print(" URL: http://localhost:8000")
+    print(" Docs: http://localhost:8000/docs")
+    print(" Mapa MAS: http://localhost:8000/static/mapa_mas_tiempo_real.html")
     print("")
     
     uvicorn.run(

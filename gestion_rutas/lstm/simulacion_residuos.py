@@ -399,7 +399,7 @@ print(df.groupby('dia_semana')['residuos_kg'].agg(['count', 'mean', 'sum']).roun
 df.to_csv('datos_residuos_iquique.csv', index=False)
 
 print("\n" + "=" * 100)
-print("✓ ARCHIVO CSV GENERADO: datos_residuos_iquique.csv")
+print(" ARCHIVO CSV GENERADO: datos_residuos_iquique.csv")
 print("=" * 100)
 print(f"Total de registros guardados: {len(df)}")
 print(f"Total de columnas: {len(df.columns)}")

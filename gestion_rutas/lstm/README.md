@@ -1,6 +1,6 @@
-# 🧠 LSTM - Predicción de Demanda de Residuos
+#  LSTM - Predicción de Demanda de Residuos
 
-## 📋 Descripción Rápida
+##  Descripción Rápida
 
 Modelo LSTM para predicción de demanda de residuos en Sector Sur Iquique.
 
@@ -8,7 +8,7 @@ Modelo LSTM para predicción de demanda de residuos en Sector Sur Iquique.
 
 ---
 
-## 📁 Archivos
+##  Archivos
 
 ### Scripts Ejecutables (en orden)
 1. **`generar_csv_final.py`** - Genera `datos_residuos_iquique.csv`
@@ -32,7 +32,7 @@ Modelo LSTM para predicción de demanda de residuos en Sector Sur Iquique.
 
 ---
 
-## 🚀 Uso Rápido
+##  Uso Rápido
 
 ```bash
 # 1. Generar datos
@@ -50,7 +50,7 @@ python generar_lstm_mejorado.py
 
 ---
 
-## 📊 Métricas Finales
+##  Métricas Finales
 
 | Métrica | Valor |
 |---------|-------|
@@ -61,7 +61,7 @@ python generar_lstm_mejorado.py
 
 ---
 
-## 💾 Requisitos Python
+##  Requisitos Python
 
 ```
 tensorflow>=2.13
@@ -74,7 +74,7 @@ matplotlib
 
 ---
 
-## 📌 Notas
+##  Notas
 
 - Datos realistas para Iquique (pasajes bajos, clima árido)
 - 675 intersecciones × 30 días = base de datos

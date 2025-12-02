@@ -2,7 +2,7 @@
 
 Planificador de rutas con optimización 2-opt para problemas de recolección de residuos con restricciones de capacidad.
 
-## 🏗️ Arquitectura
+##  Arquitectura
 
 ```
 ┌────────────────────────────┐
@@ -23,7 +23,7 @@ Planificador de rutas con optimización 2-opt para problemas de recolección de 
 └────────────────────────────┘
 ```
 
-## 📁 Archivos
+##  Archivos
 
 | Archivo | Descripción |
 |---------|-------------|
@@ -37,7 +37,7 @@ Planificador de rutas con optimización 2-opt para problemas de recolección de 
 | `API_INTEGRATION.md` | Guía de uso del endpoint |
 | `OPTIMIZACION_2OPT.md` | Documentación técnica de 2-opt |
 
-## 🚀 Uso Rápido
+##  Uso Rápido
 
 ### 1. Instalación
 
@@ -96,7 +96,7 @@ curl -X POST "http://localhost:8000/rutas/planificar" \
 }
 ```
 
-## 🎯 Características
+##  Características
 
 ### Construcción de Ruta Inicial
 - Distribución secuencial de nodos respetando capacidad
@@ -109,12 +109,12 @@ curl -X POST "http://localhost:8000/rutas/planificar" \
 ````
 
 ### Restricciones
-- ✅ Capacidad por vehículo
-- ✅ Múltiples vehículos
-- ✅ Depósito único
-- 🔄 (Extensible: ventanas de tiempo, descarga intermedia)
+-  Capacidad por vehículo
+-  Múltiples vehículos
+-  Depósito único
+-  (Extensible: ventanas de tiempo, descarga intermedia)
 
-## 📊 Resultados Empíricos
+##  Resultados Empíricos
 
 ### Test con 9 nodos, 2 vehículos
 
@@ -122,9 +122,9 @@ curl -X POST "http://localhost:8000/rutas/planificar" \
 |---------|---------|-----------|--------|
 | Distancia | 249.12 km | 233.70 km | **6.2%** ↓ |
 | Tiempo | <0.001s | ~0.01s | +0.009s |
-| Solución | Inicial | Local óptimo | ✅ |
+| Solución | Inicial | Local óptimo |  |
 
-## 🔄 Extensiones Futuras (Según documento de trabajo)
+##  Extensiones Futuras (Según documento de trabajo)
 
 ### Heurísticas adicionales
 1. **Or-opt**: Ya implementado en `optimizacion.py`
@@ -144,14 +144,14 @@ curl -X POST "http://localhost:8000/rutas/planificar" \
 - **Predicción de demanda**: Integración con LSTM
 - **Indicadores**: Energía consumida, emisiones, cumplimiento horario
 
-## 📚 Referencias
+##  Referencias
 
 - Document: "2.3 Plataformas, datos y articulación con VRP"
 - VRP Classic: Toth & Vigo (2002)
 - 2-opt: Croes (1958)
 - Implementación: Helsgaun (2000)
 
-## 💡 Notas
+##  Notas
 
 - El primer nodo siempre es el **depósito** (warehouse)
 - La demanda del depósito **debe ser 0**
@@ -159,16 +159,16 @@ curl -X POST "http://localhost:8000/rutas/planificar" \
 - Para instancias >500 nodos, considerar algoritmos avanzados
 - 2-opt es determinista (siempre el mismo resultado)
 
-## ✅ Estado
+##  Estado
 
-- ✅ Construcción de ruta inicial
-- ✅ 2-opt (búsqueda local)
-- ✅ API FastAPI integrada
-- ✅ Tests completos
-- 🔄 Ventanas de tiempo (TODO)
-- 🔄 LNS / Tabu Search (TODO)
+-  Construcción de ruta inicial
+-  2-opt (búsqueda local)
+-  API FastAPI integrada
+-  Tests completos
+-  Ventanas de tiempo (TODO)
+-  LNS / Tabu Search (TODO)
 
-## 🧪 Tests Disponibles
+##  Tests Disponibles
 
 ```bash
 # Test de 2-opt con comparativas
@@ -180,4 +180,4 @@ python test_api.py
 **Resultado esperado en test_2opt.py:**
 - NN: 249.12 km
 - NN+2-opt: 233.70 km
-- Mejora: **6.2%** ✅
+- Mejora: **6.2%** 

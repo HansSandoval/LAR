@@ -26,14 +26,14 @@ def test_entorno_basico():
         seed=42
     )
     
-    print(f"✓ Entorno creado exitosamente")
+    print(f" Entorno creado exitosamente")
     print(f"  - Camiones: {env.num_camiones}")
     print(f"  - Clientes: {env.num_clientes}")
     print(f"  - Capacidad por camión: {env.capacidad_camion_kg} kg")
     
     # Reset
     obs = env.reset()
-    print(f"✓ Reset exitoso")
+    print(f" Reset exitoso")
     print(f"  - Observación shape: {obs.shape}")
     
     # Ejecutar algunos pasos
@@ -46,7 +46,7 @@ def test_entorno_basico():
             break
     
     env.close()
-    print("✓ Test básico completado\n")
+    print(" Test básico completado\n")
 
 
 def test_agente_individual():
@@ -64,7 +64,7 @@ def test_agente_individual():
     camion = env.camiones[0]
     agente = AgenteRecolector(camion, env)
     
-    print(f"✓ Agente creado exitosamente")
+    print(f" Agente creado exitosamente")
     print(f"  - Camión ID: {agente.camion.id}")
     print(f"  - Capacidad: {agente.camion.capacidad_kg} kg")
     
@@ -72,7 +72,7 @@ def test_agente_individual():
     clientes_disponibles = [c for c in env.clientes if not c.servido]
     cliente_id = agente.seleccionar_proximo_cliente(clientes_disponibles)
     
-    print(f"✓ Selección de cliente exitosa")
+    print(f" Selección de cliente exitosa")
     print(f"  - Cliente seleccionado: {cliente_id}")
     
     if agente.memoria_decisiones:
@@ -81,7 +81,7 @@ def test_agente_individual():
         print(f"  - Prioridad: {ultima_decision.prioridad_decision:.2f}")
         print(f"  - Distancia: {ultima_decision.distancia_estimada:.2f} km")
     
-    print("✓ Test agente individual completado\n")
+    print(" Test agente individual completado\n")
 
 
 def test_mas_cooperativo():
@@ -99,11 +99,11 @@ def test_mas_cooperativo():
     
     coordinador = CoordinadorMAS(env)
     
-    print(f"✓ Coordinador MAS creado")
+    print(f" Coordinador MAS creado")
     print(f"  - Número de agentes: {len(coordinador.agentes)}")
     
     # Ejecutar algunos pasos
-    print("\n📊 Ejecutando 10 pasos cooperativos...")
+    print("\n Ejecutando 10 pasos cooperativos...")
     for i in range(10):
         info_paso = coordinador.ejecutar_paso_cooperativo()
         if i % 3 == 0:
@@ -113,12 +113,12 @@ def test_mas_cooperativo():
                   f"Reward={info_paso['reward_promedio']:.2f}")
     
     estadisticas = coordinador.get_estadisticas()
-    print(f"\n✓ Estadísticas del coordinador:")
+    print(f"\n Estadísticas del coordinador:")
     print(f"  - Pasos totales: {estadisticas['pasos_totales']}")
     print(f"  - Conflictos resueltos: {estadisticas['conflictos_resueltos']}")
     print(f"  - Decisiones cooperativas: {estadisticas['decisiones_cooperativas']}")
     
-    print("✓ Test MAS cooperativo completado\n")
+    print(" Test MAS cooperativo completado\n")
 
 
 def test_episodio_completo():
@@ -136,7 +136,7 @@ def test_episodio_completo():
     
     coordinador = CoordinadorMAS(env)
     
-    print("🚀 Iniciando episodio completo...\n")
+    print(" Iniciando episodio completo...\n")
     
     estadisticas = coordinador.ejecutar_episodio_completo(
         max_pasos=200,
@@ -148,19 +148,19 @@ def test_episodio_completo():
     print("VALIDACIÓN DE RESULTADOS")
     print("="*70)
     
-    assert estadisticas['clientes_servidos'] > 0, "❌ No se sirvió ningún cliente"
-    print(f"✓ Clientes servidos: {estadisticas['clientes_servidos']}")
+    assert estadisticas['clientes_servidos'] > 0, " No se sirvió ningún cliente"
+    print(f" Clientes servidos: {estadisticas['clientes_servidos']}")
     
-    assert estadisticas['reward_total'] != 0, "❌ Reward total es 0"
-    print(f"✓ Reward total: {estadisticas['reward_total']:.2f}")
+    assert estadisticas['reward_total'] != 0, " Reward total es 0"
+    print(f" Reward total: {estadisticas['reward_total']:.2f}")
     
-    assert estadisticas['distancia_total_km'] > 0, "❌ No se recorrió distancia"
-    print(f"✓ Distancia total: {estadisticas['distancia_total_km']:.2f} km")
+    assert estadisticas['distancia_total_km'] > 0, " No se recorrió distancia"
+    print(f" Distancia total: {estadisticas['distancia_total_km']:.2f} km")
     
     eficiencia = (estadisticas['clientes_servidos'] / estadisticas['pasos_totales']) * 100
-    print(f"✓ Eficiencia: {eficiencia:.1f}% clientes/paso")
+    print(f" Eficiencia: {eficiencia:.1f}% clientes/paso")
     
-    print("\n✅ Todos los tests pasaron exitosamente!")
+    print("\n Todos los tests pasaron exitosamente!")
 
 
 def test_sin_time_windows():
@@ -179,11 +179,11 @@ def test_sin_time_windows():
         print(f"  - Ventana fin: {cliente.ventana_fin}")
         
         # Validar
-        assert cliente.ventana_inicio == 0.0, f"❌ Cliente {i} tiene límite inferior != 0"
-        assert cliente.ventana_fin == float('inf'), f"❌ Cliente {i} tiene límite superior != infinito"
-        print(f"  ✓ Sin restricciones de tiempo")
+        assert cliente.ventana_inicio == 0.0, f" Cliente {i} tiene límite inferior != 0"
+        assert cliente.ventana_fin == float('inf'), f" Cliente {i} tiene límite superior != infinito"
+        print(f"   Sin restricciones de tiempo")
     
-    print(f"\n✅ Confirmado: Todos los clientes tienen ventanas [0, ∞) (SIN RESTRICCIONES)")
+    print(f"\n Confirmado: Todos los clientes tienen ventanas [0, ∞) (SIN RESTRICCIONES)")
 
 
 def ejecutar_todos_los_tests():
@@ -200,11 +200,11 @@ def ejecutar_todos_los_tests():
         test_episodio_completo()
         
         print("\n" + "="*90)
-        print(" "*30 + "🎉 TODOS LOS TESTS PASARON 🎉")
+        print(" "*30 + " TODOS LOS TESTS PASARON ")
         print("="*90)
         
     except Exception as e:
-        print(f"\n❌ ERROR EN LOS TESTS:")
+        print(f"\n ERROR EN LOS TESTS:")
         print(f"   {str(e)}")
         import traceback
         traceback.print_exc()

@@ -78,7 +78,7 @@ def read_root():
 @app.get("/api-info")
 def read_api_info():
     return {
-        "mensaje": "🚀 API de gestión de rutas funcionando!",
+        "mensaje": " API de gestión de rutas funcionando!",
         "endpoints": {
             "zonas": "/zonas",
             "puntos": "/puntos",

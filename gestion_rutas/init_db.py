@@ -46,7 +46,7 @@ def crear_datos_prueba():
         db.add(zona2)
         db.flush()
         
-        logger.info(f"✓ Zonas creadas: {zona1.nombre}, {zona2.nombre}")
+        logger.info(f" Zonas creadas: {zona1.nombre}, {zona2.nombre}")
         
         # Crear puntos de recolección
         puntos = [
@@ -92,7 +92,7 @@ def crear_datos_prueba():
             db.add(punto)
         db.flush()
         
-        logger.info(f"✓ Puntos de recolección creados: {len(puntos)}")
+        logger.info(f" Puntos de recolección creados: {len(puntos)}")
         
         # Crear camiones
         camion1 = Camion(
@@ -116,7 +116,7 @@ def crear_datos_prueba():
         db.add(camion2)
         db.flush()
         
-        logger.info(f"✓ Camiones creados: {camion1.patente}, {camion2.patente}")
+        logger.info(f" Camiones creados: {camion1.patente}, {camion2.patente}")
         
         # Crear turnos
         turno1 = Turno(
@@ -140,7 +140,7 @@ def crear_datos_prueba():
         db.add(turno2)
         db.flush()
         
-        logger.info(f"✓ Turnos creados: {turno1.operador}, {turno2.operador}")
+        logger.info(f" Turnos creados: {turno1.operador}, {turno2.operador}")
         
         # Crear rutas planificadas
         # Geometría dummy (línea recta entre puntos)
@@ -179,7 +179,7 @@ def crear_datos_prueba():
         db.add(ruta2)
         db.flush()
         
-        logger.info(f"✓ Rutas planificadas creadas: {len([ruta1, ruta2])}")
+        logger.info(f" Rutas planificadas creadas: {len([ruta1, ruta2])}")
         
         # Crear usuario
         usuario = Usuario(
@@ -193,12 +193,12 @@ def crear_datos_prueba():
         db.add(usuario)
         db.commit()
         
-        logger.info(f"✓ Usuario creado: {usuario.nombre}")
-        logger.info("✓ Datos de prueba insertados exitosamente")
+        logger.info(f" Usuario creado: {usuario.nombre}")
+        logger.info(" Datos de prueba insertados exitosamente")
         
     except Exception as e:
         db.rollback()
-        logger.error(f"✗ Error al crear datos de prueba: {str(e)}")
+        logger.error(f" Error al crear datos de prueba: {str(e)}")
         raise
     finally:
         db.close()
@@ -214,19 +214,19 @@ def main():
         # Crear tablas
         logger.info("\n1. Creando estructura de tablas...")
         init_db()
-        logger.info("✓ Tablas creadas exitosamente")
+        logger.info(" Tablas creadas exitosamente")
         
         # Crear datos de prueba
         logger.info("\n2. Insertando datos de prueba...")
         crear_datos_prueba()
         
         logger.info("\n" + "=" * 60)
-        logger.info("✓ Base de datos inicializada correctamente")
-        logger.info("✓ Conectada a PostgreSQL en: localhost:5432/gestion_rutas")
+        logger.info(" Base de datos inicializada correctamente")
+        logger.info(" Conectada a PostgreSQL en: localhost:5432/gestion_rutas")
         logger.info("=" * 60 + "\n")
         
     except Exception as e:
-        logger.error(f"\n✗ Error en inicialización: {str(e)}")
+        logger.error(f"\n Error en inicialización: {str(e)}")
         raise
 
 

@@ -42,7 +42,7 @@ def actualizar_tabla_operador():
         """)
         
         conn.commit()
-        logger.info("✅ Tabla operador actualizada exitosamente.")
+        logger.info(" Tabla operador actualizada exitosamente.")
         
     except Exception as e:
         conn.rollback()

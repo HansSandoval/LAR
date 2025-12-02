@@ -146,6 +146,6 @@ html_final = html_final.replace('%RUTAS_JSON%', json.dumps(rutas))
 with open('c:\\Users\\hanss\\Desktop\\LAR\\static\\visualizar_rutas.html', 'w', encoding='utf-8') as f:
     f.write(html_final)
 
-print("✓ Archivo guardado: static/visualizar_rutas.html")
+print(" Archivo guardado: static/visualizar_rutas.html")
 print("\nAbre en tu navegador:")
 print("  http://localhost:8000/static/visualizar_rutas.html")

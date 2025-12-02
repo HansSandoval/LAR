@@ -61,7 +61,7 @@ for punto, (lat, lon) in nuevas_coordenadas.items():
 output_path = 'datos_residuos_iquique.csv'
 df_nuevo.to_csv(output_path, index=False)
 
-print(f"\n✓ CSV actualizado: {output_path}")
+print(f"\n CSV actualizado: {output_path}")
 
 # Verificar dispersión
 print(f"\n{'='*100}")
@@ -74,7 +74,7 @@ correlacion = np.corrcoef(coords_df['latitud_punto_recoleccion'], coords_df['lon
 print(f"  Rango latitud:  {coords_df['latitud_punto_recoleccion'].min():.6f} a {coords_df['latitud_punto_recoleccion'].max():.6f}")
 print(f"  Rango longitud: {coords_df['longitud_punto_recoleccion'].min():.6f} a {coords_df['longitud_punto_recoleccion'].max():.6f}")
 print(f"  Correlación lat-lon: {correlacion:.4f}")
-print(f"  Estado: {'✓ DISPERSAS (OK)' if abs(correlacion) < 0.3 else '✗ EN LINEA (MAL)'}")
+print(f"  Estado: {' DISPERSAS (OK)' if abs(correlacion) < 0.3 else ' EN LINEA (MAL)'}")
 
 print(f"\n{'='*100}")
 print("COMPLETADO")

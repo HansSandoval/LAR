@@ -107,7 +107,7 @@ class AgenteRecolector:
                     es_valida = False
 
             if not es_valida:
-                # logger.warning(f"⚠️ Acción PPO {action} inválida. Buscando alternativa...")
+                # logger.warning(f" Acción PPO {action} inválida. Buscando alternativa...")
                 # Buscar primera acción válida (Greedy)
                 action = 0 # Default depot
                 
@@ -454,9 +454,9 @@ class CoordinadorMAS:
         if modelo_ppo_path and PPO:
             try:
                 self.modelo_ppo = PPO.load(modelo_ppo_path)
-                logger.info(f"✅ Modelo PPO cargado en CoordinadorMAS: {modelo_ppo_path}")
+                logger.info(f" Modelo PPO cargado en CoordinadorMAS: {modelo_ppo_path}")
             except Exception as e:
-                logger.warning(f"⚠️ Error cargando modelo PPO: {e}")
+                logger.warning(f" Error cargando modelo PPO: {e}")
                 
         self.agentes: List[AgenteRecolector] = []
         self._inicializar_agentes()
@@ -479,7 +479,7 @@ class CoordinadorMAS:
         if not self.env.clientes:
             return
 
-        logger.info("🧩 Iniciando sectorización K-Means...")
+        logger.info(" Iniciando sectorización K-Means...")
         # Puntos de clientes
         puntos = [(c.latitud, c.longitud) for c in self.env.clientes]
         k = len(self.env.camiones)
@@ -518,7 +518,7 @@ class CoordinadorMAS:
         # Reporte
         for i in range(k):
             count = asignaciones.count(i)
-            logger.info(f"🗺️ Sector {i}: {count} clientes asignados")
+            logger.info(f" Sector {i}: {count} clientes asignados")
     
     def _negociar_redistribucion(self) -> List[Dict]:
         """
@@ -602,7 +602,7 @@ class CoordinadorMAS:
                     'mensaje': f"Camión {agente_libre.camion.id} ayuda a Camión {agente_donante.camion.id}"
                 })
                 
-                logger.info(f"🤝 NEGOCIACIÓN: Camión {agente_libre.camion.id} toma cliente {cliente_a_transferir.id} de Camión {agente_donante.camion.id}")
+                logger.info(f" NEGOCIACIÓN: Camión {agente_libre.camion.id} toma cliente {cliente_a_transferir.id} de Camión {agente_donante.camion.id}")
                 
         return eventos
 
@@ -631,12 +631,12 @@ class CoordinadorMAS:
         
         for agente in self.agentes:
             if not agente.camion.activo:
-                logger.debug(f"⚠️ Agente {agente.camion.id} inactivo")
+                logger.debug(f" Agente {agente.camion.id} inactivo")
                 continue
             
             # Verificar si debe regresar al depósito
             if agente.debe_regresar_depot():
-                logger.debug(f"🔙 Agente {agente.camion.id} decide regresar a depot")
+                logger.debug(f" Agente {agente.camion.id} decide regresar a depot")
                 decision = DecisionAgente(
                     camion_id=agente.camion.id,
                     cliente_objetivo_id=0,  # 0 = depot
@@ -667,12 +667,12 @@ class CoordinadorMAS:
                 )
                 
                 if cliente_id is not None:
-                    logger.debug(f"✅ Agente {agente.camion.id} seleccionó cliente {cliente_id}")
+                    logger.debug(f" Agente {agente.camion.id} seleccionó cliente {cliente_id}")
                     # Usar la última decisión del agente
                     if agente.memoria_decisiones:
                         decisiones_propuestas.append(agente.memoria_decisiones[-1])
                 else:
-                    logger.debug(f"❌ Agente {agente.camion.id} NO seleccionó cliente (None)")
+                    logger.debug(f" Agente {agente.camion.id} NO seleccionó cliente (None)")
         
         # 2. Detectar y resolver conflictos
         conflictos = self._detectar_conflictos(decisiones_propuestas)
@@ -699,7 +699,7 @@ class CoordinadorMAS:
                     idx = next(i for i, c in enumerate(self.env.clientes) if int(c.id) == action_id)
                     action_env = idx + 1 # Convertir a 1-based index para step()
                 except StopIteration:
-                    logger.error(f"❌ Cliente ID {action_id} no encontrado en entorno. Saltando.")
+                    logger.error(f" Cliente ID {action_id} no encontrado en entorno. Saltando.")
                     continue
             else:
                 action_env = 0
@@ -739,12 +739,12 @@ class CoordinadorMAS:
                     if 0 <= cliente_idx < len(self.env.clientes):
                         cliente = self.env.clientes[cliente_idx]
                         if not cliente.servido:
-                            logger.warning(f"⚠️ ALERTA: Cliente {cliente.id} NO fue marcado como servido tras step_agent!")
+                            logger.warning(f" ALERTA: Cliente {cliente.id} NO fue marcado como servido tras step_agent!")
                             # Forzar servido para evitar bucle infinito
                             cliente.servido = True
                             self.env.clientes_servidos += 1
             except Exception as e:
-                logger.error(f"❌ Error crítico ejecutando acción para agente {decision.camion_id}: {e}")
+                logger.error(f" Error crítico ejecutando acción para agente {decision.camion_id}: {e}")
         
         # 4. Recopilar información
         info_paso = {
@@ -948,9 +948,9 @@ if __name__ == '__main__':
     modelo_path = os.path.join(os.path.dirname(__file__), "modelo_ppo_vrp.zip")
     if not os.path.exists(modelo_path):
         modelo_path = None
-        print("⚠️ No se encontró modelo entrenado, usando heurística pura.")
+        print(" No se encontró modelo entrenado, usando heurística pura.")
     else:
-        print(f"📂 Usando modelo entrenado: {modelo_path}")
+        print(f" Usando modelo entrenado: {modelo_path}")
 
     coordinador = CoordinadorMAS(env, modelo_ppo_path=modelo_path)
     

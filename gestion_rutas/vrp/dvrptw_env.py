@@ -41,9 +41,9 @@ class OSRMService:
             if os.path.exists(cls._cache_file):
                 with open(cls._cache_file, 'r', encoding='utf-8') as f:
                     cls._route_cache = json.load(f)
-                logger.info(f"💾 Caché OSRM cargado: {len(cls._route_cache)} rutas")
+                logger.info(f" Caché OSRM cargado: {len(cls._route_cache)} rutas")
         except Exception as e:
-            logger.warning(f"⚠️ Error cargando caché OSRM: {e}")
+            logger.warning(f" Error cargando caché OSRM: {e}")
         cls._cache_loaded = True
 
     @classmethod
@@ -52,7 +52,7 @@ class OSRMService:
             with open(cls._cache_file, 'w', encoding='utf-8') as f:
                 json.dump(cls._route_cache, f)
         except Exception as e:
-            logger.warning(f"⚠️ Error guardando caché OSRM: {e}")
+            logger.warning(f" Error guardando caché OSRM: {e}")
 
     @staticmethod
     def _generar_ruta_lineal(lat1: float, lon1: float, lat2: float, lon2: float) -> Dict:
@@ -315,7 +315,7 @@ class DVRPTWEnv(gym.Env):
                             
                             info['eventos'].append({
                                 'tipo': 'retorno_final',
-                                'mensaje': f"🚛 Fin de ruta: Camión {camion.id} regresa a base.",
+                                'mensaje': f" Fin de ruta: Camión {camion.id} regresa a base.",
                                 'camion_id': camion.id
                             })
 
@@ -339,7 +339,7 @@ class DVRPTWEnv(gym.Env):
             return self._get_observation(), total_reward, terminated, truncated, info
 
         except Exception as e:
-            print(f"\n🔥🔥 ERROR CRÍTICO EN STEP: {e}")
+            print(f"\n ERROR CRÍTICO EN STEP: {e}")
             traceback.print_exc()
             return self._get_observation(), 0, False, False, {'error': str(e), 'clientes_servidos_ids': []}
 
@@ -458,7 +458,7 @@ class DVRPTWEnv(gym.Env):
                                             
                                             # Log informativo solicitado
                                             dist_metros = dist_km * 1000
-                                            logger.info(f"🚛💨 Check-in-Transit: Cliente {cand.id} recogido a {dist_metros:.1f}m de la ruta.")
+                                            logger.info(f" Check-in-Transit: Cliente {cand.id} recogido a {dist_metros:.1f}m de la ruta.")
                                             
                                             # Remover de lista local para no volver a chequear
                                             candidatos_check.remove(cand)

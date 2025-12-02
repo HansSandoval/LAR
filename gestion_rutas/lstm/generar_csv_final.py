@@ -21,9 +21,9 @@ for inter in datos_intersecciones['intersecciones']:
 print('=' * 100)
 print('GENERACIÓN DE CSV - SIMULACIÓN DE RESIDUOS SECTOR SUR IQUIQUE')
 print('=' * 100)
-print(f'\n✓ Intersecciones cargadas: {len(intersecciones_dict)}')
-print(f'✓ Período: 30 días (2024-10-01 a 2024-10-30)')
-print(f'✓ Coordenadas: Precisas de OpenStreetMap\n')
+print(f'\n Intersecciones cargadas: {len(intersecciones_dict)}')
+print(f' Período: 30 días (2024-10-01 a 2024-10-30)')
+print(f' Coordenadas: Precisas de OpenStreetMap\n')
 
 # Zona única
 zona = {
@@ -215,16 +215,16 @@ df = df[columnas_orden]
 output_file = 'datos_residuos_iquique_final.csv'
 df.to_csv(output_file, index=False, encoding='utf-8')
 
-print(f'\n✓ CSV generado exitosamente: {output_file}')
+print(f'\n CSV generado exitosamente: {output_file}')
 print(f'  - Total de registros: {len(df):,}')
 print(f'  - Intersecciones únicas: {df["punto_recoleccion"].nunique()}')
 print(f'  - Período: {fecha_inicio.strftime("%Y-%m-%d")} a {(fecha_inicio + timedelta(days=29)).strftime("%Y-%m-%d")}')
 print(f'  - Columnas: {len(df.columns)}')
 print(f'  - Coordenadas: PRECISAS DE OPENSTREETMAP (Nominatim)')
-print(f'\n✓ Primeros registros del CSV:\n')
+print(f'\n Primeros registros del CSV:\n')
 print(df.head(10))
 
-print(f'\n✓ Estadísticas de coordenadas:')
+print(f'\n Estadísticas de coordenadas:')
 print(f'  Latitudes: min={df["latitud_punto_recoleccion"].min():.4f}, max={df["latitud_punto_recoleccion"].max():.4f}')
 print(f'  Longitudes: min={df["longitud_punto_recoleccion"].min():.4f}, max={df["longitud_punto_recoleccion"].max():.4f}')
 

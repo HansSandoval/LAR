@@ -5,7 +5,7 @@ from stable_baselines3.common.env_checker import check_env
 from gestion_rutas.vrp.dvrptw_env import DVRPTWEnv
 
 def entrenar_agente():
-    print("🚀 Iniciando entrenamiento de agente PPO para DVRPTW...")
+    print(" Iniciando entrenamiento de agente PPO para DVRPTW...")
     
     # 1. Configurar entorno en modo MARL (observación fija)
     # Usamos usar_routing_real=False para que el entrenamiento sea rápido (Haversine)
@@ -20,9 +20,9 @@ def entrenar_agente():
     )
     
     # 2. Verificar que el entorno cumple con la API de Gym
-    print("🔍 Verificando entorno...")
+    print(" Verificando entorno...")
     check_env(env)
-    print("✅ Entorno verificado correctamente.")
+    print(" Entorno verificado correctamente.")
     
     # 3. Crear modelo PPO
     # MlpPolicy es adecuado para vectores de características (no imágenes)
@@ -42,16 +42,16 @@ def entrenar_agente():
     )
     
     # 4. Entrenar (Aumentado a 300,000 pasos para convergencia robusta)
-    print("🏋️ Entrenando modelo (esto tomará unos minutos)...")
+    print(" Entrenando modelo (esto tomará unos minutos)...")
     model.learn(total_timesteps=300000)
     
     # 5. Guardar modelo
     save_path = os.path.join("gestion_rutas", "vrp", "modelo_ppo_vrp")
     model.save(save_path)
-    print(f"💾 Modelo guardado en: {save_path}.zip")
+    print(f" Modelo guardado en: {save_path}.zip")
     
     # 6. Probar modelo
-    print("\n🧪 Probando modelo entrenado...")
+    print("\n Probando modelo entrenado...")
     obs, _ = env.reset()
     for i in range(10):
         action, _states = model.predict(obs, deterministic=True)
@@ -60,7 +60,7 @@ def entrenar_agente():
         if done:
             break
             
-    print("🏁 Entrenamiento finalizado exitosamente.")
+    print(" Entrenamiento finalizado exitosamente.")
 
 if __name__ == "__main__":
     entrenar_agente()
