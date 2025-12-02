@@ -7,12 +7,12 @@ import logging
 from datetime import date, datetime, time
 # DEPRECATED: Este archivo usa el patrón antiguo de SQLAlchemy
 # Usar scripts específicos de PostgreSQL para migraciones
-# from .database.db import SessionLocal, init_db
-# from .models.models import (
-#     Zona, PuntoRecoleccion, Camion, Turno, 
-#     RutaPlanificada, RutaEjecutada, Incidencia, 
-#     PrediccionDemanda, Usuario, PeriodoTemporal
-# )
+from .database.db import SessionLocal, init_db
+from .models.models import (
+    Zona, PuntoRecoleccion, Camion, Turno, 
+    RutaPlanificada, RutaEjecutada, Incidencia, 
+    PrediccionDemanda, Usuario, PeriodoTemporal
+)
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
@@ -143,6 +143,17 @@ def crear_datos_prueba():
         logger.info(f"✓ Turnos creados: {turno1.operador}, {turno2.operador}")
         
         # Crear rutas planificadas
+        # Geometría dummy (línea recta entre puntos)
+        geo1 = [
+            [puntos[0].latitud, puntos[0].longitud],
+            [puntos[1].latitud, puntos[1].longitud],
+            [puntos[2].latitud, puntos[2].longitud]
+        ]
+        geo2 = [
+            [puntos[0].latitud, puntos[0].longitud],
+            [puntos[3].latitud, puntos[3].longitud]
+        ]
+
         ruta1 = RutaPlanificada(
             id_zona=zona1.id_zona,
             id_turno=turno1.id_turno,
@@ -150,7 +161,8 @@ def crear_datos_prueba():
             secuencia_puntos=[puntos[0].id_punto, puntos[1].id_punto, puntos[2].id_punto],
             distancia_planificada_km=35.5,
             duracion_planificada_min=180,
-            version_modelo_vrp="v1.0"
+            version_modelo_vrp="v1.0",
+            geometria_json=geo1
         )
         ruta2 = RutaPlanificada(
             id_zona=zona2.id_zona,
@@ -159,7 +171,8 @@ def crear_datos_prueba():
             secuencia_puntos=[puntos[0].id_punto, puntos[3].id_punto],
             distancia_planificada_km=28.2,
             duracion_planificada_min=150,
-            version_modelo_vrp="v1.0"
+            version_modelo_vrp="v1.0",
+            geometria_json=geo2
         )
         
         db.add(ruta1)

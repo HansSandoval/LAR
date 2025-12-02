@@ -141,7 +141,13 @@ def cargar_predicciones_lstm_csv(num_clientes: int = 50) -> List[float]:
     return [random.uniform(50, 150) for _ in range(num_clientes)]
 
 
-def obtener_coordenadas_sector_sur(num_clientes: int = 50) -> List[Dict[str, float]]:
+def _generar_id_estable(texto: str) -> int:
+    """Genera un ID entero positivo estable a partir de un string"""
+    # Usar hash estable (hash() de python puede variar entre ejecuciones)
+    import hashlib
+    return int(hashlib.sha256(texto.encode('utf-8')).hexdigest(), 16) % 1000000
+
+def obtener_coordenadas_sector_sur(num_clientes: int = 50) -> List[Dict[str, Any]]:
     """
     Obtiene coordenadas reales del Sector Sur de Iquique.
     Lee desde el CSV de datos reales si existe.
@@ -155,12 +161,16 @@ def obtener_coordenadas_sector_sur(num_clientes: int = 50) -> List[Dict[str, flo
             import pandas as pd
             df = pd.read_csv(csv_path)
             logger.info(f"📊 CSV cargado: {len(df)} registros totales")
-            logger.info(f"📋 Columnas: {df.columns.tolist()[:5]}...")
             
             # ✅ COLUMNAS CORRECTAS: latitud_punto_recoleccion, longitud_punto_recoleccion, punto_recoleccion
             if 'latitud_punto_recoleccion' in df.columns and 'longitud_punto_recoleccion' in df.columns:
+                # Columnas a seleccionar
+                cols = ['latitud_punto_recoleccion', 'longitud_punto_recoleccion', 'punto_recoleccion']
+                if 'id_punto' in df.columns:
+                    cols.append('id_punto')
+                
                 # Obtener coordenadas únicas
-                coords_unicas = df[['latitud_punto_recoleccion', 'longitud_punto_recoleccion', 'punto_recoleccion']].drop_duplicates()
+                coords_unicas = df[cols].drop_duplicates(subset=['punto_recoleccion'])
                 logger.info(f"🎯 Coordenadas únicas encontradas: {len(coords_unicas)}")
                 
                 # Filtrar coordenadas válidas (rango amplio de Iquique)
@@ -177,11 +187,22 @@ def obtener_coordenadas_sector_sur(num_clientes: int = 50) -> List[Dict[str, flo
                     cant_usar = min(len(coords_validas), num_clientes)
                     coordenadas = []
                     for _, row in coords_validas.head(cant_usar).iterrows():
-                        coordenadas.append({
+                        coord_data = {
                             'lat': float(row['latitud_punto_recoleccion']),
                             'lon': float(row['longitud_punto_recoleccion']),
                             'nombre': str(row['punto_recoleccion'])
-                        })
+                        }
+                        # Usar id_punto si existe, sino generar uno estable
+                        if 'id_punto' in row:
+                            # BLINDAJE: Forzar string limpio
+                            try:
+                                coord_data['id'] = str(int(float(row['id_punto']))).strip()
+                            except:
+                                coord_data['id'] = str(row['id_punto']).strip()
+                        else:
+                            coord_data['id'] = str(_generar_id_estable(coord_data['nombre']))
+                            
+                        coordenadas.append(coord_data)
                     
                     logger.info(f"✅ Cargadas {len(coordenadas)} coordenadas REALES desde CSV")
                     logger.info(f"📍 Ejemplo: {coordenadas[0]}")
@@ -226,7 +247,6 @@ def crear_clientes_con_datos_reales(config: ConfiguracionMAS) -> List[Cliente]:
     
     # Crear clientes
     clientes = []
-    contador_id = 1  # ID contiguo para la simulación
     
     for i, (coord, demanda) in enumerate(zip(coordenadas, predicciones)):
         lat = coord['lat']
@@ -240,13 +260,13 @@ def crear_clientes_con_datos_reales(config: ConfiguracionMAS) -> List[Cliente]:
             lon = max(-70.25, min(-70.05, lon))
             logger.info(f"   ✓ Ajustada a: ({lat}, {lon})")
         
-        # FILTRO DE NEGOCIO: Ignorar puntos con demanda BAJA (< 80 kg)
+        # FILTRO DE NEGOCIO: Ignorar puntos con demanda MUY BAJA (< 10 kg)
         # Se dejan para el día siguiente para priorizar recolección crítica
-        if demanda < 80.0:
+        if demanda < 10.0:
             continue
 
         cliente = Cliente(
-            id=contador_id,  # IDs deben ser contiguos 1..N para el entorno Gym
+            id=coord.get('id', i + 1),  # Usar ID real (id_punto o hash)
             nombre=coord.get('nombre', f"Punto {i+1}"),
             latitud=lat,
             longitud=lon,
@@ -256,7 +276,6 @@ def crear_clientes_con_datos_reales(config: ConfiguracionMAS) -> List[Cliente]:
             ventana_fin=float('inf')  # Sin restricción de tiempo
         )
         clientes.append(cliente)
-        contador_id += 1
     
     logger.info(f"✅ Creados {len(clientes)} clientes con coordenadas validadas (Filtrados por demanda < 80kg)")
     return clientes
@@ -296,23 +315,28 @@ async def iniciar_simulacion(config: ConfiguracionMAS):
             })
         
         # Crear entorno DVRPTW
-        # Depot en el centro del Sector Sur de Iquique (coordenadas VÁLIDAS)
-        # Iquique está en: Latitud -20.2° (sur), Longitud -70.1° (oeste)
-        depot_lat = -20.2666  # Centro Sector Sur (TIERRA, no océano)
-        depot_lon = -70.1300  # Dentro de la ciudad
+        # Configuración de coordenadas (Base y Vertedero)
+        base_lat = -20.29305111963256
+        base_lon = -70.12295105323292
         
-        logger.info(f"🏠 Depot configurado en: ({depot_lat}, {depot_lon})")
+        vertedero_lat = -20.19767564535899
+        vertedero_lon = -70.06207963576485
+        
+        logger.info(f"🏠 Base configurada en: ({base_lat}, {base_lon})")
+        logger.info(f"🗑️ Vertedero configurado en: ({vertedero_lat}, {vertedero_lon})")
         
         env = DVRPTWEnv(
             num_camiones=config.num_camiones,
             capacidad_camion_kg=config.capacidad_camion,
             clientes=clientes_dict,
-            depot_lat=depot_lat,
-            depot_lon=depot_lon,
+            depot_lat=vertedero_lat, # El depot es el vertedero para descargar
+            depot_lon=vertedero_lon,
+            base_lat=base_lat,       # Inicio en la base
+            base_lon=base_lon,
             usar_routing_real=True,  # ✅ ACTIVADO - rutas por calles reales OSRM
             penalizacion_distancia=0.1,
             recompensa_servicio=10.0,
-            max_steps=500,
+            max_steps=3000,
             seed=42
         )
         
@@ -344,7 +368,9 @@ async def iniciar_simulacion(config: ConfiguracionMAS):
             'mensaje': 'Simulación iniciada correctamente',
             'config': config.dict(),
             'num_clientes_reales': len(clientes_dict),
-            'coordenadas_depot': {'lat': -20.2666, 'lon': -70.1300}
+            'coordenadas_depot': {'lat': vertedero_lat, 'lon': vertedero_lon},
+            'coordenadas_base': {'lat': base_lat, 'lon': base_lon},
+            'clientes': [{'id': c['id'], 'nombre': c['nombre'], 'lat': c['latitud'], 'lon': c['longitud']} for c in clientes_dict]
         }
         
     except Exception as e:
@@ -381,12 +407,34 @@ async def obtener_estado_simulacion(sim_id: str):
             
             # Construir ruta con coordenadas REALES por calles (si están disponibles)
             ruta_coords = []
-            ruta_geometria = []  # Geometría completa por calles OSRM
+            ruta_geometria = []  # Geometría completa OSRM [[lat,lon],...]
             
             # Si el camión tiene geometría de ruta calculada por OSRM, usarla
             if hasattr(camion, 'ruta_geometria') and camion.ruta_geometria:
                 # La geometría ya viene en [lat, lon] desde dvrptw_env.py (OSRMService)
-                ruta_geometria = camion.ruta_geometria
+                ruta_geometria = list(camion.ruta_geometria) # Copia para no modificar original
+                
+                # FIX CRÍTICO: Asegurar que la ruta visual SIEMPRE empiece en el Depot/Base si es el primer movimiento
+                # o en la posición actual del camión.
+                if len(ruta_geometria) > 0:
+                    primer_punto = ruta_geometria[0]
+                    
+                    # 1. Verificar si la ruta comienza cerca de la Base (Inicio de turno)
+                    # Usamos una tolerancia de ~200m (0.002 grados) para detectar si es una ruta que sale de la base
+                    dist_start_base = ((primer_punto[0] - env.base_lat)**2 + (primer_punto[1] - env.base_lon)**2)**0.5
+                    
+                    if dist_start_base < 0.002:
+                         # Insertar explícitamente la Base al inicio si hay gap visual
+                         if abs(primer_punto[0] - env.base_lat) > 0.0001 or abs(primer_punto[1] - env.base_lon) > 0.0001:
+                             ruta_geometria.insert(0, [env.base_lat, env.base_lon])
+                    
+                    # 2. Verificar si está en Depot (Vertedero)
+                    dist_depot = ((camion.latitud - env.depot_lat)**2 + (camion.longitud - env.depot_lon)**2)**0.5
+                    if dist_depot < 0.001:
+                         # Insertar explícitamente el Depot al inicio si hay gap
+                         if abs(primer_punto[0] - env.depot_lat) > 0.0001 or abs(primer_punto[1] - env.depot_lon) > 0.0001:
+                             ruta_geometria.insert(0, [env.depot_lat, env.depot_lon])
+                
                 if len(ruta_geometria) > 0:
                     logger.debug(f"   📍 Geo Sample (Camión {i}): {ruta_geometria[0]}")
                 logger.info(f"Camión {i}: Enviando geometría OSRM con {len(ruta_geometria)} puntos")
@@ -467,10 +515,9 @@ async def obtener_estado_simulacion(sim_id: str):
             tiempo_total_estimado=tiempo_total_estimado
         )
         
-        # Agregar lista de IDs de clientes servidos para actualizar visualización
-        clientes_servidos_ids = [
-            i for i, cliente in enumerate(env.clientes) if cliente.servido
-        ]
+        # Agregar lista de IDs de clientes servidos para actualización visual INFALIBLE
+        # CORRECCIÓN: Usar IDs reales del objeto cliente, NO índices
+        clientes_servidos_ids = [cliente.id for cliente in env.clientes if cliente.servido]
         
         logger.debug(f"📊 Stats enviadas: {estadisticas.dict()}") # LOG AÑADIDO
         
@@ -479,7 +526,7 @@ async def obtener_estado_simulacion(sim_id: str):
             'paso': sim['paso_actual'],
             'camiones': estados_camiones,
             'estadisticas': estadisticas.dict(),
-            'clientes_servidos_ids': clientes_servidos_ids,  # IDs de puntos servidos
+            'clientes_servidos_ids': clientes_servidos_ids,  # CAMBIO: IDs explícitos (índices)
             'activa': sim['activa']
         }
         
@@ -520,6 +567,28 @@ async def ejecutar_paso_simulacion(sim_id: str):
         eventos = []
         timestamp = datetime.now().isoformat()
         
+        # Agregar eventos de negociación (NUEVO)
+        if 'eventos_negociacion' in info:
+            eventos.extend(info['eventos_negociacion'])
+            
+        # Agregar eventos de conflicto (NUEVO)
+        if 'eventos_conflicto' in info:
+            for evt in info['eventos_conflicto']:
+                evento = EventoMAS(
+                    tipo="conflicto",
+                    timestamp=timestamp,
+                    camion_id=evt['camion_id'],
+                    datos={
+                        'cliente_id': evt['cliente_id'],
+                        'ganador_id': evt['ganador_id'],
+                        'mensaje': evt['mensaje']
+                    }
+                )
+                eventos.append(evento.dict())
+        
+        # Agregar eventos del entorno (Retornos con carga real)
+        eventos_entorno = info.get('eventos_entorno', [])
+        
         for decision in decisiones:
             if decision and decision.cliente_objetivo_id > 0:  # Cliente real (no depot)
                 # Buscar cliente por ID (lista es 0-indexed pero IDs empiezan en 1)
@@ -539,14 +608,24 @@ async def ejecutar_paso_simulacion(sim_id: str):
                     eventos.append(evento.dict())
             
             elif decision and decision.cliente_objetivo_id == 0:  # Retorno al depot
-                agente = next(a for a in coordinador.agentes if a.camion.id == decision.camion_id)
+                # Buscar si hay un evento de retorno real en eventos_entorno para este camión
+                evt_real = next((e for e in eventos_entorno if e.get('tipo') == 'retorno' and e.get('camion_id') == decision.camion_id), None)
+                
+                carga_descargada = 0.0
+                if evt_real:
+                    carga_descargada = evt_real.get('carga_descargada', 0.0)
+                else:
+                    # Fallback (aunque probablemente sea 0.0 si ya descargó)
+                    agente = next(a for a in coordinador.agentes if a.camion.id == decision.camion_id)
+                    carga_descargada = agente.camion.carga_actual_kg
+
                 evento = EventoMAS(
                     tipo="retorno",
                     timestamp=timestamp,
                     camion_id=decision.camion_id,
                     datos={
                         'posicion': {'lat': env.depot_lat, 'lon': env.depot_lon},
-                        'carga_descargada': agente.camion.carga_actual_kg
+                        'carga_descargada': carga_descargada
                     }
                 )
                 eventos.append(evento.dict())
@@ -555,9 +634,12 @@ async def ejecutar_paso_simulacion(sim_id: str):
         sim['paso_actual'] += 1
         
         # Verificar si terminó
-        if all(cliente.servido for cliente in env.clientes):
+        if len(env.clientes) > 0 and all(cliente.servido for cliente in env.clientes):
             sim['activa'] = False
-            logger.info(f"✅ Simulación {sim_id} completada: 100% clientes servidos")
+            logger.info(f"✅ Simulación {sim_id} completada: 100% clientes servidos ({len(env.clientes)}/{len(env.clientes)})")
+        elif len(env.clientes) == 0:
+             logger.warning(f"⚠️ Simulación {sim_id} tiene 0 clientes. Finalizando.")
+             sim['activa'] = False
         
         return {
             'mensaje': 'Paso ejecutado',
@@ -684,7 +766,7 @@ async def guardar_simulacion(sim_id: str):
         raise HTTPException(status_code=500, detail=f"Error al guardar: {str(e)}")
 
 
-@router.delete("/simulacion/{sim_id}")
+@router.post("/simulacion/{sim_id}/detener")
 async def detener_simulacion(sim_id: str):
     """
     Detiene y elimina una simulación activa.

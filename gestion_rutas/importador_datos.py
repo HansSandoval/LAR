@@ -3,6 +3,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 import logging
+import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
 
 # Importar modelos
 from models.models import (
@@ -10,19 +15,15 @@ from models.models import (
     PuntoDisposicion, Usuario, Incidencia, PrediccionDemanda,
     RutaPlanificada, RutaEjecutada
 )
+from database.db import SessionLocal
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Configuración BD
-DATABASE_URL = "postgresql://postgres:password@localhost:5432/gestion_rutas"
-engine = create_engine(DATABASE_URL)
-Session = sessionmaker(bind=engine)
-
 class ImportadorDatos:
     def __init__(self, csv_path):
         self.df = pd.read_csv(csv_path)
-        self.session = Session()
+        self.session = SessionLocal()
         logger.info(f"CSV cargado: {csv_path}")
     
     def importar_zonas(self):

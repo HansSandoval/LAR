@@ -10,7 +10,7 @@ def entrenar_agente():
     # 1. Configurar entorno en modo MARL (observación fija)
     # Usamos usar_routing_real=False para que el entrenamiento sea rápido (Haversine)
     env = DVRPTWEnv(
-        num_camiones=1,
+        num_camiones=3, # Simulación real con 3 camiones
         capacidad_camion_kg=3500,
         clientes=None, # Generará aleatorios
         depot_lat=-20.2666,
@@ -26,20 +26,24 @@ def entrenar_agente():
     
     # 3. Crear modelo PPO
     # MlpPolicy es adecuado para vectores de características (no imágenes)
+    # MEJORA: Red neuronal más profunda [256, 256] y coeficiente de entropía para exploración
+    policy_kwargs = dict(net_arch=[256, 256])
+    
     model = PPO(
         "MlpPolicy", 
         env, 
         verbose=1,
         learning_rate=0.0003,
         n_steps=2048,
-        batch_size=64,
-        gamma=0.99
+        batch_size=128,
+        gamma=0.99,
+        ent_coef=0.01, # Fomenta la exploración
+        policy_kwargs=policy_kwargs
     )
     
-    # 4. Entrenar (Pocos pasos solo para demostración/inicialización)
-    # En un caso real, esto serían 100,000+ pasos
-    print("🏋️ Entrenando modelo (esto puede tardar unos segundos)...")
-    model.learn(total_timesteps=5000)
+    # 4. Entrenar (Aumentado a 300,000 pasos para convergencia robusta)
+    print("🏋️ Entrenando modelo (esto tomará unos minutos)...")
+    model.learn(total_timesteps=300000)
     
     # 5. Guardar modelo
     save_path = os.path.join("gestion_rutas", "vrp", "modelo_ppo_vrp")

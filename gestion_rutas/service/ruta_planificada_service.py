@@ -102,16 +102,16 @@ class RutaPlanificadaService:
 
             query = """
                 INSERT INTO ruta_planificada 
-                (id_zona, id_turno, fecha, secuencia_puntos, id_camion,
-                 distancia_km, tiempo_estimado_min, version_modelo_vrp, geometria_json)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                RETURNING id_ruta, id_zona, id_turno, fecha, secuencia_puntos, id_camion,
-                          distancia_km, tiempo_estimado_min, version_modelo_vrp, geometria_json
+                (id_zona, id_turno, fecha, secuencia_puntos,
+                 distancia_planificada_km, duracion_planificada_min, version_modelo_vrp, geometria_json)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id_ruta, id_zona, id_turno, fecha, secuencia_puntos,
+                          distancia_planificada_km, duracion_planificada_min, version_modelo_vrp, geometria_json
             """
             
             try:
                 resultado = execute_insert_returning(query, (
-                    id_zona, id_turno, fecha, secuencia_str, id_camion,
+                    id_zona, id_turno, fecha, secuencia_str,
                     distancia_km, duracion_min, version_vrp, geometria_str
                 ))
                 logger.info(f"Ruta {resultado['id_ruta']} creada exitosamente")
@@ -142,7 +142,7 @@ class RutaPlanificadaService:
         """Obtener ruta planificada por ID"""
         query = """
             SELECT id_ruta, id_zona, id_turno, fecha, secuencia_puntos,
-                   distancia_km, tiempo_estimado_min, version_modelo_vrp, geometria_json
+                   distancia_planificada_km, duracion_planificada_min, version_modelo_vrp, geometria_json
             FROM ruta_planificada
             WHERE id_ruta = %s
         """
@@ -184,6 +184,10 @@ class RutaPlanificadaService:
         total = count_result[0]['total'] if count_result else 0
         
         # Obtener paginados
+        # FIX: SQLite syntax compatibility
+        # Postgres: OFFSET %s LIMIT %s
+        # SQLite: LIMIT %s OFFSET %s
+        # We use a neutral placeholder that db.py will intercept and rewrite correctly
         query += " ORDER BY fecha DESC OFFSET %s LIMIT %s"
         params.extend([skip, limit])
         

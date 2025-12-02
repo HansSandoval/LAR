@@ -1,4 +1,4 @@
-import pandas as pd
+﻿import pandas as pd
 import numpy as np
 import random
 import string
@@ -193,8 +193,8 @@ fecha_inicio = datetime(2024, 1, 1)
 fechas = [fecha_inicio + timedelta(days=i) for i in range(365)]
 
 # Opciones para clima y eventos
-climas = ['soleado', 'nublado', 'mayormente soleado', 'parcialmente nublado']
-eventos = ['ninguno', 'feria_local', 'festivo', 'evento_deportivo']
+climas = ['soleado', 'nublado', 'mayormente soleado']
+eventos = ['ninguno', 'feria_local', 'festivo']
 
 # BALANCE ÓPTIMO: Patrón claro con variación moderada
 registros = []

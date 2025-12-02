@@ -10,6 +10,12 @@ import random
 import math
 from .dvrptw_env import DVRPTWEnv, Cliente, Camion, OSRMService
 
+import logging
+
+# Configuración de logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
 try:
     from stable_baselines3 import PPO
 except ImportError:
@@ -67,9 +73,53 @@ class AgenteRecolector:
         # 2. Predecir acción
         try:
             action, _ = self.modelo_ppo.predict(obs, deterministic=True)
-            
-            # Convertir numpy int a python int
             action = int(action)
+            
+            # --- FILTRO ANTI-ATASCO (Action Masking Manual) ---
+            # Verificar si la acción elegida es válida
+            es_valida = True
+            
+            # Reconstruir vecinos (misma lógica que abajo)
+            clientes_info = []
+            for cliente in self.env.clientes:
+                if not cliente.servido:
+                    dist = self.env._calcular_distancia_haversine(
+                        self.camion.latitud, self.camion.longitud,
+                        cliente.latitud, cliente.longitud
+                    )
+                    clientes_info.append({'dist': dist, 'cliente': cliente})
+            clientes_info.sort(key=lambda x: x['dist'])
+            vecinos = clientes_info[:self.env.max_clientes_visibles]
+            
+            if action > 0:
+                vecino_idx = action - 1
+                if vecino_idx < len(vecinos):
+                    cliente = vecinos[vecino_idx]['cliente']
+                    # Validar: No servido Y Capacidad suficiente
+                    # BLINDAJE: float() para evitar error str > float
+                    if cliente.servido or float(cliente.demanda_kg) > float(self.camion.capacidad_disponible):
+                        es_valida = False
+                else:
+                    es_valida = False # Índice fuera de rango
+            elif action == 0:
+                # Validar depot: Solo si tiene carga o no hay clientes
+                if self.camion.carga_actual_kg == 0 and len(vecinos) > 0:
+                    es_valida = False
+
+            if not es_valida:
+                # logger.warning(f"⚠️ Acción PPO {action} inválida. Buscando alternativa...")
+                # Buscar primera acción válida (Greedy)
+                action = 0 # Default depot
+                
+                # Intentar encontrar un vecino válido
+                for i, info in enumerate(vecinos):
+                    c = info['cliente']
+                    # BLINDAJE: float()
+                    if not c.servido and float(c.demanda_kg) <= float(self.camion.capacidad_disponible):
+                        action = i + 1 # Acción es índice + 1
+                        break
+            # --------------------------------------------------
+
         except Exception as e:
             print(f"Error predicción PPO: {e}")
             return None
@@ -96,7 +146,7 @@ class AgenteRecolector:
             cliente_elegido = vecinos[vecino_idx]['cliente']
             # El sistema MAS usa IDs 1-based para clientes, 0 para depot
             # Cliente.id ya es el ID correcto (1..N)
-            return cliente_elegido.id
+            return int(cliente_elegido.id)
         else:
             # Acción inválida (ej: eligió vecino 5 pero solo hay 2)
             return 0
@@ -123,9 +173,10 @@ class AgenteRecolector:
                 # 2. Si tiene carga pero es menos del 90% y hay clientes factibles, prohibido volver
                 else:
                     porcentaje_carga = (self.camion.carga_actual_kg / self.camion.capacidad_kg) * 100
+                    # BLINDAJE: float()
                     clientes_factibles_check = [
                         c for c in clientes_disponibles 
-                        if not c.servido and c.demanda_kg <= self.camion.capacidad_disponible
+                        if not c.servido and float(c.demanda_kg) <= float(self.camion.capacidad_disponible)
                     ]
                     
                     if porcentaje_carga < 90 and len(clientes_factibles_check) > 0:
@@ -152,14 +203,15 @@ class AgenteRecolector:
                 # Caso 2: PPO decide ir a un cliente
                 cliente = next((c for c in clientes_disponibles if c.id == cliente_id_ppo), None)
                 
-                if cliente and not cliente.servido and cliente.demanda_kg <= self.camion.capacidad_disponible:
+                # BLINDAJE: float()
+                if cliente and not cliente.servido and float(cliente.demanda_kg) <= float(self.camion.capacidad_disponible):
                     decision = DecisionAgente(
                         camion_id=self.camion.id,
                         cliente_objetivo_id=cliente_id_ppo,
                         razonamiento=f"IA PPO (Acción {cliente_id_ppo})",
                         prioridad_decision=10.0,
                         distancia_estimada=self._calcular_distancia_a(cliente, usar_osrm=False),
-                        beneficio_estimado=cliente.demanda_kg
+                        beneficio_estimado=float(cliente.demanda_kg)
                     )
                     self.memoria_decisiones.append(decision)
                     return cliente_id_ppo
@@ -169,9 +221,10 @@ class AgenteRecolector:
             return None
         
         # Filtrar clientes ya servidos y por capacidad
+        # BLINDAJE: float()
         clientes_factibles = [
             c for c in clientes_disponibles 
-            if not c.servido and c.demanda_kg <= self.camion.capacidad_disponible
+            if not c.servido and float(c.demanda_kg) <= float(self.camion.capacidad_disponible)
         ]
         
         if not clientes_factibles:
@@ -201,9 +254,9 @@ class AgenteRecolector:
             )
             candidatos_preliminares.append((cliente, dist_h))
         
-        # Ordenar por distancia Haversine y tomar los top 15
+        # Ordenar por distancia Haversine y tomar los top 5 (Optimización para velocidad)
         candidatos_preliminares.sort(key=lambda x: x[1])
-        top_candidatos = [c[0] for c in candidatos_preliminares[:15]]
+        top_candidatos = [c[0] for c in candidatos_preliminares[:5]]
         
         # Evaluar solo los top candidatos con OSRM completo
         evaluaciones = []
@@ -223,11 +276,11 @@ class AgenteRecolector:
         # Registrar decisión
         decision = DecisionAgente(
             camion_id=self.camion.id,
-            cliente_objetivo_id=mejor_cliente_id,
+            cliente_objetivo_id=int(mejor_cliente_id),
             razonamiento=f"Score: {mejor_score:.2f} | Distancia: {self._calcular_distancia_a(mejor_cliente):.2f}km",
             prioridad_decision=mejor_score,
             distancia_estimada=self._calcular_distancia_a(mejor_cliente),
-            beneficio_estimado=mejor_cliente.demanda_kg * mejor_cliente.prioridad
+            beneficio_estimado=float(mejor_cliente.demanda_kg) * mejor_cliente.prioridad
         )
         self.memoria_decisiones.append(decision)
         
@@ -249,7 +302,8 @@ class AgenteRecolector:
         score_distancia = pow(max(0, 1 - (distancia / max_distancia)), 3)
         
         # 2. Factor de demanda
-        score_demanda = cliente.demanda_kg / self.camion.capacidad_kg
+        # BLINDAJE: float()
+        score_demanda = float(cliente.demanda_kg) / float(self.camion.capacidad_kg)
         
         # 3. Factor de prioridad
         score_prioridad = cliente.prioridad / 3.0
@@ -284,7 +338,7 @@ class AgenteRecolector:
             else:
                 penalizacion_pasaje = -0.05 
 
-        # 7. Lógica de Continuidad de Calle
+        # 7. Lógica de Continuidad de Calle (MEJORADA)
         bonus_misma_calle = 0.0
         penalizacion_cambio_calle = 0.0
         
@@ -296,21 +350,24 @@ class AgenteRecolector:
             hay_calle_comun = any(c in calles_destino for c in calles_origen)
             
             if hay_calle_comun:
-                if distancia < 0.5:
-                    bonus_misma_calle = 0.8  # Aumentado de 0.5
+                # Si es la misma calle y está cerca, PRIORIDAD ABSOLUTA
+                if distancia < 0.8: # Menos de 800m en la misma calle
+                    bonus_misma_calle = 2.5  # Valor muy alto para forzar continuidad
             else:
-                if distancia < 0.15: 
-                    penalizacion_cambio_calle = 0.8  # Aumentado de 0.6
-                elif distancia < 0.3:
-                    penalizacion_cambio_calle = 0.4  # Aumentado de 0.3
+                # Penalizar cambio de calle si hay opciones cerca en la misma calle
+                if distancia < 0.2: 
+                    penalizacion_cambio_calle = 0.5
 
-        # 8. Factor de Cluster (Proximidad inmediata)
+        # 8. Factor de Cluster / Barrido (Proximidad inmediata)
+        # "Si está al lado, recógelo de una vez"
         bonus_cluster = 0.0
-        if distancia < 0.03: # 30 metros
-            bonus_cluster = 0.6
+        if distancia < 0.15: # 150m
+            bonus_cluster = 2.5 # Bonus alto pero balanceado (antes 5.0)
+        elif distancia < 0.4: # 400m
+            bonus_cluster = 1.0
 
         score = (
-            (self.peso_distancia * 2.0) * score_distancia +
+            (self.peso_distancia * 3.5) * score_distancia + # Peso distancia fuerte pero no excesivo
             self.peso_demanda * score_demanda +
             self.peso_prioridad * score_prioridad +
             bonus_retorno +
@@ -355,9 +412,10 @@ class AgenteRecolector:
             return True
         
         # Buscar si hay algún cliente servible con capacidad restante
+        # BLINDAJE: float()
         clientes_servibles = [
             c for c in self.env.clientes
-            if not c.servido and c.demanda_kg <= self.camion.capacidad_disponible
+            if not c.servido and float(c.demanda_kg) <= float(self.camion.capacidad_disponible)
         ]
         
         return len(clientes_servibles) == 0
@@ -396,9 +454,9 @@ class CoordinadorMAS:
         if modelo_ppo_path and PPO:
             try:
                 self.modelo_ppo = PPO.load(modelo_ppo_path)
-                print(f"✅ Modelo PPO cargado en CoordinadorMAS: {modelo_ppo_path}")
+                logger.info(f"✅ Modelo PPO cargado en CoordinadorMAS: {modelo_ppo_path}")
             except Exception as e:
-                print(f"⚠️ Error cargando modelo PPO: {e}")
+                logger.warning(f"⚠️ Error cargando modelo PPO: {e}")
                 
         self.agentes: List[AgenteRecolector] = []
         self._inicializar_agentes()
@@ -421,7 +479,7 @@ class CoordinadorMAS:
         if not self.env.clientes:
             return
 
-        print("🧩 Iniciando sectorización K-Means...")
+        logger.info("🧩 Iniciando sectorización K-Means...")
         # Puntos de clientes
         puntos = [(c.latitud, c.longitud) for c in self.env.clientes]
         k = len(self.env.camiones)
@@ -460,8 +518,94 @@ class CoordinadorMAS:
         # Reporte
         for i in range(k):
             count = asignaciones.count(i)
-            print(f"🗺️ Sector {i}: {count} clientes asignados")
+            logger.info(f"🗺️ Sector {i}: {count} clientes asignados")
     
+    def _negociar_redistribucion(self) -> List[Dict]:
+        """
+        Implementa un sistema de mensajería/negociación simple.
+        Los camiones libres 'roban' tareas a los camiones sobrecargados.
+        """
+        eventos = []
+        
+        # Identificar agentes libres (que van al depot o no tienen destino claro)
+        agentes_libres = []
+        agentes_ocupados = []
+        
+        for agente in self.agentes:
+            if not agente.camion.activo:
+                continue
+                
+            # Criterio de "Libre": Carga baja (<50%) Y (sin decisiones recientes O yendo al depot)
+            yendo_al_depot = False
+            if agente.memoria_decisiones:
+                ultima = agente.memoria_decisiones[-1]
+                if ultima.cliente_objetivo_id == 0:
+                    yendo_al_depot = True
+            
+            if agente.camion.porcentaje_carga < 50 and (not agente.memoria_decisiones or yendo_al_depot):
+                agentes_libres.append(agente)
+            else:
+                agentes_ocupados.append(agente)
+        
+        if not agentes_libres or not agentes_ocupados:
+            return eventos
+
+        # Lógica de Negociación
+        for agente_libre in agentes_libres:
+            mejor_oferta = None
+            agente_donante = None
+            
+            # Preguntar a todos los ocupados: "¿Tienes algún cliente lejos que me des?"
+            for ocupado in agentes_ocupados:
+                # Buscar clientes en el sector del ocupado que NO hayan sido servidos
+                clientes_sector_ocupado = [
+                    c for c in self.env.clientes 
+                    if not c.servido and self.mapa_sectores.get(c.id) == ocupado.sector_id
+                ]
+                
+                if not clientes_sector_ocupado:
+                    continue
+                    
+                # Encontrar el cliente más lejano para el ocupado, pero cerca del libre
+                for cliente in clientes_sector_ocupado:
+                    dist_ocupado = self.env._calcular_distancia_haversine(
+                        ocupado.camion.latitud, ocupado.camion.longitud,
+                        cliente.latitud, cliente.longitud
+                    )
+                    
+                    dist_libre = self.env._calcular_distancia_haversine(
+                        agente_libre.camion.latitud, agente_libre.camion.longitud,
+                        cliente.latitud, cliente.longitud
+                    )
+                    
+                    # Si al ocupado le queda lejos (>0.5km) y al libre le queda más cerca
+                    if dist_ocupado > 0.5 and dist_libre < dist_ocupado:
+                        score = dist_ocupado - dist_libre # Ganancia neta
+                        
+                        if mejor_oferta is None or score > mejor_oferta[0]:
+                            mejor_oferta = (score, cliente)
+                            agente_donante = ocupado
+            
+            # Cerrar el trato
+            if mejor_oferta and agente_donante:
+                score, cliente_a_transferir = mejor_oferta
+                
+                # CAMBIAR EL SECTOR del cliente (Esto es la "transferencia" efectiva)
+                self.mapa_sectores[cliente_a_transferir.id] = agente_libre.sector_id
+                
+                # Registrar evento para visualización
+                eventos.append({
+                    'tipo': 'negociacion',
+                    'origen_id': agente_donante.camion.id,
+                    'destino_id': agente_libre.camion.id,
+                    'cliente_id': cliente_a_transferir.id,
+                    'mensaje': f"Camión {agente_libre.camion.id} ayuda a Camión {agente_donante.camion.id}"
+                })
+                
+                logger.info(f"🤝 NEGOCIACIÓN: Camión {agente_libre.camion.id} toma cliente {cliente_a_transferir.id} de Camión {agente_donante.camion.id}")
+                
+        return eventos
+
     def ejecutar_paso_cooperativo(self) -> Tuple[List, Dict]:
         """
         Ejecuta un paso de decisión cooperativa entre todos los agentes
@@ -477,18 +621,22 @@ class CoordinadorMAS:
         """
         self.pasos_totales += 1
         
-        # 1. Recopilar decisiones de todos los agentes
+        # 1. FASE DE NEGOCIACIÓN (NUEVO)
+        # Antes de planificar, los agentes libres piden trabajo a los ocupados
+        eventos_negociacion = self._negociar_redistribucion()
+        
+        # 2. Recopilar decisiones de todos los agentes
         decisiones_propuestas = []
         clientes_disponibles = [c for c in self.env.clientes if not c.servido]
         
         for agente in self.agentes:
             if not agente.camion.activo:
-                print(f"⚠️ Agente {agente.camion.id} inactivo")
+                logger.debug(f"⚠️ Agente {agente.camion.id} inactivo")
                 continue
             
             # Verificar si debe regresar al depósito
             if agente.debe_regresar_depot():
-                print(f"🔙 Agente {agente.camion.id} decide regresar a depot")
+                logger.debug(f"🔙 Agente {agente.camion.id} decide regresar a depot")
                 decision = DecisionAgente(
                     camion_id=agente.camion.id,
                     cliente_objetivo_id=0,  # 0 = depot
@@ -519,52 +667,94 @@ class CoordinadorMAS:
                 )
                 
                 if cliente_id is not None:
-                    print(f"✅ Agente {agente.camion.id} seleccionó cliente {cliente_id}")
+                    logger.debug(f"✅ Agente {agente.camion.id} seleccionó cliente {cliente_id}")
                     # Usar la última decisión del agente
                     if agente.memoria_decisiones:
                         decisiones_propuestas.append(agente.memoria_decisiones[-1])
                 else:
-                    print(f"❌ Agente {agente.camion.id} NO seleccionó cliente (None)")
+                    logger.debug(f"❌ Agente {agente.camion.id} NO seleccionó cliente (None)")
         
         # 2. Detectar y resolver conflictos
         conflictos = self._detectar_conflictos(decisiones_propuestas)
+        eventos_conflicto = []
         if conflictos:
-            decisiones_propuestas = self._resolver_conflictos(decisiones_propuestas, conflictos)
+            decisiones_propuestas, eventos_conflicto = self._resolver_conflictos(decisiones_propuestas, conflictos)
             self.conflictos_resueltos += len(conflictos)
         
         # 3. Ejecutar acciones en el entorno
         rewards = []
+        eventos_entorno = [] # Lista para acumular eventos del entorno (ej: retornos)
+        
         for decision in decisiones_propuestas:
             # Buscar agente correspondiente
             agente = next(a for a in self.agentes if a.camion.id == decision.camion_id)
             
             # Determinar acción (0=depot, 1-N=clientes)
-            action = decision.cliente_objetivo_id
+            action_id = decision.cliente_objetivo_id
+            
+            # FIX: Mapear ID real a índice de lista para el entorno (step espera índice 1..N)
+            if action_id > 0:
+                try:
+                    # Buscar índice (0-based) del cliente con este ID
+                    idx = next(i for i, c in enumerate(self.env.clientes) if int(c.id) == action_id)
+                    action_env = idx + 1 # Convertir a 1-based index para step()
+                except StopIteration:
+                    logger.error(f"❌ Cliente ID {action_id} no encontrado en entorno. Saltando.")
+                    continue
+            else:
+                action_env = 0
             
             # Ejecutar acción
             try:
                 # FIX: Usar step_agent para mover el camión correcto
-                obs, reward, done, info = self.env.step_agent(action, decision.camion_id)
+                # Si el entorno no tiene step_agent, usar step normal (fallback)
+                if hasattr(self.env, 'step_agent'):
+                    obs, reward, done, truncated, info = self.env.step_agent(action_env, decision.camion_id)
+                else:
+                    # Fallback peligroso: asume que step maneja lista de acciones
+                    # Esto es solo por si acaso, pero step_agent debería existir
+                    obs, reward, done, truncated, info = self.env.step(action_env)
+                
                 rewards.append(reward)
                 
+                # Capturar eventos del entorno (ej: retorno con carga descargada)
+                if info and 'eventos' in info:
+                    for evt in info['eventos']:
+                        # Enriquecer evento con ID de camión si no lo tiene
+                        if isinstance(evt, dict):
+                            if 'camion_id' not in evt:
+                                evt['camion_id'] = decision.camion_id
+                            eventos_entorno.append(evt)
+                        else:
+                            # Si es string, convertir a dict
+                            eventos_entorno.append({
+                                'tipo': 'info',
+                                'mensaje': str(evt),
+                                'camion_id': decision.camion_id
+                            })
+                
                 # VERIFICACIÓN DE ESTADO
-                if action > 0:
-                    cliente_idx = action - 1
+                if action_env > 0:
+                    cliente_idx = action_env - 1
                     if 0 <= cliente_idx < len(self.env.clientes):
                         cliente = self.env.clientes[cliente_idx]
                         if not cliente.servido:
-                            print(f"⚠️ ALERTA: Cliente {cliente.id} NO fue marcado como servido tras step_agent!")
+                            logger.warning(f"⚠️ ALERTA: Cliente {cliente.id} NO fue marcado como servido tras step_agent!")
                             # Forzar servido para evitar bucle infinito
                             cliente.servido = True
                             self.env.clientes_servidos += 1
             except Exception as e:
-                print(f"❌ Error crítico ejecutando acción para agente {decision.camion_id}: {e}")
+                logger.error(f"❌ Error crítico ejecutando acción para agente {decision.camion_id}: {e}")
         
         # 4. Recopilar información
         info_paso = {
             'paso': self.pasos_totales,
             'decisiones': len(decisiones_propuestas),
             'conflictos': len(conflictos) if conflictos else 0,
+            'negociaciones': len(eventos_negociacion), # Nuevo dato
+            'eventos_negociacion': eventos_negociacion, # Lista real de eventos
+            'eventos_conflicto': eventos_conflicto, # Lista real de eventos
+            'eventos_entorno': eventos_entorno, # Eventos del entorno (retornos, etc)
             'reward_promedio': np.mean(rewards) if rewards else 0.0,
             'clientes_servidos': self.env.clientes_servidos,
             'agentes_activos': sum(1 for a in self.agentes if a.camion.activo)
@@ -602,13 +792,14 @@ class CoordinadorMAS:
         self, 
         decisiones: List[DecisionAgente],
         conflictos: List[Tuple[int, List[int]]]
-    ) -> List[DecisionAgente]:
+    ) -> Tuple[List[DecisionAgente], List[Dict]]:
         """
         Resuelve conflictos asignando el cliente al agente más cercano/prioritario
         Los otros agentes deben elegir alternativas
         """
         decisiones_resueltas = []
         agentes_reasignar = set()
+        eventos_conflicto = []
         
         for cliente_id, agentes_en_conflicto in conflictos:
             # Buscar decisiones en conflicto
@@ -630,6 +821,13 @@ class CoordinadorMAS:
             # Los demás deben reasignar
             for decision in decisiones_conflicto[1:]:
                 agentes_reasignar.add(decision.camion_id)
+                eventos_conflicto.append({
+                    'tipo': 'conflicto',
+                    'camion_id': decision.camion_id,
+                    'cliente_id': cliente_id,
+                    'ganador_id': ganador.camion_id,
+                    'mensaje': f"Cede paso a Camión {ganador.camion_id} en Cliente {cliente_id}"
+                })
         
         # Agregar decisiones sin conflicto
         for decision in decisiones:
@@ -654,7 +852,7 @@ class CoordinadorMAS:
         
         self.decisiones_cooperativas += len(agentes_reasignar)
         
-        return decisiones_resueltas
+        return decisiones_resueltas, eventos_conflicto
     
     def ejecutar_episodio_completo(self, max_pasos: int = 500, verbose: bool = True) -> Dict:
         """
@@ -745,7 +943,16 @@ if __name__ == '__main__':
     )
     
     # Crear coordinador MAS
-    coordinador = CoordinadorMAS(env)
+    # Intentar cargar modelo entrenado si existe
+    import os
+    modelo_path = os.path.join(os.path.dirname(__file__), "modelo_ppo_vrp.zip")
+    if not os.path.exists(modelo_path):
+        modelo_path = None
+        print("⚠️ No se encontró modelo entrenado, usando heurística pura.")
+    else:
+        print(f"📂 Usando modelo entrenado: {modelo_path}")
+
+    coordinador = CoordinadorMAS(env, modelo_ppo_path=modelo_path)
     
     # Ejecutar episodio completo
     estadisticas = coordinador.ejecutar_episodio_completo(

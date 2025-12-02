@@ -32,6 +32,8 @@
             bottom: 20px;
             left: 20px;
             width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         
         h2 { 
@@ -237,10 +239,53 @@
         .loading {
             animation: pulse 1.5s infinite;
         }
+
+        /* Estilos para notificaciones Toast */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        
+        .toast {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease-out, fadeOut 0.5s ease-in 4.5s forwards;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .toast.negociacion {
+            border-left-color: #f1c40f; /* Amarillo para negociación */
+            background: rgba(44, 62, 80, 0.9);
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
     </style>
 </head>
 <body>
     <div id="map"></div>
+    <div id="toast-container"></div>
     
     <!-- Panel de Configuración -->
     <div class="panel panel-config">
@@ -303,7 +348,11 @@
             </div>
             <div class="legend-item">
                 <div class="legend-icon" style="background: #3498db;"></div>
-                <span>Depot (Base)</span>
+                <span>Vertedero</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background: #8e44ad;"></div>
+                <span>Base Operaciones</span>
             </div>
         </div>
     </div>
@@ -335,14 +384,21 @@
         <div class="truck-list" id="listaCamiones">
             <p style="color: #999; font-size: 12px;">Inicia la simulación para ver camiones</p>
         </div>
+
+        <h3>Bitácora de Eventos</h3>
+        <div class="log-container" id="bitacoraMensajes" style="max-height: 150px; overflow-y: auto; font-size: 11px; background: #f8f9fa; padding: 5px; border-radius: 5px; border: 1px solid #eee;">
+            <p style="color: #ccc; margin: 0;">Esperando eventos...</p>
+        </div>
     </div>
     
     <script>
         // ==================== VARIABLES GLOBALES ====================
-        const map = L.map('map').setView([-20.2666, -70.1300], 14);
+        // Centrar mapa entre Base y Vertedero
+        const map = L.map('map').setView([-20.245, -70.09], 13);
         let simulacionId = null;
         let intervalId = null;
         let timeoutId = null; // Nuevo: para control de ciclo secuencial
+        let isFetching = false; // Flag para evitar solapamiento de peticiones
         let prediccionesActuales = [];
         let marcadoresPuntos = [];
         let marcadoresCamiones = [];
@@ -365,14 +421,25 @@
             weight: 2
         }).addTo(map);
         
-        // Depot
-        const depotMarker = L.marker([-20.2666, -70.1300], {
+        // --- MARCADORES INICIALES (Base y Vertedero) ---
+        
+        // 1. Base de Operaciones (Inicio)
+        const baseMarker = L.marker([-20.29305111963256, -70.12295105323292], {
+            icon: L.divIcon({
+                className: 'base-icon',
+                html: '<div style="background: #8e44ad; width: 30px; height: 30px; border-radius: 5px; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); display:flex; justify-content:center; align-items:center; color:white; font-weight:bold;">B</div>',
+                iconSize: [30, 30]
+            })
+        }).bindPopup('<b>Base de Operaciones</b><br>Inicio/Fin de Turno').addTo(map);
+
+        // 2. Vertedero (Depot/Descarga)
+        const vertederoMarker = L.marker([-20.19767564535899, -70.06207963576485], {
             icon: L.divIcon({
                 className: 'depot-icon',
                 html: '<div style="background: #3498db; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>',
                 iconSize: [30, 30]
             })
-        }).bindPopup('<b>Depot</b><br>Base de Operaciones').addTo(map);
+        }).bindPopup('<b>Vertedero</b><br>Punto de Disposición Final').addTo(map);
         
         // ==================== FECHA POR DEFECTO ====================
         const mañana = new Date();
@@ -430,16 +497,22 @@
                     const color = getColorPorDemanda(pred.prediccion_kg);
                     const radio = getRadioPorDemanda(pred.prediccion_kg);
                     
+                    // Asignar ID correcto (usamos el ID que viene del backend si existe, o generamos uno secuencial 0..N-1)
+                    // IMPORTANTE: El backend ahora retorna índices 0..N-1 en 'clientes_servidos_ids'
+                    const idSimulacion = idx; 
+                    
                     const marker = L.circleMarker([pred.latitud, pred.longitud], {
                         radius: radio,
                         fillColor: color,
                         color: '#333',
                         weight: 2,
                         opacity: 1,
-                        fillOpacity: 0.7
+                        fillOpacity: 0.7,
+                        custom_id: idSimulacion, // ID temporal
+                        nombre: pred.punto // Guardar nombre para sincronización
                     }).bindPopup(`
                         <div style="min-width: 200px;">
-                            <h4 style="margin: 0 0 10px 0; color: ${color};">${pred.punto}</h4>
+                            <h4 style="margin: 0 0 10px 0; color: ${color};">${pred.punto} (ID: ${idSimulacion})</h4>
                             <p style="margin: 5px 0;">
                                 <b>Predicción:</b> <span style="color: ${color}; font-size: 16px; font-weight: bold;">
                                     ${pred.prediccion_kg.toFixed(0)} kg
@@ -497,6 +570,15 @@
                     throw new Error(data.error);
                 }
                 
+                // ACTUALIZAR MARCADORES DE BASE Y VERTEDERO (Si el backend envía nuevas coords)
+                if (data.coordenadas_depot) {
+                    vertederoMarker.setLatLng([data.coordenadas_depot.lat, data.coordenadas_depot.lon]);
+                }
+
+                if (data.coordenadas_base) {
+                    baseMarker.setLatLng([data.coordenadas_base.lat, data.coordenadas_base.lon]);
+                }
+                
                 simulacionId = data.simulacion_id;
                 
                 estadoDiv.innerHTML = `<div class="alert alert-success">
@@ -509,6 +591,38 @@
                 document.getElementById('btnDetener').disabled = false;
                 document.getElementById('btnGuardar').disabled = false;
                 
+                // Sincronizar IDs del backend con los marcadores
+                if (data.clientes) {
+                    console.log("🔄 Sincronizando IDs de clientes con backend...");
+                    const nuevosMarcadores = {};
+                    // Convertir array actual a array para búsqueda
+                    const marcadoresArray = Array.isArray(marcadoresPuntos) ? marcadoresPuntos : Object.values(marcadoresPuntos);
+                    
+                    data.clientes.forEach(clienteBackend => {
+                        // Buscar marcador por nombre (asumiendo nombres únicos)
+                        // FIX: Búsqueda robusta ignorando mayúsculas/espacios
+                        const nombreBackend = String(clienteBackend.nombre).trim().toLowerCase();
+                        const marker = marcadoresArray.find(m => String(m.options.nombre).trim().toLowerCase() === nombreBackend);
+                        
+                        if (marker) {
+                            // BLINDAJE DE TIPOS FRONTEND
+                            let idLimpio = String(clienteBackend.id).trim();
+                            
+                            marker.options.custom_id = idLimpio;
+                            nuevosMarcadores[idLimpio] = marker;
+                            
+                            // Actualizar popup con ID real
+                            const popup = marker.getPopup().getContent();
+                            if (popup) {
+                                marker.setPopupContent(popup.replace(/ID: \d+/, `ID: ${idLimpio}`));
+                            }
+                        }
+                    });
+                    // Reemplazar array con objeto indexado por ID para acceso O(1)
+                    marcadoresPuntos = nuevosMarcadores; 
+                    console.log(`✅ ${Object.keys(marcadoresPuntos).length} marcadores sincronizados.`);
+                }
+
                 // Iniciar actualización automática
                 iniciarActualizacionAutomatica();
                 
@@ -551,11 +665,28 @@
         }
         
         // ==================== FUNCIÓN: INICIAR ACTUALIZACIÓN AUTOMÁTICA ====================
-        function iniciarActualizacionAutomatica() {
+        async function iniciarActualizacionAutomatica() {
             if (timeoutId) clearTimeout(timeoutId);
             if (intervalId) clearInterval(intervalId);
             
             console.log('🚀 Iniciando simulación con animación siguiendo calles OSRM');
+            
+            // FIX: Obtener estado inicial (t=0) ANTES de ejecutar el primer paso
+            // Esto asegura que los camiones aparezcan en la Base y tracen la línea desde ahí
+            try {
+                const debugDiv = document.getElementById('debugInfo') || crearDebugPanel();
+                debugDiv.innerHTML = `📥 Obteniendo estado inicial...`;
+                
+                const estadoResponse = await fetch(`/api/mas/simulacion/${simulacionId}/estado`);
+                if (estadoResponse.ok) {
+                    const data = await estadoResponse.json();
+                    console.log("📍 Estado inicial cargado (Camiones en Base)");
+                    actualizarVisualizacion(data);
+                }
+            } catch (e) {
+                console.error("Error cargando estado inicial:", e);
+            }
+
             console.log('🔄 Ciclo de actualización secuencial activado');
             
             // Iniciar el ciclo
@@ -565,7 +696,9 @@
         // ==================== FUNCIÓN: ACTUALIZACIÓN AUTOMÁTICA ROBUSTA ====================
         async function ejecutarCicloSimulacion() {
             if (!simulacionId) return;
+            if (isFetching) return; // Evitar solapamiento
             
+            isFetching = true;
             const debugDiv = document.getElementById('debugInfo') || crearDebugPanel();
             
             try {
@@ -574,7 +707,8 @@
                 
                 // 1. EJECUTAR PASO
                 const controller = new AbortController();
-                const timeoutIdFetch = setTimeout(() => controller.abort(), 60000); // 60s timeout
+                // Aumentar timeout a 120s para evitar abortos por lentitud de OSRM
+                const timeoutIdFetch = setTimeout(() => controller.abort(), 120000); 
                 
                 const pasoResponse = await fetch(`/api/mas/simulacion/${simulacionId}/paso`, { 
                     method: 'POST',
@@ -589,6 +723,12 @@
                 
                 if (!pasoResponse.ok) {
                     throw new Error(`Error HTTP: ${pasoResponse.status}`);
+                }
+                
+                // PROCESAR EVENTOS DE PASO (NUEVO: Para ver negociaciones)
+                const pasoData = await pasoResponse.json();
+                if (pasoData.eventos && pasoData.eventos.length > 0) {
+                    procesarEventos(pasoData.eventos);
                 }
                 
                 // 2. OBTENER ESTADO ACTUALIZADO
@@ -613,8 +753,8 @@
                     return;
                 }
                 
-                // 4. SIGUIENTE CICLO
-                timeoutId = setTimeout(ejecutarCicloSimulacion, 1000); 
+                // 4. SIGUIENTE CICLO (Intervalo corto para minimizar espera entre pasos)
+                timeoutId = setTimeout(ejecutarCicloSimulacion, 100); 
                 
             } catch (error) {
                 console.error('❌ Error en ciclo:', error);
@@ -628,7 +768,69 @@
                     debugDiv.innerHTML = `❌ Error: ${error.message}. Reintentando...`;
                     timeoutId = setTimeout(ejecutarCicloSimulacion, 5000);
                 }
+            } finally {
+                isFetching = false;
             }
+        }
+
+        // ==================== FUNCIÓN: PROCESAR EVENTOS (NEGOCIACIÓN + RECOGIDA) ====================
+        function procesarEventos(eventos) {
+            const bitacora = document.getElementById('bitacoraMensajes');
+            if (bitacora.children[0]?.tagName === 'P') bitacora.innerHTML = ''; // Remove "Esperando..."
+
+            eventos.forEach(evento => {
+                let msgHTML = '';
+                let estiloBorde = '';
+                
+                if (evento.tipo === 'negociacion') {
+                    mostrarToast(`🤝 ${evento.mensaje}`, 'negociacion');
+                    msgHTML = `<span style="color:#f1c40f">★</span> <b>[Negociación]</b> ${evento.mensaje}`;
+                    estiloBorde = 'border-left: 3px solid #f1c40f;';
+                    
+                    // Línea visual temporal
+                    if (marcadoresCamiones[evento.origen_id] && marcadoresCamiones[evento.destino_id]) {
+                        const p1 = marcadoresCamiones[evento.origen_id].getLatLng();
+                        const p2 = marcadoresCamiones[evento.destino_id].getLatLng();
+                        const linea = L.polyline([p1, p2], { color: '#f1c40f', weight: 4, dashArray: '10, 10', opacity: 0.8 }).addTo(map);
+                        setTimeout(() => map.removeLayer(linea), 2000);
+                    }
+                } 
+                else if (evento.tipo === 'conflicto') {
+                    const datos = evento.datos || {};
+                    msgHTML = `<span style="color:#e74c3c">⚡</span> <b>[Conflicto]</b> ${datos.mensaje || 'Conflicto detectado'}`;
+                    estiloBorde = 'border-left: 3px solid #e74c3c;';
+                }
+                else if (evento.tipo === 'recogida') {
+                    const datos = evento.datos || {};
+                    msgHTML = `<span style="color:#2ecc71">✓</span> <b>[Recogida]</b> Camión ${evento.camion_id} recogió ${datos.residuos_kg?.toFixed(1) || '?'}kg en Cliente ${datos.cliente_id}`;
+                    estiloBorde = 'border-left: 3px solid #2ecc71;';
+                }
+                else if (evento.tipo === 'retorno') {
+                    const datos = evento.datos || {};
+                    msgHTML = `<span style="color:#3498db">⟲</span> <b>[Retorno]</b> Camión ${evento.camion_id} descargó ${datos.carga_descargada?.toFixed(1) || '?'}kg en Depot`;
+                    estiloBorde = 'border-left: 3px solid #3498db;';
+                }
+
+                if (msgHTML) {
+                    const msg = document.createElement('div');
+                    msg.style.cssText = `margin-bottom: 4px; padding: 6px; background: white; border-radius: 4px; font-size: 11px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); ${estiloBorde}`;
+                    msg.innerHTML = msgHTML;
+                    bitacora.prepend(msg); // Lo más nuevo arriba
+                }
+            });
+        }
+
+        function mostrarToast(mensaje, tipo = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${tipo}`;
+            toast.innerHTML = mensaje;
+            container.appendChild(toast);
+            
+            // Eliminar del DOM después de la animación (5s)
+            setTimeout(() => {
+                if (toast.parentNode) toast.parentNode.removeChild(toast);
+            }, 5000);
         }
 
         // ==================== FUNCIÓN: ACTUALIZAR VISUALIZACIÓN (DEBUGGEADA) ====================
@@ -657,6 +859,38 @@
             document.getElementById('tiempoTotal').textContent = tiempoStr;
             document.getElementById('paso').textContent = paso;
             
+            // 1.5 Actualizar Lista de Camiones (NUEVO)
+            const listaCamionesDiv = document.getElementById('listaCamiones');
+            listaCamionesDiv.innerHTML = ''; // Limpiar lista anterior
+            
+            data.camiones.forEach((camion, idx) => {
+                const item = document.createElement('div');
+                item.className = 'truck-item';
+                item.style.borderLeftColor = camion.color || '#3498db';
+                
+                // Valores seguros para evitar crash si el backend envía null/undefined
+                const carga = (camion.carga_actual || 0);
+                const capacidad = (camion.capacidad_total || camion.capacidad_kg || 3500);
+                
+                // Calcular porcentaje dinámicamente si no viene o es 0
+                let porcentaje = (camion.porcentaje_carga || 0);
+                if (porcentaje === 0 && carga > 0) {
+                    porcentaje = (carga / capacidad) * 100;
+                }
+                
+                item.innerHTML = `
+                    <div style="display:flex; justify-content:space-between;">
+                        <strong>Camión ${idx + 1}</strong>
+                        <span style="font-weight:bold;">${porcentaje.toFixed(1)}%</span>
+                    </div>
+                    <div style="background:#eee; height:5px; border-radius:3px; margin-top:5px;">
+                        <div style="background:${camion.color || '#3498db'}; width:${porcentaje}%; height:100%; border-radius:3px;"></div>
+                    </div>
+                    <small>${camion.activo ? 'En ruta' : 'Inactivo'} | ${carga.toFixed(0)}/${capacidad} kg</small>
+                `;
+                listaCamionesDiv.appendChild(item);
+            });
+
             // 2. Actualizar Mapa (Camiones)
             lineasRutas.forEach(l => map.removeLayer(l));
             lineasRutas = [];
@@ -691,9 +925,9 @@
                 
                 // Marcador
                 if (marcadoresCamiones[idx]) {
-                    // Animar
+                    // Animar (Velocidad suave: 800ms)
                     const geometria = camion.geometria_actual || camion.ruta_geometria;
-                    animarMovimiento(marcadoresCamiones[idx], marcadoresCamiones[idx].getLatLng(), nuevaPos, 900, geometria);
+                    animarMovimiento(marcadoresCamiones[idx], marcadoresCamiones[idx].getLatLng(), nuevaPos, 800, geometria);
                     
                     // Popup
                     marcadoresCamiones[idx].setPopupContent(`
@@ -712,19 +946,85 @@
                 }
                 
                 // Ruta futura (línea punteada)
-                if (camion.ruta_geometria) {
-                     const linea = L.polyline(camion.ruta_geometria, {
+                if (camion.ruta_geometria && camion.ruta_geometria.length > 0) {
+                    // Asegurar que el trazo comience desde la posición actual del camión
+                    let rutaVisual = [...camion.ruta_geometria];
+                    const posActual = [camion.posicion.lat, camion.posicion.lon];
+                    
+                    // Si el primer punto está lejos de la posición actual, insertar posición actual
+                    const primerPunto = rutaVisual[0];
+                    if (Math.abs(primerPunto[0] - posActual[0]) > 0.0001 || Math.abs(primerPunto[1] - posActual[1]) > 0.0001) {
+                        rutaVisual.unshift(posActual);
+                    }
+
+                     const linea = L.polyline(rutaVisual, {
                         color: camion.color, weight: 2, dashArray: '5, 10', opacity: 0.5
                     }).addTo(map);
                     lineasRutas.push(linea);
                 }
             });
             
-            // 3. Actualizar Clientes (Servidos)
-            if (data.clientes_servidos_ids) {
+            // 3. Actualizar Clientes (Servidos) - Lógica Robusta y Agnóstica al Tipo
+            if (data.clientes_servidos_ids && Array.isArray(data.clientes_servidos_ids)) {
+                data.clientes_servidos_ids.forEach(rawId => {
+                    // 1. Normalización del ID entrante (String y Trim)
+                    const idObjetivo = String(rawId).trim();
+                    const idObjetivoLower = idObjetivo.toLowerCase();
+                    
+                    // 2. Búsqueda del marcador (Estrategia "Busca hasta encontrar")
+                    let marker = null;
+                    const listaMarcadores = Array.isArray(marcadoresPuntos) ? marcadoresPuntos : Object.values(marcadoresPuntos);
+                    
+                    // Estrategia A: Búsqueda Directa en Diccionario (si es objeto)
+                    if (!Array.isArray(marcadoresPuntos) && marcadoresPuntos[idObjetivo]) {
+                        marker = marcadoresPuntos[idObjetivo];
+                    }
+                    
+                    // Estrategia B: Búsqueda Iterativa (Funciona para Array y Objeto)
+                    if (!marker) {
+                        // B.1: Por custom_id exacto (string vs string)
+                        marker = listaMarcadores.find(m => String(m.options.custom_id).trim() === idObjetivo);
+                        
+                        // B.2: Por nombre (si el ID falla, tal vez el nombre coincida con el ID o viceversa)
+                        if (!marker) {
+                             marker = listaMarcadores.find(m => String(m.options.nombre).trim() === idObjetivo);
+                        }
+
+                        // B.3: Búsqueda Desesperada (Ignorar mayúsculas, espacios internos, tipos)
+                        if (!marker) {
+                            marker = listaMarcadores.find(m => {
+                                const mId = String(m.options.custom_id).trim().toLowerCase();
+                                const mNombre = String(m.options.nombre).trim().toLowerCase();
+                                return mId === idObjetivoLower || mNombre === idObjetivoLower || 
+                                       mId.includes(idObjetivoLower) || idObjetivoLower.includes(mId);
+                            });
+                        }
+                    }
+
+                    // 3. Validación de Existencia y Actualización
+                    if (marker) {
+                        // Verificar si ya estaba marcado para no repetir operaciones (Optimización)
+                        if (marker.options.fillColor !== '#ecf0f1') {
+                            // CAMBIO VISUAL: Gris (Recogido)
+                            marker.setStyle({
+                                fillColor: '#ecf0f1', 
+                                color: '#bdc3c7', 
+                                fillOpacity: 0.4,
+                                weight: 1,
+                                radius: 6
+                            });
+                            
+                            // Actualizar popup indicando estado
+                            const popupContent = marker.getPopup().getContent();
+                            if (!popupContent.includes("(RECOLECTADO)")) {
+                                marker.setPopupContent(popupContent.replace("</h4>", " <span style='color:gray; font-size:0.8em'>(RECOLECTADO)</span></h4>"));
+                            }
+                        }
+                    }
+                });
+            } else if (data.clientes_servidos_coords) {
+                // Fallback para compatibilidad antigua
                 data.clientes_servidos_ids.forEach(id => {
-                    // Ajustar ID (backend 0-based vs frontend array)
-                    // El backend devuelve indices de la lista de clientes
                     if (marcadoresPuntos[id]) {
                         marcadoresPuntos[id].setStyle({
                             fillColor: '#bdc3c7', color: '#7f8c8d', fillOpacity: 0.2

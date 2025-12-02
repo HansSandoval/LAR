@@ -56,11 +56,16 @@ class CamionService:
     ) -> tuple[List[Dict], int]:
         """Obtener camiones con filtros"""
         if estado:
+            # FIX: SQLite syntax compatibility
+            # Postgres: OFFSET %s LIMIT %s
+            # SQLite: LIMIT %s OFFSET %s
+            # We use a neutral placeholder that db.py will intercept and rewrite correctly
             query = "SELECT * FROM camion WHERE estado_operativo = %s ORDER BY id_camion OFFSET %s LIMIT %s"
             params = (estado, skip, limit)
             count_query = "SELECT COUNT(*) as total FROM camion WHERE estado_operativo = %s"
             count_result = execute_query_one(count_query, (estado,))
         else:
+            # FIX: SQLite syntax compatibility
             query = "SELECT * FROM camion ORDER BY id_camion OFFSET %s LIMIT %s"
             params = (skip, limit)
             count_query = "SELECT COUNT(*) as total FROM camion"
