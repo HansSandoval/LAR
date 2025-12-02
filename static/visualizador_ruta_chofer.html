@@ -211,6 +211,7 @@
     let watchId = null;
     let isFollowMode = true;
     let currentBearing = 0;
+    let currentSimId = null;
 
     function toggleFollowMode() {
         isFollowMode = document.getElementById('follow-mode').checked;
@@ -280,6 +281,22 @@
         return (brng + 360) % 360;
     }
 
+    function sendPositionUpdate(lat, lng, heading) {
+        if (!currentSimId) return;
+        
+        // Enviar actualización al backend para que el cliente lo vea
+        fetch(`/api/mas/simulacion/${currentSimId}/actualizar_posicion`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                camion_id: 0, // Asumimos que somos el camión 0 en esta sesión
+                lat: lat,
+                lon: lng,
+                heading: heading || 0
+            })
+        }).catch(e => console.error("Error enviando posición:", e));
+    }
+
     async function startRoute(id) {
         stopSimulation(); // Detener cualquier proceso anterior
 
@@ -292,6 +309,44 @@
             if (!ruta.geometria_json || ruta.geometria_json.length === 0) {
                 alert("Esta ruta no tiene geometría válida para navegar.");
                 return;
+            }
+
+            // INICIAR SESIÓN DE TRACKING EN BACKEND
+            try {
+                const simResponse = await fetch('/api/mas/simular', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        num_camiones: 1,
+                        num_clientes: 5, // Mínimo para inicializar entorno
+                        capacidad_camion: 5000,
+                        coordenadas_reales: true,
+                        velocidad_simulacion: 1.0,
+                        usar_predicciones_lstm: false 
+                    })
+                });
+                
+                if (simResponse.ok) {
+                    const simData = await simResponse.json();
+                    currentSimId = simData.simulacion_id;
+                    console.log("✅ Sesión de tracking iniciada:", currentSimId);
+
+                    // ENVIAR GEOMETRÍA DE RUTA
+                    if (ruta.geometria_json) {
+                        fetch(`/api/mas/simulacion/${currentSimId}/actualizar_ruta`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                camion_id: 0,
+                                geometria: ruta.geometria_json
+                            })
+                        }).catch(e => console.error("Error enviando ruta:", e));
+                    }
+                } else {
+                    console.warn("⚠️ No se pudo iniciar sesión de tracking en backend");
+                }
+            } catch (e) {
+                console.error("❌ Error conectando con backend:", e);
             }
 
             // Visualizar ruta en el mapa
@@ -377,6 +432,9 @@
                 simulationMarker.setLatLng(newLatLng);
                 map.setView(newLatLng, 18);
                 simulationMarker.bindPopup(`📍 Tu Ubicación<br>Vel: ${(position.coords.speed || 0).toFixed(1)} m/s`).openPopup();
+
+                // ENVIAR AL BACKEND
+                sendPositionUpdate(lat, lng, currentBearing);
             },
             (error) => {
                 console.error("Error GPS:", error);
@@ -449,12 +507,14 @@
                 currentSegment++;
                 simulationMarker.setLatLng(p2);
                 map.setView(p2, 18); // Mantener centrado
+                sendPositionUpdate(p2.lat, p2.lng, currentBearing);
             } else {
                 const lat = p1.lat + (p2.lat - p1.lat) * progress;
                 const lng = p1.lng + (p2.lng - p1.lng) * progress;
                 const newPos = [lat, lng];
                 simulationMarker.setLatLng(newPos);
                 map.setView(newPos, 18); // Mantener centrado
+                sendPositionUpdate(lat, lng, currentBearing);
             }
         }, updateRate);
     }

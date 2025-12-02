@@ -90,6 +90,20 @@ class EventoMAS(BaseModel):
     datos: Dict[str, Any]
 
 
+class ActualizacionPosicion(BaseModel):
+    """Modelo para actualizar la posición de un camión desde el cliente"""
+    camion_id: int
+    lat: float
+    lon: float
+    heading: Optional[float] = 0.0
+
+
+class ActualizacionRuta(BaseModel):
+    """Modelo para actualizar la geometría de ruta de un camión"""
+    camion_id: int
+    geometria: List[List[float]] # [[lat, lon], ...]
+
+
 # ==================== VARIABLES GLOBALES ====================
 
 # Almacenar estado de simulaciones activas
@@ -283,6 +297,12 @@ def crear_clientes_con_datos_reales(config: ConfiguracionMAS) -> List[Cliente]:
 
 # ==================== ENDPOINTS ====================
 
+@router.get("/simulaciones/activas", response_model=List[str])
+def listar_simulaciones_activas():
+    """Retorna una lista de IDs de simulaciones activas."""
+    return list(simulaciones_activas.keys())
+
+
 @router.post("/simular", response_model=Dict[str, Any])
 async def iniciar_simulacion(config: ConfiguracionMAS):
     """
@@ -291,7 +311,7 @@ async def iniciar_simulacion(config: ConfiguracionMAS):
     """
     try:
         sim_id = f"sim_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        
+
         logger.info(f"🚀 Iniciando simulación {sim_id}")
         logger.info(f"   - Camiones: {config.num_camiones}")
         logger.info(f"   - Clientes: {config.num_clientes}")
@@ -410,7 +430,9 @@ async def obtener_estado_simulacion(sim_id: str):
             ruta_geometria = []  # Geometría completa OSRM [[lat,lon],...]
             
             # Si el camión tiene geometría de ruta calculada por OSRM, usarla
-            if hasattr(camion, 'ruta_geometria') and camion.ruta_geometria:
+            if hasattr(camion, 'ruta_geometria_override') and camion.ruta_geometria_override:
+                 ruta_geometria = camion.ruta_geometria_override
+            elif hasattr(camion, 'ruta_geometria') and camion.ruta_geometria:
                 # La geometría ya viene en [lat, lon] desde dvrptw_env.py (OSRMService)
                 ruta_geometria = list(camion.ruta_geometria) # Copia para no modificar original
                 
@@ -871,3 +893,60 @@ async def health_check():
         'simulaciones_activas': len(simulaciones_activas),
         'websockets_activos': len(websocket_connections)
     }
+
+
+@router.post("/simulacion/{sim_id}/actualizar_posicion")
+async def actualizar_posicion_camion(sim_id: str, update: ActualizacionPosicion):
+    """
+    Actualiza la posición de un camión manualmente (desde GPS del chofer).
+    """
+    if sim_id not in simulaciones_activas:
+        raise HTTPException(status_code=404, detail="Simulación no encontrada")
+    
+    sim = simulaciones_activas[sim_id]
+    coordinador = sim['coordinador']
+    
+    # Buscar el agente/camión
+    found = False
+    for agente in coordinador.agentes:
+        # Ajustar comparación de ID si es necesario (a veces es 0-indexed vs 1-indexed)
+        # En mas_cooperativo.py, los camiones suelen tener id 0, 1, 2...
+        if agente.camion.id == update.camion_id:
+            agente.camion.latitud = update.lat
+            agente.camion.longitud = update.lon
+            # Si el objeto camión tiene atributo heading/orientación, actualizarlo
+            if hasattr(agente.camion, 'heading'):
+                agente.camion.heading = update.heading
+            
+            # Actualizar timestamp de última actualización si existe
+            if hasattr(agente.camion, 'last_update'):
+                agente.camion.last_update = datetime.now()
+                
+            found = True
+            logger.info(f"📍 Posición actualizada Camión {update.camion_id}: {update.lat}, {update.lon}")
+            break
+            
+    if not found:
+        raise HTTPException(status_code=404, detail=f"Camión {update.camion_id} no encontrado en la simulación")
+        
+    return {"status": "ok", "posicion": {"lat": update.lat, "lon": update.lon}}
+
+
+@router.post("/simulacion/{sim_id}/actualizar_ruta")
+async def actualizar_ruta_camion(sim_id: str, update: ActualizacionRuta):
+    """
+    Actualiza la geometría de la ruta de un camión (para visualización correcta en cliente).
+    """
+    if sim_id not in simulaciones_activas:
+        raise HTTPException(status_code=404, detail="Simulación no encontrada")
+    
+    sim = simulaciones_activas[sim_id]
+    coordinador = sim['coordinador']
+    
+    for agente in coordinador.agentes:
+        if agente.camion.id == update.camion_id:
+            agente.camion.ruta_geometria_override = update.geometria
+            logger.info(f"🗺️ Ruta actualizada para Camión {update.camion_id} ({len(update.geometria)} puntos)")
+            return {"status": "ok"}
+            
+    raise HTTPException(status_code=404, detail="Camión no encontrado")

@@ -10,7 +10,8 @@ from typing import List, Optional
 from ..schemas.schemas import (
     UsuarioCreate,
     UsuarioUpdate,
-    UsuarioResponse
+    UsuarioResponse,
+    LoginRequest
 )
 from ..service.usuario_service import UsuarioService
 import re
@@ -18,6 +19,44 @@ import re
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
 usuario_service = UsuarioService()
+
+@router.post("/login", summary="Iniciar sesión")
+async def login(credentials: LoginRequest):
+    """
+    Autentica un usuario con correo y contraseña.
+    Retorna el usuario si las credenciales son válidas.
+    """
+    user = usuario_service.autenticar_usuario(credentials.correo, credentials.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Credenciales inválidas")
+    return {"mensaje": "Login exitoso", "usuario": user}
+
+@router.post("/register", summary="Registrar nuevo usuario (Cliente)")
+async def register(usuario: UsuarioCreate):
+    """
+    Registra un nuevo usuario con rol 'cliente' por defecto.
+    """
+    # Verificar si el correo ya existe
+    existing = usuario_service.obtener_usuario_por_correo(usuario.correo)
+    if existing:
+        raise HTTPException(status_code=400, detail="El correo ya está registrado")
+    
+    # Forzar rol a 'cliente' para registro público, o usar el que viene si se desea flexibilidad
+    # Aquí asumiremos que el registro público es para clientes.
+    rol_asignado = "cliente"
+    
+    try:
+        new_user = usuario_service.crear_usuario(
+            nombre=usuario.nombre,
+            correo=usuario.correo,
+            rol=rol_asignado,
+            password=usuario.password,
+            activo=True
+        )
+        return new_user
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al registrar usuario: {str(e)}")
+
 
 
 def validar_email(email: str) -> bool:

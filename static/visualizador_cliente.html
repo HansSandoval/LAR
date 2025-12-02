@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Dónde viene mi camión? - LAR</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-white: #ffffff;
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #map {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Panel de Información Flotante */
+        .info-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--bg-white);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: transform 0.3s ease-in-out;
+            max-height: 40vh;
+            overflow-y: auto;
+        }
+
+        @media (min-width: 768px) {
+            .info-panel {
+                bottom: 20px;
+                left: 20px;
+                width: 350px;
+                border-radius: 12px;
+                max-height: 80vh;
+            }
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .status-badge {
+            background-color: #dbeafe;
+            color: var(--primary-color);
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .eta-display {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 12px;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: var(--bg-white);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 2000;
+            position: relative;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 3000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5); 
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .toggle-form span {
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        .nav-btn {
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--bg-white);
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 2001;
+            border-radius: 8px;
+            top: 100%;
+            left: 0;
+        }
+
+        .dropdown-content a {
+            color: var(--text-dark);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f3f4f6;
+            color: var(--primary-color);
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Mobile menu adjustments */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        .eta-time {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        .eta-label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .location-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-outline {
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            color: var(--text-dark);
+        }
+
+        .btn-outline:hover {
+            background-color: #f9fafb;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border: 1px solid #f3f4f6;
+            border-radius: 8px;
+        }
+
+        .info-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .info-content h4 {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .info-content p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Animación de carga */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Marcadores personalizados */
+        .user-marker-icon {
+            background-color: var(--primary-color);
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px var(--primary-color), 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .truck-marker-icon {
+            font-size: 24px;
+            color: var(--text-dark);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .nearest-point-marker {
+            background-color: var(--accent-color);
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <i class="fas fa-truck-fast"></i> LAR
+        </a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Inicio</a>
+            
+            <div class="dropdown">
+                <a href="#" class="nav-link" onclick="focusMap(); return false;">Puntos de Reciclaje <i class="fas fa-chevron-down" style="font-size: 0.8em;"></i></a>
+                <div class="dropdown-content">
+                    <a href="#" onclick="zoomToRecyclingPoint('norte'); return false;">Sector Norte (Zofri)</a>
+                    <a href="#" onclick="zoomToRecyclingPoint('centro'); return false;">Sector Centro (Playa Brava)</a>
+                    <a href="#" onclick="zoomToRecyclingPoint('sur'); return false;">Sector Sur (Recynor)</a>
+                </div>
+            </div>
+
+            <a href="/info-basura" class="nav-link">Info Basura</a>
+            <a href="/comunidad" class="nav-link">Comunidad</a>
+            
+            <!-- Botón de Login/Registro o Usuario -->
+            <div id="auth-section">
+                <button onclick="openLoginModal()" class="nav-btn">Iniciar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Buscando camiones cercanos...</p>
+    </div>
+
+    <div id="map"></div>
+
+    <div class="info-panel">
+        <div class="panel-header">
+            <div class="panel-title">Estado del Servicio</div>
+            <span class="status-badge" id="service-status">Buscando...</span>
+        </div>
+
+        <div class="location-controls">
+            <button class="btn btn-primary" onclick="getUserLocation()">
+                <i class="fas fa-location-arrow"></i> Mi Ubicación
+            </button>
+            <button class="btn btn-outline" onclick="enableManualSelection()">
+                <i class="fas fa-map-pin"></i> Seleccionar
+            </button>
+        </div>
+
+        <div id="eta-container" style="display: none;">
+            <div class="eta-display">
+                <div class="eta-time" id="eta-time">-- min</div>
+                <div class="eta-label">Tiempo estimado de llegada</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-icon"><i class="fas fa-truck"></i></div>
+                <div class="info-content">
+                    <h4>Distancia del camión</h4>
+                    <p id="truck-distance">-- km</p>
+                </div>
+            </div>
+
+            <div class="info-row" id="walking-info" style="display: none;">
+                <div class="info-icon" style="color: var(--warning-color); background: #fffbeb;"><i class="fas fa-walking"></i></div>
+                <div class="info-content">
+                    <h4>Punto de encuentro</h4>
+                    <p id="walking-distance">El camión pasa a -- m de ti</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="no-truck-msg" style="text-align: center; color: var(--text-light); padding: 20px; display: none;">
+            <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
+            <p>Selecciona tu ubicación para ver el camión más cercano.</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script> <!-- Para cálculos geoespaciales -->
+    
+    <!-- Login/Register Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            
+            <!-- Login Form -->
+            <div id="loginForm">
+                <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary-color);">Iniciar Sesión</h2>
+                <div class="form-group">
+                    <label for="loginEmail">Correo Electrónico</label>
+                    <input type="email" id="loginEmail" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="********" required>
+                </div>
+                <button class="btn-submit" onclick="handleLogin()">Ingresar</button>
+                <div class="toggle-form">
+                    ¿No tienes cuenta? <span onclick="showRegister()">Regístrate aquí</span>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" style="display: none;">
+                <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary-color);">Crear Cuenta</h2>
+                <div class="form-group">
+                    <label for="regName">Nombre Completo</label>
+                    <input type="text" id="regName" placeholder="Juan Pérez" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Correo Electrónico</label>
+                    <input type="email" id="regEmail" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Contraseña</label>
+                    <input type="password" id="regPassword" placeholder="********" required>
+                </div>
+                <button class="btn-submit" onclick="handleRegister()">Registrarse</button>
+                <div class="toggle-form">
+                    ¿Ya tienes cuenta? <span onclick="showLogin()">Inicia sesión</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navbar Logic
+        function focusMap() {
+            const mapElement = document.getElementById('map');
+            if (mapElement) {
+                mapElement.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Auth Logic Simulation
+        document.addEventListener('DOMContentLoaded', () => {
+            // Simulación: Descomentar la siguiente línea para probar el estado logueado
+            // localStorage.setItem('lar_user', JSON.stringify({name: 'Usuario Demo'}));
+            
+            const user = localStorage.getItem('lar_user'); 
+            const authSection = document.getElementById('auth-section');
+            
+            if (user && authSection) {
+                try {
+                    const userData = JSON.parse(user);
+                    authSection.innerHTML = `
+                        <div class="user-profile" onclick="alert('Perfil de usuario: ' + '${userData.name}')">
+                            <div class="user-avatar">${userData.name.charAt(0)}</div>
+                            <span style="font-weight: 600; color: var(--text-dark);">${userData.name}</span>
+                        </div>
+                    `;
+                } catch (e) {
+                    console.error('Error parsing user data', e);
+                }
+            }
+        });
+
+        // Configuración Global
+        const API_BASE_URL = '/api/mas';
+        let map;
+        let userMarker = null;
+        let truckMarkers = {};
+        let recyclingMarkers = {}; // Almacenar marcadores de reciclaje
+        let routePolylines = {};
+        let nearestPointMarker = null;
+        let connectionLine = null;
+        let activeSimulationId = null;
+        let isManualSelectionMode = false;
+        let userLocation = null;
+
+        // Iconos
+        const truckIcon = L.divIcon({
+            html: '<i class="fas fa-truck-moving fa-2x" style="color: #2563eb; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);"></i>',
+            className: 'truck-marker-custom',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        });
+
+        const userIcon = L.divIcon({
+            className: 'user-marker-icon',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+
+        const nearestPointIcon = L.divIcon({
+            className: 'nearest-point-marker',
+            iconSize: [12, 12],
+            iconAnchor: [6, 6]
+        });
+
+        const recyclingIcon = L.divIcon({
+            html: '<i class="fas fa-recycle fa-2x" style="color: #10b981; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); background: white; border-radius: 50%; padding: 2px;"></i>',
+            className: 'recycling-marker-custom',
+            iconSize: [34, 34],
+            iconAnchor: [17, 17]
+        });
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            initMap();
+            findActiveSimulation();
+        });
+
+        function initMap() {
+            // Centrar en Iquique por defecto
+            map = L.map('map').setView([-20.2307033, -70.1356692], 13);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+
+            map.on('click', (e) => {
+                if (isManualSelectionMode) {
+                    setUserLocation(e.latlng.lat, e.latlng.lng);
+                    isManualSelectionMode = false;
+                    document.getElementById('map').style.cursor = 'grab';
+                }
+            });
+
+            // Agregar Punto Limpio TriCiclos 1 (Playa Brava)
+            const puntoLimpio1Lat = -20.242455;
+            const puntoLimpio1Lon = -70.1411224;
+            
+            const popupContent1 = `
+                <div style="min-width: 220px; font-family: 'Segoe UI', sans-serif;">
+                    <h3 style="margin: 0 0 8px 0; color: #10b981; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-recycle"></i> Punto Limpio TriCiclos
+                    </h3>
+                    <p style="margin: 0 0 8px 0; font-size: 13px; color: #4b5563;">
+                        <strong>Dirección:</strong><br>
+                        Playa Brava con Genaro Gallo y Orden y Patria<br>
+                        (Universidad Arturo Prat)
+                    </p>
+                    <div style="font-size: 12px; background: #f0fdf4; padding: 8px; border-radius: 6px; border: 1px solid #dcfce7; color: #166534;">
+                        <strong>🕒 Horario de Atención:</strong>
+                        <ul style="margin: 5px 0 0 0; padding-left: 15px; list-style-type: disc;">
+                            <li>Lun-Vie: 10:00-14:00 / 15:00-18:00</li>
+                            <li>Sábado: 10:00-14:00</li>
+                            <li>Domingo: <span style="color: #dc2626; font-weight: bold;">Cerrado</span></li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            recyclingMarkers['centro'] = L.marker([puntoLimpio1Lat, puntoLimpio1Lon], {icon: recyclingIcon})
+                .addTo(map)
+                .bindPopup(popupContent1);
+
+            // Agregar Punto Limpio TriCiclos 2 (Zofri)
+            const puntoLimpio2Lat = -20.2060074;
+            const puntoLimpio2Lon = -70.141377;
+            
+            const popupContent2 = `
+                <div style="min-width: 220px; font-family: 'Segoe UI', sans-serif;">
+                    <h3 style="margin: 0 0 8px 0; color: #10b981; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-recycle"></i> Punto Limpio TriCiclos - Zofri
+                    </h3>
+                    <p style="margin: 0 0 8px 0; font-size: 13px; color: #4b5563;">
+                        <strong>Dirección:</strong><br>
+                        Centenario con Las Naciones<br>
+                        Edificio Convenciones s/n<br>
+                        Estacionamiento Mall Zofri
+                    </p>
+                    <div style="font-size: 12px; background: #f0fdf4; padding: 8px; border-radius: 6px; border: 1px solid #dcfce7; color: #166534;">
+                        <strong>🕒 Horario de Atención:</strong>
+                        <ul style="margin: 5px 0 0 0; padding-left: 15px; list-style-type: disc;">
+                            <li>Lun, Mar, Jue, Vie:<br>10:00–13:30, 14:30–17:00</li>
+                            <li>Sábado: 10:00–13:30</li>
+                            <li>Miércoles y Domingo:<br><span style="color: #dc2626; font-weight: bold;">Cerrado</span></li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            recyclingMarkers['norte'] = L.marker([puntoLimpio2Lat, puntoLimpio2Lon], {icon: recyclingIcon})
+                .addTo(map)
+                .bindPopup(popupContent2);
+
+            // Agregar Punto Limpio 3 (Recynor)
+            const puntoLimpio3Lat = -20.2922379;
+            const puntoLimpio3Lon = -70.1264075;
+            
+            const popupContent3 = `
+                <div style="min-width: 220px; font-family: 'Segoe UI', sans-serif;">
+                    <h3 style="margin: 0 0 8px 0; color: #10b981; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-recycle"></i> Recynor
+                    </h3>
+                    <p style="margin: 0 0 8px 0; font-size: 13px; color: #4b5563;">
+                        <strong>Dirección:</strong><br>
+                        Vía Uno, Manzana M, Sitio<br>
+                        Enrique Brenner 5<br>
+                        Bajo Molle, Iquique
+                    </p>
+                    <div style="font-size: 12px; background: #f0fdf4; padding: 8px; border-radius: 6px; border: 1px solid #dcfce7; color: #166534;">
+                        <strong>🕒 Horario de Atención:</strong>
+                        <ul style="margin: 5px 0 0 0; padding-left: 15px; list-style-type: disc;">
+                            <li>Lun-Vie: 09:00–17:30</li>
+                            <li>Sábado y Domingo:<br><span style="color: #dc2626; font-weight: bold;">Cerrado</span></li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            recyclingMarkers['sur'] = L.marker([puntoLimpio3Lat, puntoLimpio3Lon], {icon: recyclingIcon})
+                .addTo(map)
+                .bindPopup(popupContent3);
+        }
+
+        function zoomToRecyclingPoint(sector) {
+            const marker = recyclingMarkers[sector];
+            if (marker) {
+                map.setView(marker.getLatLng(), 16);
+                marker.openPopup();
+                
+                // Scroll to map if needed (mobile)
+                document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        async function findActiveSimulation() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/simulaciones/activas`);
+                if (response.ok) {
+                    const ids = await response.json();
+                    if (ids.length > 0) {
+                        // Usar la última (más reciente)
+                        activeSimulationId = ids[ids.length - 1];
+                        console.log("Conectado a simulación:", activeSimulationId);
+                        document.getElementById('loading').style.display = 'none';
+                        startTracking();
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error("Error buscando simulaciones:", e);
+            }
+
+            // Fallback si no hay activas o error
+            document.getElementById('loading').style.display = 'none';
+            
+            const statusBadge = document.getElementById('service-status');
+            statusBadge.textContent = 'Sin servicio';
+            statusBadge.style.backgroundColor = '#fee2e2';
+            statusBadge.style.color = '#ef4444';
+
+            const msgContainer = document.getElementById('no-truck-msg');
+            msgContainer.style.display = 'block';
+            msgContainer.innerHTML = `
+                <i class="fas fa-clock" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
+                <p>No hay camiones en ruta actualmente.</p>
+                <button class="btn btn-outline" style="margin-top:10px; width:100%; justify-content:center;" onclick="findActiveSimulation()">
+                    <i class="fas fa-sync"></i> Actualizar
+                </button>
+            `;
+        }
+
+        function startTracking() {
+            setInterval(updateTruckPositions, 2000); // Actualizar cada 2 segundos
+        }
+
+        async function updateTruckPositions() {
+            if (!activeSimulationId) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/simulacion/${activeSimulationId}/estado`);
+                if (!response.ok) throw new Error('Simulación no encontrada');
+                
+                const data = await response.json();
+                
+                // Actualizar marcadores de camiones
+                data.camiones.forEach(camion => {
+                    updateTruckMarker(camion);
+                });
+
+                // Si el usuario tiene ubicación, recalcular ETA
+                if (userLocation) {
+                    calculateNearestTruck(data.camiones);
+                }
+
+                document.getElementById('service-status').textContent = 'En vivo';
+                document.getElementById('service-status').style.backgroundColor = '#dbeafe';
+                document.getElementById('service-status').style.color = '#2563eb';
+
+            } catch (error) {
+                console.error('Error actualizando camiones:', error);
+                document.getElementById('service-status').textContent = 'Desconectado';
+                document.getElementById('service-status').style.backgroundColor = '#fee2e2';
+                document.getElementById('service-status').style.color = '#ef4444';
+            }
+        }
+
+        function updateTruckMarker(camion) {
+            const lat = camion.posicion.lat;
+            const lng = camion.posicion.lon;
+
+            if (truckMarkers[camion.id]) {
+                // Animar movimiento
+                truckMarkers[camion.id].setLatLng([lat, lng]);
+            } else {
+                const marker = L.marker([lat, lng], { icon: truckIcon }).addTo(map);
+                marker.bindPopup(`<b>Camión ${camion.id}</b><br>Carga: ${camion.carga_actual}kg`);
+                truckMarkers[camion.id] = marker;
+            }
+
+            // Dibujar ruta si está disponible y no dibujada
+            if (camion.ruta_geometria && !routePolylines[camion.id]) {
+                const latlngs = camion.ruta_geometria.map(p => [p[0], p[1]]); // OSRM devuelve [lat, lon] o [lon, lat]? Verificar. OSRM suele ser [lon, lat], pero el backend podría haberlo corregido.
+                // Asumimos que el backend envía [lat, lon] listo para Leaflet.
+                
+                const polyline = L.polyline(latlngs, {
+                    color: '#3b82f6',
+                    weight: 4,
+                    opacity: 0.6,
+                    dashArray: '10, 10' // Línea punteada para ruta planificada
+                }).addTo(map);
+                routePolylines[camion.id] = polyline;
+                routePolylines[camion.id].rawData = latlngs; // Guardar para cálculos
+            }
+        }
+
+        function getUserLocation() {
+            if ("geolocation" in navigator) {
+                document.getElementById('loading').style.display = 'flex';
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        setUserLocation(position.coords.latitude, position.coords.longitude);
+                        document.getElementById('loading').style.display = 'none';
+                    },
+                    (error) => {
+                        alert("No pudimos obtener tu ubicación. Por favor selecciónala en el mapa.");
+                        document.getElementById('loading').style.display = 'none';
+                        enableManualSelection();
+                    }
+                );
+            } else {
+                alert("Geolocalización no soportada. Selecciona en el mapa.");
+                enableManualSelection();
+            }
+        }
+
+        function enableManualSelection() {
+            isManualSelectionMode = true;
+            document.getElementById('map').style.cursor = 'crosshair';
+            alert("Haz clic en el mapa para establecer tu ubicación.");
+        }
+
+        function setUserLocation(lat, lng) {
+            userLocation = { lat, lng };
+
+            if (userMarker) {
+                userMarker.setLatLng([lat, lng]);
+            } else {
+                userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(map);
+                map.setView([lat, lng], 15);
+            }
+
+            // Mostrar panel de ETA
+            document.getElementById('eta-container').style.display = 'block';
+            document.getElementById('no-truck-msg').style.display = 'none';
+            
+            // Forzar actualización inmediata
+            updateTruckPositions();
+        }
+
+        function calculateNearestTruck(camiones) {
+            if (!userLocation) return;
+
+            let minTime = Infinity;
+            let nearestTruck = null;
+            let nearestPointOnRoute = null;
+            let distToRoute = Infinity;
+
+            const userPoint = turf.point([userLocation.lng, userLocation.lat]);
+
+            camiones.forEach(camion => {
+                if (!routePolylines[camion.id] || !routePolylines[camion.id].rawData) return;
+
+                const routeLine = turf.lineString(routePolylines[camion.id].rawData.map(p => [p[1], p[0]])); // Leaflet [lat, lon] -> GeoJSON [lon, lat]
+                const snapped = turf.nearestPointOnLine(routeLine, userPoint);
+                
+                const distUserToRoute = turf.distance(userPoint, snapped, {units: 'kilometers'});
+                
+                // Calcular distancia del camión al punto snapped a lo largo de la ruta
+                // Esto es complejo sin grafo, así que usaremos distancia directa como aproximación simple para el demo
+                // O mejor: distancia del camión al usuario directa / velocidad promedio
+                
+                const truckPoint = turf.point([camion.posicion.lon, camion.posicion.lat]);
+                const distTruckToUser = turf.distance(truckPoint, userPoint, {units: 'kilometers'});
+                
+                // Velocidad promedio camión urbano ~ 20 km/h
+                const speedKmH = 20;
+                const timeHours = distTruckToUser / speedKmH;
+                const timeMin = timeHours * 60;
+
+                if (timeMin < minTime) {
+                    minTime = timeMin;
+                    nearestTruck = camion;
+                    nearestPointOnRoute = snapped;
+                    distToRoute = distUserToRoute;
+                }
+            });
+
+            if (nearestTruck) {
+                updateUI(minTime, distToRoute, nearestPoint);
+            }
+        }
+
+        function updateUI(timeMin, distToRouteKm, nearestPoint) {
+            // Actualizar Tiempo
+            const timeDisplay = Math.ceil(timeMin);
+            document.getElementById('eta-time').textContent = `${timeDisplay} min`;
+            
+            // Actualizar Distancia Camión (aprox)
+            // document.getElementById('truck-distance').textContent = ...
+
+            // Lógica de "Punto Cercano"
+            const distMeters = Math.round(distToRouteKm * 1000);
+            
+            if (distMeters > 50) { // Si está a más de 50 metros de la ruta
+                document.getElementById('walking-info').style.display = 'flex';
+                document.getElementById('walking-distance').textContent = `El camión pasa a ${distMeters} metros de ti.`;
+                
+                // Dibujar punto cercano y línea
+                const [lon, lat] = nearestPoint.geometry.coordinates;
+                
+                if (nearestPointMarker) {
+                    nearestPointMarker.setLatLng([lat, lon]);
+                } else {
+                    nearestPointMarker = L.marker([lat, lon], {icon: nearestPointIcon}).addTo(map);
+                }
+
+                if (connectionLine) {
+                    connectionLine.setLatLngs([[userLocation.lat, userLocation.lng], [lat, lon]]);
+                } else {
+                    connectionLine = L.polyline([[userLocation.lat, userLocation.lng], [lat, lon]], {
+                        color: '#f59e0b',
+                        dashArray: '5, 5',
+                        weight: 2
+                    }).addTo(map);
+                }
+            } else {
+                document.getElementById('walking-info').style.display = 'none';
+                if (nearestPointMarker) map.removeLayer(nearestPointMarker);
+                if (connectionLine) map.removeLayer(connectionLine);
+                nearestPointMarker = null;
+                connectionLine = null;
+            }
+        }
+        // Auth Logic
+        const API_URL = window.location.origin; // Or specific URL if needed
+
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('show');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('show');
+        }
+
+        // Close modal if clicked outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('loginModal');
+            if (event.target == modal) {
+                closeLoginModal();
+            }
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/usuarios/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ correo: email, password: password })
+                });
+
+                let data;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    data = { detail: text || response.statusText };
+                }
+
+                if (response.ok) {
+                    // Login successful
+                    localStorage.setItem('user', JSON.stringify(data.usuario));
+                    updateAuthUI(data.usuario);
+                    closeLoginModal();
+                    alert('¡Bienvenido ' + data.usuario.nombre + '!');
+                } else {
+                    let errorMessage = 'Error al iniciar sesión';
+                    if (data.detail) {
+                        if (Array.isArray(data.detail)) {
+                            errorMessage = data.detail.map(err => `${err.loc.join('.')}: ${err.msg}`).join('\n');
+                        } else {
+                            errorMessage = data.detail;
+                        }
+                    }
+                    alert(errorMessage);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        }
+
+        async function handleRegister() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            if (!name || !email || !password) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/usuarios/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        nombre: name, 
+                        correo: email, 
+                        password: password,
+                        rol: 'cliente' // Default
+                    })
+                });
+
+                let data;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    data = { detail: text || response.statusText };
+                }
+
+                if (response.ok) {
+                    alert('Registro exitoso. Por favor inicia sesión.');
+                    showLogin();
+                } else {
+                    let errorMessage = 'Error al registrarse';
+                    if (data.detail) {
+                        if (Array.isArray(data.detail)) {
+                            errorMessage = data.detail.map(err => `${err.loc.join('.')}: ${err.msg}`).join('\n');
+                        } else {
+                            errorMessage = data.detail;
+                        }
+                    }
+                    alert(errorMessage);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        }
+
+        function updateAuthUI(user) {
+            const authSection = document.getElementById('auth-section');
+            if (user) {
+                authSection.innerHTML = `
+                    <div class="user-menu">
+                        <span class="user-name">Hola, ${user.nombre}</span>
+                        <button onclick="logout()" class="nav-btn" style="background-color: var(--danger-color); padding: 0.4rem 1rem; font-size: 0.9rem;">Salir</button>
+                    </div>
+                `;
+            } else {
+                authSection.innerHTML = `
+                    <button onclick="openLoginModal()" class="nav-btn">Iniciar Sesión</button>
+                `;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            updateAuthUI(null);
+            window.location.reload();
+        }
+
+        // Check login status on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                try {
+                    const user = JSON.parse(storedUser);
+                    updateAuthUI(user);
+                } catch (e) {
+                    localStorage.removeItem('user');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

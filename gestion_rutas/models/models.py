@@ -114,9 +114,12 @@ class PrediccionDemanda(Base):
 class Operador(Base):
     __tablename__ = 'operador'
     id_operador = Column(Integer, primary_key=True)
+    id_usuario = Column(Integer, ForeignKey('usuario.id_usuario'))
     nombre = Column(String, nullable=False)
-    cedula = Column(String, unique=True, nullable=False)
-    especialidad = Column(String)
+    email = Column(String)
+    telefono = Column(String)
+    estado = Column(String)
+    usuario = relationship('Usuario')
 
 class PuntoDisposicion(Base):
     __tablename__ = 'punto_disposicion'

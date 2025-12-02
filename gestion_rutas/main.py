@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from .routers import (
     ruta, mapa_router,
     zona_router, punto_router, camion_router, ruta_planificada_router,
     turno_router, usuario_router, punto_disposicion_router,
-    lstm_router, mas_router
+    lstm_router, mas_router, operador_router
 )
 import logging
 import os
@@ -39,6 +40,7 @@ app.include_router(turno_router.router)
 # app.include_router(ruta_ejecutada_router.router)  # Pendiente: Conversión a PostgreSQL
 # app.include_router(incidencia_router.router)  # Pendiente: Conversión a PostgreSQL
 app.include_router(usuario_router.router)
+app.include_router(operador_router.router)
 app.include_router(punto_disposicion_router.router)
 app.include_router(ruta.router)
 app.include_router(mapa_router.router)
@@ -70,6 +72,11 @@ logger.info(f"Directorio temporal LSTM montado: {lstm_temp_dir}")
 
 @app.get("/")
 def read_root():
+    """Página de inicio"""
+    return FileResponse('static/inicio.html')
+
+@app.get("/api-info")
+def read_api_info():
     return {
         "mensaje": "🚀 API de gestión de rutas funcionando!",
         "endpoints": {

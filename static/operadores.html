@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Operadores - LAR</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #10b981;
+            --text-color: #1f2937;
+            --light-bg: #f3f4f6;
+            --white: #ffffff;
+            --danger-color: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; color: var(--text-color); background-color: var(--light-bg); }
+
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.5rem 5%; background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: fixed; width: 100%; top: 0; z-index: 1000;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; gap: 0.5rem; }
+        .nav-links a { text-decoration: none; color: var(--text-color); margin-left: 2rem; font-weight: 600; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary-color); }
+
+        .container { max-width: 1200px; margin: 100px auto 2rem; padding: 0 20px; }
+        
+        .card { background: var(--white); border-radius: 10px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 2rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .card-title { font-size: 1.25rem; font-weight: 700; color: var(--secondary-color); }
+
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        .form-control { width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; font-family: inherit; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background-color: var(--primary-color); color: var(--white); }
+        .btn-primary:hover { background-color: var(--secondary-color); }
+        .btn-danger { background-color: var(--danger-color); color: var(--white); padding: 0.5rem 1rem; font-size: 0.875rem; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { font-weight: 600; color: var(--secondary-color); background-color: #f8fafc; }
+        tr:hover { background-color: #f8fafc; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--white); padding: 2rem; border-radius: 10px; width: 100%; max-width: 500px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo"><i class="fas fa-recycle"></i> LAR</div>
+        <div class="nav-links">
+            <a href="/static/inicio.html">Inicio</a>
+            <a href="/static/visualizar_rutas.html">Rutas</a>
+            <a href="/static/operadores.html" style="color: var(--primary-color);">Operadores</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Gestión de Operadores</h2>
+                <button class="btn btn-primary" onclick="openModal()">
+                    <i class="fas fa-plus"></i> Nuevo Operador
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table id="operadoresTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Crear Operador -->
+    <div class="modal" id="operadorModal">
+        <div class="modal-content">
+            <div class="card-header">
+                <h3 class="card-title">Nuevo Operador</h3>
+                <button onclick="closeModal()" style="background:none;border:none;cursor:pointer;font-size:1.5rem">&times;</button>
+            </div>
+            <form id="operadorForm" onsubmit="crearOperador(event)">
+                <div class="form-group">
+                    <label class="form-label">Nombre Completo</label>
+                    <input type="text" class="form-control" id="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" class="form-control" id="telefono">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Estado</label>
+                    <select class="form-control" id="estado">
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%">Guardar Operador</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/operadores';
+
+        async function loadOperadores() {
+            try {
+                const response = await fetch(API_URL);
+                const operadores = await response.json();
+                const tbody = document.querySelector('#operadoresTable tbody');
+                tbody.innerHTML = '';
+                
+                operadores.forEach(op => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${op.id_operador}</td>
+                        <td>${op.nombre}</td>
+                        <td>${op.email || '-'}</td>
+                        <td>${op.telefono || '-'}</td>
+                        <td>${op.estado || '-'}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="eliminarOperador(${op.id_operador})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error cargando operadores:', error);
+                alert('Error al cargar la lista de operadores');
+            }
+        }
+
+        async function crearOperador(e) {
+            e.preventDefault();
+            const data = {
+                nombre: document.getElementById('nombre').value,
+                email: document.getElementById('email').value,
+                telefono: document.getElementById('telefono').value,
+                estado: document.getElementById('estado').value
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    closeModal();
+                    document.getElementById('operadorForm').reset();
+                    loadOperadores();
+                    alert('Operador creado exitosamente');
+                } else {
+                    const error = await response.json();
+                    alert(error.detail || 'Error al crear operador');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        }
+
+        async function eliminarOperador(id) {
+            if (!confirm('¿Está seguro de eliminar este operador?')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    loadOperadores();
+                } else {
+                    const error = await response.json();
+                    alert(error.detail || 'Error al eliminar operador');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        }
+
+        function openModal() { document.getElementById('operadorModal').classList.add('active'); }
+        function closeModal() { document.getElementById('operadorModal').classList.remove('active'); }
+
+        // Load on start
+        loadOperadores();
+    </script>
+</body>
+</html>
