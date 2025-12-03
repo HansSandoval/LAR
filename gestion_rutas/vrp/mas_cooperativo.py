@@ -4,7 +4,7 @@ Camiones cooperativos que toman decisiones inteligentes basadas en predicciones 
 """
 
 import numpy as np
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Any
 from dataclasses import dataclass, field
 import random
 import math
@@ -434,6 +434,111 @@ class AgenteRecolector:
             'decisiones_tomadas': len(self.memoria_decisiones)
         }
 
+    def ejecutar_accion(self, cliente_objetivo: Cliente) -> Dict[str, Any]:
+        """
+        Ejecuta la acción de ir a un cliente y recolectar.
+        Actualiza el estado del camión y del cliente.
+        """
+        # 1. Mover camión
+        # Guardar posición anterior para cálculo de ruta
+        pos_anterior = {'lat': self.camion.latitud, 'lon': self.camion.longitud}
+        
+        # Actualizar posición del camión
+        self.camion.latitud = cliente_objetivo.latitud
+        self.camion.longitud = cliente_objetivo.longitud
+        self.camion.nombre_ultimo_punto = cliente_objetivo.nombre
+        
+        # Registrar en ruta histórica (coordenadas)
+        if not self.camion.ruta:
+            # Si es el primer movimiento, agregar el origen (depot/base)
+            self.camion.ruta.append(pos_anterior)
+        self.camion.ruta.append({'lat': cliente_objetivo.latitud, 'lon': cliente_objetivo.longitud})
+        
+        # 2. Calcular ruta detallada (geometría) para visualización
+        ruta_info = OSRMService.obtener_ruta(
+            pos_anterior['lat'], pos_anterior['lon'],
+            cliente_objetivo.latitud, cliente_objetivo.longitud
+        )
+        
+        geometria_tramo = []
+        distancia_tramo = 0.0
+        
+        if ruta_info:
+            geometria_tramo = ruta_info.get('geometry', [])
+            distancia_tramo = ruta_info.get('distancia_km', 0.0)
+            
+            # Actualizar geometría actual y total
+            self.camion.geometria_actual = geometria_tramo
+            if geometria_tramo:
+                self.camion.ruta_geometria.extend(geometria_tramo)
+                self.camion.historial_geometria.extend(geometria_tramo)
+        
+        # 3. Actualizar métricas del camión
+        self.camion.distancia_recorrida_km += distancia_tramo
+        
+        # 4. Recolectar residuos
+        carga_recolectada = min(float(cliente_objetivo.demanda_kg), float(self.camion.capacidad_disponible))
+        self.camion.carga_actual_kg += carga_recolectada
+        
+        # 5. Actualizar cliente
+        cliente_objetivo.servido = True
+        self.camion.clientes_servidos.append(cliente_objetivo.id) # Registrar ID cliente servido
+        
+        return {
+            'tipo': 'recogida',
+            'camion_id': self.camion.id,
+            'cliente_id': cliente_objetivo.id,
+            'residuos_kg': carga_recolectada,
+            'distancia_km': distancia_tramo,
+            'geometria': geometria_tramo
+        }
+
+    def retornar_a_depot(self) -> Dict[str, Any]:
+        """
+        Ejecuta la acción de retornar al vertedero para descargar.
+        """
+        pos_anterior = {'lat': self.camion.latitud, 'lon': self.camion.longitud}
+        
+        # Mover a depot
+        self.camion.latitud = self.env.depot_lat
+        self.camion.longitud = self.env.depot_lon
+        self.camion.nombre_ultimo_punto = "Vertedero"
+        
+        # Registrar ruta
+        self.camion.ruta.append({'lat': self.env.depot_lat, 'lon': self.env.depot_lon})
+        
+        # Calcular ruta
+        ruta_info = OSRMService.obtener_ruta(
+            pos_anterior['lat'], pos_anterior['lon'],
+            self.env.depot_lat, self.env.depot_lon
+        )
+        
+        geometria_tramo = []
+        distancia_tramo = 0.0
+        
+        if ruta_info:
+            geometria_tramo = ruta_info.get('geometry', [])
+            distancia_tramo = ruta_info.get('distancia_km', 0.0)
+            
+            self.camion.geometria_actual = geometria_tramo
+            if geometria_tramo:
+                self.camion.ruta_geometria.extend(geometria_tramo)
+                self.camion.historial_geometria.extend(geometria_tramo)
+                
+        self.camion.distancia_recorrida_km += distancia_tramo
+        
+        # Descargar
+        carga_descargada = self.camion.carga_actual_kg
+        self.camion.carga_actual_kg = 0.0
+        
+        return {
+            'tipo': 'retorno',
+            'camion_id': self.camion.id,
+            'carga_descargada': carga_descargada,
+            'distancia_km': distancia_tramo,
+            'geometria': geometria_tramo
+        }
+    
 
 class CoordinadorMAS:
     """

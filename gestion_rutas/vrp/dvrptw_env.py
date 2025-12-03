@@ -115,10 +115,23 @@ class OSRMService:
                     if data.get("code") == "Ok" and data.get("routes"):
                         ruta = data["routes"][0]
                         geo_leaf = [[c[1], c[0]] for c in ruta["geometry"]["coordinates"]]
+                        
+                        dist_km = ruta["distance"] / 1000
+                        dur_min = ruta["duration"] / 60
+                        
+                        # HEURÍSTICA DE VELOCIDAD:
+                        # Si la velocidad promedio es > 45 km/h, asumimos tramo de carretera/autopista
+                        # y ajustamos la duración para simular 80 km/h (velocidad camión en carretera)
+                        if dur_min > 0:
+                            velocidad_promedio = dist_km / (dur_min / 60)
+                            if velocidad_promedio > 45.0:
+                                # Recalcular duración a 80 km/h
+                                dur_min = (dist_km / 80.0) * 60
+                        
                         result = {
                             "geometry": OSRMService._simplificar_geometria(geo_leaf),
-                            "distancia_km": round(ruta["distance"] / 1000, 2),
-                            "duracion_minutos": round(ruta["duration"] / 60, 2),
+                            "distancia_km": round(dist_km, 2),
+                            "duracion_minutos": round(dur_min, 2),
                             "es_fallback": False
                         }
                         OSRMService._route_cache[cache_key] = result
@@ -174,12 +187,14 @@ class Camion:
     longitud: float = -70.1525
     tiempo_actual: float = 0.0
     ruta_actual: List[int] = field(default_factory=list)
+    ruta: List[Dict[str, float]] = field(default_factory=list) # Nueva propiedad para almacenar la ruta completa con coordenadas
     ruta_geometria: List[List[float]] = field(default_factory=list)
     historial_geometria: List[List[float]] = field(default_factory=list)
     geometria_actual: List[List[float]] = field(default_factory=list)
     distancia_recorrida_km: float = 0.0
     activo: bool = True
     nombre_ultimo_punto: str = ""
+    clientes_servidos: List[str] = field(default_factory=list) # Nueva propiedad para almacenar IDs de clientes servidos
     
     @property
     def capacidad_disponible(self) -> float:
@@ -375,7 +390,14 @@ class DVRPTWEnv(gym.Env):
                 if self.usar_routing_real:
                     ruta = self._obtener_ruta_completa(camion.latitud, camion.longitud, self.depot_lat, self.depot_lon)
                     camion.geometria_actual = ruta.get('geometry', [])
-                    camion.ruta_geometria = ruta.get('geometry', []) # Actualizar ruta_geometria
+                    # FIX: Acumular geometría en lugar de sobrescribir
+                    if camion.geometria_actual:
+                        camion.ruta_geometria.extend(camion.geometria_actual)
+                        camion.historial_geometria.extend(camion.geometria_actual)
+                
+                # Registrar punto en ruta histórica
+                camion.ruta.append({'lat': self.depot_lat, 'lon': self.depot_lon, 'tipo': 'depot'})
+                
                 camion.latitud, camion.longitud = self.depot_lat, self.depot_lon
                 camion.distancia_recorrida_km += dist
                 
@@ -408,11 +430,19 @@ class DVRPTWEnv(gym.Env):
                 else:
                     dist = self._calcular_distancia(camion.latitud, camion.longitud, cliente.latitud, cliente.longitud)
                     ruta_geo = []
+                    
+                    # Registrar punto en ruta histórica
+                    camion.ruta.append({'lat': cliente.latitud, 'lon': cliente.longitud, 'tipo': 'cliente', 'id': cliente.id})
+
                     if self.usar_routing_real:
                         ruta = self._obtener_ruta_completa(camion.latitud, camion.longitud, cliente.latitud, cliente.longitud)
                         ruta_geo = ruta.get('geometry', [])
                         camion.geometria_actual = ruta_geo
-                        camion.ruta_geometria = ruta_geo # Actualizar ruta_geometria también
+                        # FIX: Acumular geometría en lugar de sobrescribir
+                        if ruta_geo:
+                            camion.ruta_geometria.extend(ruta_geo)
+                            camion.historial_geometria.extend(ruta_geo)
+                        
                         # --- CHECK-IN-TRANSIT MEJORADO (Radio Realista) ---
                         RADIO_RECOLECCION_KM = 0.05 # 50 metros (Más realista)
                         
@@ -510,7 +540,7 @@ class DVRPTWEnv(gym.Env):
     def _calcular_distancia_haversine(self, lat1, lon1, lat2, lon2):
         R = 6371.0
         dlat = np.radians(lat2 - lat1)
-        dlon = np.radians(lon2 - lon1)
+        dlon = np.radians(lon1 - lon2)
         a = np.sin(dlat/2)**2 + np.cos(np.radians(lat1)) * np.cos(np.radians(lat2)) * np.sin(dlon/2)**2
         return R * 2 * np.arctan2(np.sqrt(a), np.sqrt(1-a))
 

@@ -19,6 +19,13 @@ from pathlib import Path
 import sys
 import random
 import pandas as pd
+from datetime import date
+
+# Importar el servicio de rutas planificadas
+try:
+    from ..service.ruta_planificada_service import RutaPlanificadaService
+except ImportError:
+    pass
 
 # Importar el sistema MAS usando importaciones relativas
 try:
@@ -31,7 +38,6 @@ except ImportError:
     from vrp.dvrptw_env import DVRPTWEnv, Cliente
     from vrp.mas_cooperativo import AgenteRecolector, CoordinadorMAS
 
-from ..service.ruta_planificada_service import RutaPlanificadaService
 from ..service.camion_service import CamionService # Importar CamionService
 
 logger = logging.getLogger(__name__)
@@ -108,6 +114,8 @@ class ActualizacionRuta(BaseModel):
 
 # Almacenar estado de simulaciones activas
 simulaciones_activas: Dict[str, Dict[str, Any]] = {}
+# Almacenar simulaciones finalizadas temporalmente para permitir guardado
+simulaciones_finalizadas: Dict[str, Dict[str, Any]] = {}
 
 # Colores para camiones (paleta distintiva)
 COLORES_CAMIONES = [
@@ -407,10 +415,14 @@ async def obtener_estado_simulacion(sim_id: str):
     - Clientes servidos/pendientes
     """
     try:
-        if sim_id not in simulaciones_activas:
+        sim = None
+        if sim_id in simulaciones_activas:
+            sim = simulaciones_activas[sim_id]
+        elif sim_id in simulaciones_finalizadas:
+            sim = simulaciones_finalizadas[sim_id]
+        else:
             raise HTTPException(status_code=404, detail="Simulación no encontrada")
         
-        sim = simulaciones_activas[sim_id]
         env = sim['env']
         coordinador = sim['coordinador']
         
@@ -710,96 +722,163 @@ async def ejecutar_simulacion_completa(sim_id: str, max_pasos: int = 500):
 
 
 @router.post("/simulacion/{sim_id}/guardar")
-async def guardar_simulacion(sim_id: str):
+async def guardar_rutas_simulacion(sim_id: str):
     """
-    Guarda el estado actual de la simulación como rutas planificadas en la base de datos.
-    Genera una RutaPlanificada por cada camión activo.
+    Guarda las rutas generadas en la simulación como rutas planificadas en la base de datos.
     """
-    if sim_id not in simulaciones_activas:
+    sim = None
+    if sim_id in simulaciones_activas:
+        sim = simulaciones_activas[sim_id]
+    elif sim_id in simulaciones_finalizadas:
+        sim = simulaciones_finalizadas[sim_id]
+    else:
         raise HTTPException(status_code=404, detail="Simulación no encontrada")
     
-    sim = simulaciones_activas[sim_id]
-    env = sim['env']
-    rutas_guardadas = []
+    coordinador = sim['coordinador']
     
     try:
-        fecha_actual = datetime.now().date()
+        rutas_guardadas = []
+        logger.info(f"Intentando guardar rutas para simulación {sim_id}. Agentes: {len(coordinador.agentes)}")
         
-        # Obtener camiones reales de la BD para mapear IDs
-        camiones_db, _ = camion_service.obtener_camiones(limit=100)
-        # Crear mapa de índice simulación -> ID real BD
-        # Si hay menos camiones en BD que en simulación, se reutilizan o se asigna None
-        mapa_camiones = {}
-        if camiones_db:
-            for i in range(len(env.camiones)):
-                idx_db = i % len(camiones_db)
-                mapa_camiones[i] = camiones_db[idx_db]['id_camion']
-        
-        for camion in env.camiones:
-            if not camion.activo:
+        # Iterar sobre cada agente (camión) y guardar su ruta
+        for agente in coordinador.agentes:
+            camion = agente.camion
+            
+            logger.info(f"Procesando camión {camion.id}. Puntos en ruta: {len(camion.ruta) if camion.ruta else 0}")
+
+            # Verificar si el camión tiene ruta asignada
+            if not camion.ruta or len(camion.ruta) <= 1: # Solo depot o vacía
+                logger.info(f"Camión {camion.id} ignorado: ruta vacía o solo inicio.")
                 continue
                 
-            # Recopilar secuencia de clientes visitados (IDs)
-            # Nota: En la simulación, 'ruta' es una lista de coordenadas, no IDs.
-            # Necesitamos reconstruir la secuencia de IDs si es posible, o usar la memoria del agente.
-            # El agente tiene 'memoria_decisiones'.
+            # Crear objeto de ruta planificada
+            secuencia_puntos_ids = []
             
-            agente = next((a for a in sim['coordinador'].agentes if a.camion.id == camion.id), None)
-            secuencia_ids = []
-            if agente:
-                secuencia_ids = [d.cliente_objetivo_id for d in agente.memoria_decisiones if d.cliente_objetivo_id > 0]
+            # El primer punto es el depot/base (ID 0 o None)
+            # Asumimos ID 0 para el depot si no tenemos uno específico
+            secuencia_puntos_ids.append(0) 
             
-            # Si no hay secuencia, no guardar
-            if not secuencia_ids:
-                continue
+            # Puntos intermedios (clientes servidos)
+            # Necesitamos mapear las coordenadas de la ruta a los clientes servidos
+            
+            puntos_encontrados = 0
+            for coord in camion.ruta[1:]:
+                # Buscar si esta coordenada corresponde a un cliente servido
+                cliente_match = None
+                
+                # Optimización: Buscar primero en clientes servidos por este camión
+                for cliente_id in camion.clientes_servidos:
+                    # Buscar el objeto cliente en el entorno
+                    cliente = next((c for c in coordinador.env.clientes if c.id == cliente_id), None)
+                    if cliente and abs(cliente.latitud - coord['lat']) < 0.0001 and abs(cliente.longitud - coord['lon']) < 0.0001:
+                        cliente_match = cliente
+                        break
+                
+                if cliente_match:
+                    secuencia_puntos_ids.append(cliente_match.id)
+                    puntos_encontrados += 1
+                else:
+                    # Si es el último punto y coincide con depot (aprox)
+                    if coord == camion.ruta[-1]:
+                         secuencia_puntos_ids.append(0) # Depot fin
+            
+            logger.info(f"Camión {camion.id}: {puntos_encontrados} clientes identificados en la ruta.")
 
-            # Obtener geometría completa acumulada
-            geometria = getattr(camion, 'historial_geometria', [])
-            if not geometria:
-                 # Fallback si no hay historial (ej. simulación antigua en memoria)
-                 geometria = getattr(camion, 'ruta_geometria', [])
+            # Preparar datos para el servicio
+            id_zona = 1 # Valor por defecto
+            id_turno = 1 # Valor por defecto
+            fecha_ruta = date.today()
             
-            # Obtener ID real de camión
-            id_camion_real = mapa_camiones.get(camion.id)
+            # Calcular métricas finales
+            distancia_km = camion.distancia_recorrida_km
+            duracion_min = (distancia_km / 30.0) * 60 # Estimación burda: 30km/h promedio
             
-            # Crear ruta en BD
-            # FIX: Forzar id_zona=1 porque los sectores (0,1,2) generados por K-Means no existen en la tabla 'zona'
-            # y causan violación de llave foránea (y error de encoding al reportarlo).
-            nueva_ruta = ruta_service.crear_ruta(
-                id_zona=1, 
-                id_turno=1, # Default turno mañana
-                fecha=fecha_actual,
-                secuencia_puntos=secuencia_ids,
-                id_camion=id_camion_real,
-                distancia_km=camion.distancia_recorrida_km,
-                duracion_min=camion.tiempo_actual,
-                version_vrp="MAS-LSTM-v2",
-                geometria_json=geometria
-            )
-            rutas_guardadas.append(nueva_ruta)
+            # Geometría
+            geometria_json = list(camion.ruta_geometria) if hasattr(camion, 'ruta_geometria') and camion.ruta_geometria else []
+            
+            # FIX: Aplicar la misma lógica de corrección visual que en el frontend/estado
+            # para asegurar que la ruta guardada esté conectada a la base/depot
+            if len(geometria_json) > 0:
+                primer_punto = geometria_json[0]
+                
+                # 1. Verificar si la ruta comienza cerca de la Base (Inicio de turno)
+                dist_start_base = ((primer_punto[0] - sim['env'].base_lat)**2 + (primer_punto[1] - sim['env'].base_lon)**2)**0.5
+                
+                if dist_start_base < 0.002:
+                     # Insertar explícitamente la Base al inicio si hay gap visual
+                     if abs(primer_punto[0] - sim['env'].base_lat) > 0.0001 or abs(primer_punto[1] - sim['env'].base_lon) > 0.0001:
+                         geometria_json.insert(0, [sim['env'].base_lat, sim['env'].base_lon])
+                
+                # 2. Verificar si está en Depot (Vertedero) al final
+                ultimo_punto = geometria_json[-1]
+                dist_end_depot = ((ultimo_punto[0] - sim['env'].depot_lat)**2 + (ultimo_punto[1] - sim['env'].depot_lon)**2)**0.5
+                
+                if dist_end_depot < 0.002:
+                     if abs(ultimo_punto[0] - sim['env'].depot_lat) > 0.0001 or abs(ultimo_punto[1] - sim['env'].depot_lon) > 0.0001:
+                         geometria_json.append([sim['env'].depot_lat, sim['env'].depot_lon])
+
+            # --- DEBUG LOGGING ---
+            logger.info(f"DEBUG SAVE: Camion {camion.id}")
+            logger.info(f"  - Ruta (waypoints): {len(camion.ruta) if camion.ruta else 0}")
+            logger.info(f"  - Ruta Geometria (puntos): {len(geometria_json)}")
+            if len(geometria_json) > 0:
+                logger.info(f"  - Primer punto: {geometria_json[0]}")
+                logger.info(f"  - Ultimo punto: {geometria_json[-1]}")
+            else:
+                logger.warning("  - Ruta Geometria ESTA VACIA!")
+            # ---------------------
+
+            # Guardar usando el servicio
+            try:
+                resultado = RutaPlanificadaService.crear_ruta(
+                    id_zona=id_zona,
+                    id_turno=id_turno,
+                    fecha=fecha_ruta,
+                    secuencia_puntos=secuencia_puntos_ids,
+                    id_camion=camion.id, # Opcional, si el servicio lo soporta
+                    distancia_km=distancia_km,
+                    duracion_min=duracion_min,
+                    version_vrp="MAS_v1.0",
+                    geometria_json=geometria_json
+                )
+                
+                rutas_guardadas.append({
+                    "camion_id": camion.id,
+                    "id_ruta_db": resultado.get('id_ruta'),
+                    "puntos_count": len(secuencia_puntos_ids)
+                })
+                logger.info(f"Ruta guardada en BD para camión {camion.id}. ID Ruta: {resultado.get('id_ruta')}")
+                
+            except Exception as e:
+                logger.error(f"Error al llamar RutaPlanificadaService para camión {camion.id}: {e}")
+                # No relanzamos para intentar guardar los otros camiones
             
         return {
-            "mensaje": f"Se guardaron {len(rutas_guardadas)} rutas exitosamente",
-            "rutas": rutas_guardadas
+            "mensaje": f"Se han guardado {len(rutas_guardadas)} rutas exitosamente",
+            "detalles": rutas_guardadas
         }
-        
+
     except Exception as e:
-        logger.error(f"Error guardando simulación: {e}")
-        raise HTTPException(status_code=500, detail=f"Error al guardar: {str(e)}")
+        logger.error(f"Error guardando rutas: {e}")
+        raise HTTPException(status_code=500, detail=f"Error interno al guardar rutas: {str(e)}")
 
 
 @router.post("/simulacion/{sim_id}/detener")
 async def detener_simulacion(sim_id: str):
     """
-    Detiene y elimina una simulación activa.
+    Detiene una simulación activa y la mueve al historial de finalizadas.
     """
-    if sim_id not in simulaciones_activas:
-        raise HTTPException(status_code=404, detail="Simulación no encontrada")
+    if sim_id in simulaciones_activas:
+        sim = simulaciones_activas.pop(sim_id)
+        sim['activa'] = False
+        simulaciones_finalizadas[sim_id] = sim
+        logger.info(f" Simulación {sim_id} detenida y movida a finalizadas")
+        return {'mensaje': 'Simulación detenida y archivada', 'simulacion_id': sim_id}
     
-    del simulaciones_activas[sim_id]
-    logger.info(f" Simulación {sim_id} detenida y eliminada")
-    
-    return {'mensaje': 'Simulación detenida', 'simulacion_id': sim_id}
+    elif sim_id in simulaciones_finalizadas:
+        return {'mensaje': 'Simulación ya estaba finalizada', 'simulacion_id': sim_id}
+        
+    raise HTTPException(status_code=404, detail="Simulación no encontrada")
 
 
 @router.get("/simulaciones")

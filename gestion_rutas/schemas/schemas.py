@@ -462,6 +462,8 @@ class RutaPlanificadaUpdate(BaseModel):
 class RutaPlanificadaResponse(RutaPlanificadaBase):
     """Schema para respuesta de RutaPlanificada"""
     id_ruta: int
+    distancia_planificada_km: Optional[float] = None
+    duracion_planificada_min: Optional[float] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
