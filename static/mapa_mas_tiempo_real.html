@@ -3,84 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Multi-Agente (MAS) - Recolección de Residuos Iquique</title>
-    
-    <!-- Leaflet CSS -->
+    <title>Sistema Integral: LSTM + MAS + VRP</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
         
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
+        .panel {
+            position: absolute;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            z-index: 1000;
         }
         
-        /* MAPA */
-        #map {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-        
-        /* PANEL DE CONTROL */
-        .control-panel {
-            position: absolute;
+        .panel-config {
             top: 20px;
             right: 20px;
             width: 350px;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            z-index: 1000;
-            padding: 20px;
             max-height: 90vh;
             overflow-y: auto;
         }
         
-        .control-panel h2 {
-            font-size: 20px;
-            margin-bottom: 15px;
+        .panel-stats {
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        h2 { 
             color: #2c3e50;
-        }
-        
-        .control-panel h3 {
-            font-size: 16px;
-            margin: 15px 0 10px 0;
-            color: #34495e;
+            margin-bottom: 15px;
+            font-size: 18px;
             border-bottom: 2px solid #3498db;
-            padding-bottom: 5px;
+            padding-bottom: 10px;
         }
         
-        .control-section {
-            margin-bottom: 20px;
+        h3 {
+            color: #34495e;
+            margin: 15px 0 10px 0;
+            font-size: 14px;
+            font-weight: 600;
         }
         
-        .input-group {
-            margin-bottom: 12px;
+        .form-group {
+            margin-bottom: 15px;
         }
         
-        .input-group label {
+        label {
             display: block;
-            font-size: 13px;
-            color: #555;
             margin-bottom: 5px;
+            color: #555;
+            font-size: 13px;
             font-weight: 500;
         }
         
-        .input-group input, .input-group select {
+        input[type="number"],
+        input[type="date"],
+        select {
             width: 100%;
             padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
             font-size: 14px;
-            transition: border 0.3s;
+            transition: border-color 0.3s;
         }
         
-        .input-group input:focus, .input-group select:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #3498db;
         }
@@ -89,16 +83,12 @@
             width: 100%;
             padding: 12px;
             border: none;
-            border-radius: 6px;
-            font-size: 15px;
+            border-radius: 5px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
         
         .btn-primary {
@@ -132,624 +122,485 @@
         }
         
         .btn:disabled {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
             transform: none !important;
         }
         
-        /* ESTADÍSTICAS */
-        .stats-container {
+        .stat-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 10px;
         }
         
-        .stat-card {
+        .stat-box {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 12px;
+            padding: 15px;
             border-radius: 8px;
             text-align: center;
         }
         
-        .stat-card.green {
+        .stat-box.green {
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
         }
         
-        .stat-card.orange {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-        
-        .stat-card.blue {
+        .stat-box.blue {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         }
         
+        .stat-box.orange {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
         .stat-value {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
-            display: block;
+            margin-bottom: 5px;
         }
         
         .stat-label {
             font-size: 11px;
             opacity: 0.9;
-            margin-top: 3px;
+            text-transform: uppercase;
         }
         
-        /* LISTA DE CAMIONES */
-        .trucks-list {
-            max-height: 300px;
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        
+        .alert-info {
+            background: #e3f2fd;
+            color: #1565c0;
+            border-left: 4px solid #1976d2;
+        }
+        
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .alert-warning {
+            background: #fff3e0;
+            color: #ef6c00;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .legend {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        .legend-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid #333;
+        }
+        
+        .truck-list {
+            margin-top: 10px;
+            max-height: 200px;
             overflow-y: auto;
         }
         
         .truck-item {
             background: #f8f9fa;
-            border-left: 4px solid;
             padding: 10px;
+            border-radius: 5px;
             margin-bottom: 8px;
-            border-radius: 4px;
-            font-size: 12px;
+            border-left: 4px solid #3498db;
         }
         
         .truck-item strong {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 13px;
+            color: #2c3e50;
         }
         
-        .truck-item span {
-            display: inline-block;
-            margin-right: 10px;
-            color: #666;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
-        .progress-bar {
-            height: 6px;
-            background: #e0e0e0;
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 5px;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transition: width 0.3s;
-        }
-        
-        /* ALERTAS */
-        .alert {
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            display: none;
-        }
-        
-        .alert.show {
-            display: block;
-            animation: slideIn 0.3s;
-        }
-        
-        .alert-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-        
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-danger {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateY(-10px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        /* TOGGLE SWITCH */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-            margin-left: 10px;
-        }
-        
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 24px;
-        }
-        
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .slider {
-            background-color: #4CAF50;
-        }
-        
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-        
-        /* SPINNER */
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3498db;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .loading {
+            animation: pulse 1.5s infinite;
         }
     </style>
 </head>
 <body>
-    <!-- MAPA -->
     <div id="map"></div>
     
-    <!-- PANEL DE CONTROL -->
-    <div class="control-panel">
-        <h2>Sistema Multi-Agente (MAS)</h2>
+    <!-- Panel de Configuración -->
+    <div class="panel panel-config">
+        <h2>Sistema Integral de Recolección</h2>
         
-        <!-- ALERTAS -->
-        <div id="alertContainer"></div>
-        
-        <!-- CONFIGURACIÓN -->
-        <div class="control-section">
-            <h3>Configuracion</h3>
-            
-            <div class="input-group">
-                <label>Número de Camiones</label>
-                <input type="number" id="numCamiones" value="3" min="1" max="8">
-            </div>
-            
-            <div class="input-group">
-                <label>Capacidad por Camión (kg)</label>
-                <input type="number" id="capacidadCamion" value="3500" min="1000" max="5000" step="500">
-            </div>
-            
-            <div class="input-group">
-                <label>Número de Clientes</label>
-                <input type="number" id="numClientes" value="50" min="10" max="460">
-            </div>
-            
-            <div class="input-group">
-                <label style="display: flex; align-items: center;">
-                    Usar Predicciones LSTM
-                    <label class="switch">
-                        <input type="checkbox" id="usarLSTM" checked>
-                        <span class="slider"></span>
-                    </label>
-                </label>
-            </div>
-            
-            <button class="btn btn-primary" onclick="iniciarSimulacion()">
-                Iniciar Simulacion
-            </button>
-            
-            <button class="btn btn-success" id="btnPaso" onclick="ejecutarPaso()" disabled>
-                Ejecutar Paso
-            </button>
-            
-            <button class="btn btn-danger" id="btnDetener" onclick="detenerSimulacion()" disabled>
-                Detener Simulacion
-            </button>
+        <div class="alert alert-info">
+            <strong>Paso 1:</strong> Selecciona fecha y carga predicciones LSTM
         </div>
         
-        <!-- ESTADÍSTICAS GLOBALES -->
-        <div class="control-section">
-            <h3>Estadisticas Globales</h3>
-            
-            <div class="stats-container">
-                <div class="stat-card green">
-                    <span class="stat-value" id="statResiduos">0</span>
-                    <span class="stat-label">KG RECOLECTADOS</span>
-                </div>
-                
-                <div class="stat-card orange">
-                    <span class="stat-value" id="statDistancia">0.0</span>
-                    <span class="stat-label">KM RECORRIDOS</span>
-                </div>
-                
-                <div class="stat-card blue">
-                    <span class="stat-value" id="statClientes">0/0</span>
-                    <span class="stat-label">CLIENTES SERVIDOS</span>
-                </div>
-                
-                <div class="stat-card">
-                    <span class="stat-value" id="statEficiencia">0%</span>
-                    <span class="stat-label">EFICIENCIA</span>
-                </div>
-            </div>
+        <h3>1. Predicciones LSTM</h3>
+        <div class="form-group">
+            <label for="fechaPrediccion">Fecha de Recolección:</label>
+            <input type="date" id="fechaPrediccion">
         </div>
         
-        <!-- ESTADO DE CAMIONES -->
-        <div class="control-section">
-            <h3>Estado de Camiones</h3>
-            <div class="trucks-list" id="trucksContainer">
-                <p style="text-align: center; color: #999; font-size: 13px;">
-                    Inicia una simulacion para ver los camiones
-                </p>
+        <button class="btn btn-primary" onclick="cargarPredicciones()">
+            Cargar Puntos de Basura
+        </button>
+        
+        <div id="estadoPredicciones"></div>
+        
+        <h3>2. Configuración de Camiones</h3>
+        <div class="form-group">
+            <label for="numCamiones">Número de Camiones:</label>
+            <input type="number" id="numCamiones" value="3" min="1" max="10">
+        </div>
+        
+        <div class="form-group">
+            <label for="capacidadCamion">Capacidad por Camión (kg):</label>
+            <input type="number" id="capacidadCamion" value="3500" min="1000" max="10000" step="100">
+        </div>
+        
+        <button class="btn btn-success" id="btnIniciar" onclick="iniciarMonitoreo()" disabled>
+            Iniciar Simulación
+        </button>
+        
+        <button class="btn btn-danger" id="btnDetener" onclick="detenerMonitoreo()" disabled>
+            Detener Simulación
+        </button>
+        
+        <div class="legend">
+            <h3>Leyenda</h3>
+            <div class="legend-item">
+                <div class="legend-icon" style="background: #2ecc71;"></div>
+                <span>Baja (< 80 kg)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background: #f39c12;"></div>
+                <span>Media (80-120 kg)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background: #e74c3c;"></div>
+                <span>Alta (> 120 kg)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background: #3498db;"></div>
+                <span>Vertedero</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background: #8e44ad;"></div>
+                <span>Base Operaciones</span>
             </div>
         </div>
     </div>
     
-    <!-- Leaflet JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <!-- Panel de Estadísticas -->
+    <div class="panel panel-stats">
+        <h2>Estadísticas en Tiempo Real</h2>
+        
+        <div class="stat-grid">
+            <div class="stat-box green">
+                <div class="stat-value" id="kgRecolectados">0</div>
+                <div class="stat-label">KG Recolectados</div>
+            </div>
+            <div class="stat-box blue">
+                <div class="stat-value" id="puntosServidos">0/0</div>
+                <div class="stat-label">Puntos Servidos</div>
+            </div>
+            <div class="stat-box orange">
+                <div class="stat-value" id="tiempoTotal">00:00</div>
+                <div class="stat-label">Tiempo Total</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="paso">0</div>
+                <div class="stat-label">Paso Actual</div>
+            </div>
+        </div>
+        
+        <h3>Estado de Camiones</h3>
+        <div class="truck-list" id="listaCamiones">
+            <p style="color: #999; font-size: 12px;">Inicia la simulación para ver camiones</p>
+        </div>
+    </div>
     
     <script>
-        // ==================== CONFIGURACIÓN ====================
-        
-        const API_BASE_URL = 'http://localhost:8000/api/mas';
-        
-        // Variables globales
-        let map;
-        let simulacionActual = null;
+        // ==================== VARIABLES GLOBALES ====================
+        const API_BASE_URL = 'http://localhost:8000/bridge';
+        const map = L.map('map').setView([-20.245, -70.09], 13);
+        let monitoreoActivo = false;
+        let intervalId = null;
+        let marcadoresPuntos = {};
         let capasCamiones = {};
-        let capasRutas = {};
-        let intervalActualizacion = null;
-        let marcadoresClientes = {};
+        let capasRutas = {}; // Ya no se usa para líneas futuras, sino para rastros
+        let rastrosCamiones = {}; // Nueva variable para el historial de posiciones
         
-        // ==================== INICIALIZACIÓN DEL MAPA ====================
+        // Colores para camiones
+        const coloresCamiones = [
+            '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#f1c40f', '#e67e22', '#1abc9c'
+        ];
         
-        function initMap() {
-            // Crear mapa centrado en Sector Sur de Iquique (coordenadas reales dentro de la ciudad)
-            map = L.map('map').setView([-20.2666, -70.1300], 14);
-            
-            // Capa base de OpenStreetMap
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
-                maxZoom: 19
-            }).addTo(map);
-            
-            // Zona de cobertura (círculo 5km)
-            L.circle([-20.2666, -70.1300], {
-                color: '#3498db',
-                fillColor: '#3498db',
-                fillOpacity: 0.1,
-                radius: 5000,
-                weight: 2
-            }).bindPopup('<b>Zona de Cobertura</b><br>Radio: 5 km<br>Sector Sur Iquique').addTo(map);
-            
-            // Depot (punto central)
-            L.marker([-20.2666, -70.1300], {
-                icon: L.icon({
-                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowSize: [41, 41]
-                })
-            }).bindPopup('<b>DEPOT</b><br>Centro de Operaciones').addTo(map);
-        }
+        // ==================== INICIALIZAR MAPA ====================
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
         
-        // ==================== FUNCIONES DE SIMULACIÓN ====================
+        // Círculo de cobertura
+        L.circle([-20.2666, -70.1300], {
+            color: '#3498db',
+            fillColor: '#3498db',
+            fillOpacity: 0.1,
+            radius: 5000,
+            weight: 2
+        }).addTo(map);
         
-        async function iniciarSimulacion() {
-            const config = {
-                num_camiones: parseInt(document.getElementById('numCamiones').value),
-                capacidad_camion: parseInt(document.getElementById('capacidadCamion').value),
-                num_clientes: parseInt(document.getElementById('numClientes').value),
-                coordenadas_reales: true,
-                velocidad_simulacion: 1.0,
-                usar_predicciones_lstm: document.getElementById('usarLSTM').checked
-            };
+        // --- MARCADORES INICIALES (Base y Vertedero) ---
+        
+        // 1. Base de Operaciones (Inicio)
+        const baseMarker = L.marker([-20.29305111963256, -70.12295105323292], {
+            icon: L.divIcon({
+                className: 'base-icon',
+                html: '<div style="background: #8e44ad; width: 30px; height: 30px; border-radius: 5px; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); display:flex; justify-content:center; align-items:center; color:white; font-weight:bold;">B</div>',
+                iconSize: [30, 30]
+            })
+        }).bindPopup('<b>Base de Operaciones</b><br>Inicio/Fin de Turno').addTo(map);
+
+        // 2. Vertedero (Depot/Descarga)
+        const vertederoMarker = L.marker([-20.19767564535899, -70.06207963576485], {
+            icon: L.divIcon({
+                className: 'depot-icon',
+                html: '<div style="background: #3498db; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>',
+                iconSize: [30, 30]
+            })
+        }).bindPopup('<b>Vertedero</b><br>Punto de Disposición Final').addTo(map);
+        
+        // ==================== FECHA POR DEFECTO ====================
+        const mañana = new Date();
+        mañana.setDate(mañana.getDate() + 1);
+        document.getElementById('fechaPrediccion').valueAsDate = mañana;
+        
+        // ==================== FUNCIÓN: CARGAR PREDICCIONES ====================
+        async function cargarPredicciones() {
+            const fecha = document.getElementById('fechaPrediccion').value;
+            const estadoDiv = document.getElementById('estadoPredicciones');
             
-            mostrarAlerta('Iniciando simulacion...', 'info');
+            if (!fecha) {
+                estadoDiv.innerHTML = '<div class="alert alert-warning">Por favor selecciona una fecha</div>';
+                return;
+            }
+            
+            estadoDiv.innerHTML = '<div class="alert alert-info loading">Inicializando simulación y cargando puntos LSTM...</div>';
             
             try {
-                const response = await fetch(`${API_BASE_URL}/simular`, {
+                const numCamiones = parseInt(document.getElementById('numCamiones').value) || 3;
+                
+                // 1. Inicializar Simulación en el Backend (Carga puntos desde LSTM)
+                const initResponse = await fetch(`${API_BASE_URL}/init`, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(config)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        fecha: fecha,
+                        num_camiones: numCamiones
+                    })
                 });
                 
+                const initData = await initResponse.json();
+                
+                if (!initResponse.ok || initData.status !== 'success') {
+                    throw new Error(initData.message || 'Error inicializando simulación');
+                }
+
+                // 2. Obtener estado inicial para visualizar
+                const response = await fetch(`${API_BASE_URL}/world/state`);
                 const data = await response.json();
                 
                 if (response.ok) {
-                    simulacionActual = data.simulacion_id;
-                    mostrarAlerta(`Simulacion iniciada: ${simulacionActual}`, 'success');
+                    // Limpiar marcadores anteriores
+                    Object.values(marcadoresPuntos).forEach(m => map.removeLayer(m));
+                    marcadoresPuntos = {};
                     
-                    // Habilitar botones
-                    document.getElementById('btnPaso').disabled = false;
-                    document.getElementById('btnDetener').disabled = false;
+                    // Dibujar puntos pendientes
+                    data.puntos_pendientes.forEach(p => {
+                        const color = getColorPorDemanda(p.demanda);
+                        const radio = getRadioPorDemanda(p.demanda);
+                        const pId = `punto_${p.id}`;
+                        
+                        marcadoresPuntos[pId] = L.circleMarker([p.lat, p.lon], {
+                            radius: radio,
+                            fillColor: color,
+                            color: '#333',
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.7
+                        }).bindPopup(`
+                            <div style="min-width: 200px;">
+                                <h4 style="margin: 0 0 10px 0; color: ${color};">${p.nombre || 'Punto ' + p.id} (ID: ${p.id})</h4>
+                                <p style="margin: 5px 0;">
+                                    <b>Predicción:</b> <span style="color: ${color}; font-size: 16px; font-weight: bold;">
+                                        ${Math.round(p.demanda)} kg
+                                    </span><br>
+                                    <b>Fecha:</b> ${fecha}<br>
+                                    <b>Coordenadas:</b> ${p.lat.toFixed(4)}, ${p.lon.toFixed(4)}
+                                </p>
+                            </div>
+                        `).addTo(map);
+                    });
                     
-                    // Iniciar actualización automática
-                    iniciarActualizacionAutomatica();
+                    estadoDiv.innerHTML = `<div class="alert alert-success">
+                        <strong>Listo!</strong> ${data.puntos_pendientes.length} puntos cargados y listos para JADE.
+                    </div>`;
                     
-                    // Cargar estado inicial
-                    await actualizarEstado();
-                    
-                } else {
-                    mostrarAlerta(`Error: ${data.detail}`, 'danger');
+                    document.getElementById('btnIniciar').disabled = false;
                 }
                 
             } catch (error) {
-                mostrarAlerta(`Error de conexion: ${error.message}`, 'danger');
-                console.error(error);
+                console.error('Error:', error);
+                estadoDiv.innerHTML = `<div class="alert alert-warning">Error: ${error.message}</div>`;
             }
         }
         
-        async function ejecutarPaso() {
-            if (!simulacionActual) return;
+        // ==================== FUNCIONES DE MONITOREO ====================
+        
+        function iniciarMonitoreo() {
+            monitoreoActivo = true;
+            document.getElementById('btnIniciar').disabled = true;
+            document.getElementById('btnDetener').disabled = false;
             
-            try {
-                const response = await fetch(`${API_BASE_URL}/simulacion/${simulacionActual}/paso`, {
-                    method: 'POST'
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    console.log(`✓ Paso ${data.paso} ejecutado - ${data.eventos.length} eventos`);
-                    
-                    // Actualizar visualización
-                    await actualizarEstado();
-                    
-                    if (data.eventos.length === 0) {
-                        mostrarAlerta('Simulacion completada', 'success');
-                        detenerSimulacion();
-                    }
-                } else {
-                    mostrarAlerta(`Error: ${data.detail}`, 'danger');
-                }
-                
-            } catch (error) {
-                console.error('Error ejecutando paso:', error);
-            }
+            // Actualizar inmediatamente y luego cada 2 segundos
+            actualizarEstado();
+            intervalId = setInterval(actualizarEstado, 2000);
         }
         
-        async function detenerSimulacion() {
-            if (!simulacionActual) return;
-            
-            if (intervalActualizacion) {
-                clearInterval(intervalActualizacion);
-                intervalActualizacion = null;
-            }
-            
-            try {
-                await fetch(`${API_BASE_URL}/simulacion/${simulacionActual}`, {
-                    method: 'DELETE'
-                });
-                
-                mostrarAlerta('Simulacion detenida', 'info');
-                
-            } catch (error) {
-                console.error('Error deteniendo simulación:', error);
-            }
-            
-            // Deshabilitar botones
-            document.getElementById('btnPaso').disabled = true;
+        function detenerMonitoreo() {
+            monitoreoActivo = false;
+            document.getElementById('btnIniciar').disabled = false;
             document.getElementById('btnDetener').disabled = true;
             
-            simulacionActual = null;
-        }
-        
-        function iniciarActualizacionAutomatica() {
-            if (intervalActualizacion) {
-                clearInterval(intervalActualizacion);
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
             }
-            
-            // Actualizar cada 2 segundos
-            intervalActualizacion = setInterval(async () => {
-                if (simulacionActual) {
-                    await ejecutarPaso();
-                }
-            }, 2000);
         }
         
-        // ==================== ACTUALIZACIÓN DE ESTADO ====================
-        
-        async function actualizarEstado() {
-            if (!simulacionActual) return;
+        function actualizarEstado() {
+            if (!monitoreoActivo) return;
             
-            try {
-                const response = await fetch(`${API_BASE_URL}/simulacion/${simulacionActual}/estado`);
-                const data = await response.json();
-                
-                if (response.ok) {
-                    // Actualizar estadísticas
-                    actualizarEstadisticas(data.estadisticas);
-                    
-                    // Actualizar camiones en el mapa
+            fetch(`${API_BASE_URL}/world/state`)
+                .then(response => response.json())
+                .then(data => {
                     actualizarCamionesEnMapa(data.camiones);
-                    
-                    // Actualizar lista de camiones
                     actualizarListaCamiones(data.camiones);
+                    actualizarEstadisticas(data);
                     
-                    // Verificar si terminó
-                    if (!data.activa) {
-                        detenerSimulacion();
+                    // Actualizar puntos servidos (cambiar a gris)
+                    if (data.puntos_servidos) {
+                        data.puntos_servidos.forEach(pid => {
+                            const markerId = `punto_${pid}`;
+                            if (marcadoresPuntos[markerId]) {
+                                marcadoresPuntos[markerId].setStyle({
+                                    fillColor: '#95a5a6', // Gris
+                                    color: '#7f8c8d',
+                                    fillOpacity: 0.4
+                                });
+                            }
+                        });
                     }
-                }
-                
-            } catch (error) {
-                console.error('Error actualizando estado:', error);
-            }
+                })
+                .catch(error => console.error('Error polling:', error));
         }
         
-        function actualizarEstadisticas(stats) {
-            document.getElementById('statResiduos').textContent = 
-                Math.round(stats.total_residuos_recolectados).toLocaleString();
+        function actualizarCamionesEnMapa(camionesDict) {
+            const camiones = Object.values(camionesDict);
             
-            document.getElementById('statDistancia').textContent = 
-                stats.total_distancia_recorrida.toFixed(1);
-            
-            document.getElementById('statClientes').textContent = 
-                `${stats.clientes_servidos}/${stats.clientes_totales}`;
-            
-            document.getElementById('statEficiencia').textContent = 
-                `${Math.round(stats.eficiencia)}%`;
-        }
-        
-        function actualizarCamionesEnMapa(camiones) {
-            camiones.forEach(camion => {
-                const camionId = camion.id;
-                
-                // ACTUALIZAR RUTA (Polyline)
-                if (camion.ruta.length > 0) {
-                    const coords = camion.ruta.map(p => [p.lat, p.lon]);
-                    
-                    if (capasRutas[camionId]) {
-                        // Actualizar ruta existente
-                        capasRutas[camionId].setLatLngs(coords);
-                    } else {
-                        // Crear nueva ruta
-                        capasRutas[camionId] = L.polyline(coords, {
-                            color: camion.color,
-                            weight: 4,
-                            opacity: 0.7,
-                            smoothFactor: 1
-                        }).addTo(map);
-                        
-                        capasRutas[camionId].bindPopup(
-                            `<b>${camion.nombre}</b><br>Ruta recorrida`
-                        );
-                    }
-                }
-                
-                // ACTUALIZAR MARCADOR DE CAMIÓN
-                if (capasCamiones[camionId]) {
-                    // Actualizar posición
-                    capasCamiones[camionId].setLatLng([camion.posicion.lat, camion.posicion.lon]);
-                    
-                    // Actualizar popup
-                    capasCamiones[camionId].getPopup().setContent(
-                        generarPopupCamion(camion)
-                    );
+            camiones.forEach((camion, index) => {
+                const camionId = `camion_${camion.id_db}`;
+                const color = coloresCamiones[index % coloresCamiones.length];
+                const posActual = [camion.lat, camion.lon];
+
+                // RASTRO (Trail) - Historial de movimiento
+                if (!rastrosCamiones[camionId]) {
+                    rastrosCamiones[camionId] = L.polyline([posActual], {
+                        color: color,
+                        weight: 4,
+                        opacity: 0.6,
+                        lineJoin: 'round'
+                    }).addTo(map);
                 } else {
-                    // Crear nuevo marcador
-                    capasCamiones[camionId] = L.circleMarker(
-                        [camion.posicion.lat, camion.posicion.lon],
-                        {
-                            radius: 10,
-                            fillColor: camion.color,
-                            color: '#fff',
-                            weight: 3,
-                            opacity: 1,
-                            fillOpacity: 0.9
-                        }
-                    ).addTo(map);
-                    
-                    capasCamiones[camionId].bindPopup(generarPopupCamion(camion));
+                    rastrosCamiones[camionId].addLatLng(posActual);
+                }
+                
+                // MARCADOR
+                if (capasCamiones[camionId]) {
+                    capasCamiones[camionId].setLatLng(posActual);
+                    capasCamiones[camionId].getPopup().setContent(generarPopupCamion(camion, color));
+                    capasCamiones[camionId].bringToFront(); // Asegurar que esté encima
+                } else {
+                    capasCamiones[camionId] = L.circleMarker(posActual, {
+                        radius: 14, // Un poco más grande
+                        fillColor: color,
+                        color: '#fff',
+                        weight: 3,
+                        opacity: 1,
+                        fillOpacity: 1,
+                        zIndexOffset: 1000 // Alta prioridad visual
+                    }).bindPopup(generarPopupCamion(camion, color)).addTo(map);
                 }
             });
         }
         
-        function generarPopupCamion(camion) {
-            const cargaPorcentaje = (camion.carga_actual / camion.capacidad_total * 100).toFixed(0);
-            
-            return `
-                <div style="min-width: 150px;">
-                    <h4 style="margin: 0 0 8px 0; color: ${camion.color};">
-                        ${camion.nombre}
-                    </h4>
-                    <p style="margin: 4px 0; font-size: 12px;">
-                        <b>Estado:</b> ${traducirEstado(camion.estado)}<br>
-                        <b>Carga:</b> ${Math.round(camion.carga_actual)}/${camion.capacidad_total}kg 
-                        (${cargaPorcentaje}%)<br>
-                        <b>Distancia:</b> ${camion.distancia_recorrida.toFixed(1)} km<br>
-                        <b>Clientes:</b> ${camion.clientes_servidos.length}
-                    </p>
-                </div>
-            `;
+        function generarPopupCamion(camion, color) {
+            return `<b>${camion.patente}</b><br>Carga: ${Math.round(camion.carga)} kg`;
         }
         
-        function actualizarListaCamiones(camiones) {
-            const container = document.getElementById('trucksContainer');
+        function actualizarListaCamiones(camionesDict) {
+            const container = document.getElementById('listaCamiones');
+            const camiones = Object.values(camionesDict);
             
             if (camiones.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #999; font-size: 13px;">Sin camiones activos</p>';
+                container.innerHTML = '<p style="color: #999; font-size: 12px;">Esperando agentes...</p>';
                 return;
             }
             
-            container.innerHTML = camiones.map(camion => {
-                const cargaPorcentaje = (camion.carga_actual / camion.capacidad_total * 100);
-                
-                return `
-                    <div class="truck-item" style="border-left-color: ${camion.color};">
-                        <strong>${camion.nombre}</strong>
-                        <span>${traducirEstado(camion.estado)}</span>
-                        <span>${Math.round(camion.carga_actual)}kg</span>
-                        <span>${camion.distancia_recorrida.toFixed(1)}km</span>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${cargaPorcentaje}%; background: ${camion.color};"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            container.innerHTML = camiones.map((c, i) => `
+                <div class="truck-item" style="border-left-color: ${coloresCamiones[i % coloresCamiones.length]}">
+                    <strong>${c.patente}</strong><br>
+                    <small>Carga: ${Math.round(c.carga)} kg | Puntos: ${c.ruta ? c.ruta.length : 0}</small>
+                </div>
+            `).join('');
         }
         
-        // ==================== FUNCIONES AUXILIARES ====================
-        
-        function mostrarAlerta(mensaje, tipo) {
-            const container = document.getElementById('alertContainer');
+        function actualizarEstadisticas(data) {
+            const camiones = Object.values(data.camiones);
+            const cargaTotal = camiones.reduce((sum, c) => sum + c.carga, 0);
             
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${tipo} show`;
-            alert.textContent = mensaje;
-            
-            container.innerHTML = '';
-            container.appendChild(alert);
-            
-            setTimeout(() => {
-                alert.classList.remove('show');
-                setTimeout(() => alert.remove(), 300);
-            }, 5000);
+            document.getElementById('kgRecolectados').textContent = Math.round(cargaTotal);
+            document.getElementById('puntosServidos').textContent = `${data.puntos_pendientes.length} pend.`;
         }
         
-        function traducirEstado(estado) {
-            const estados = {
-                'en_ruta': 'En ruta',
-                'retornando': 'Retornando',
-                'en_depot': 'En depot'
-            };
-            return estados[estado] || estado;
+        // Helpers de color/radio
+        function getColorPorDemanda(kg) {
+            if (kg < 80) return '#2ecc71';
+            if (kg < 120) return '#f39c12';
+            return '#e74c3c';
         }
         
-        // ==================== INICIALIZACIÓN ====================
-        
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log('Inicializando Sistema MAS...');
-            initMap();
-            console.log('Mapa inicializado correctamente');
-        });
+        function getRadioPorDemanda(kg) {
+            return Math.max(5, Math.min(15, kg / 10));
+        }
     </script>
 </body>
 </html>

@@ -6,7 +6,7 @@ from .routers import (
     ruta, mapa_router,
     zona_router, punto_router, camion_router, ruta_planificada_router,
     turno_router, usuario_router, punto_disposicion_router,
-    lstm_router, mas_router, operador_router
+    lstm_router, mas_router, operador_router, bridge_router
 )
 import logging
 import os
@@ -46,6 +46,7 @@ app.include_router(ruta.router)
 app.include_router(mapa_router.router)
 app.include_router(lstm_router.router)
 app.include_router(mas_router.router)
+app.include_router(bridge_router.router)
 
 # Nota: Los siguientes routers están pendientes de conversión a PostgreSQL directo:
 # app.include_router(lstm_router.router)

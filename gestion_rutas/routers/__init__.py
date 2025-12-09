@@ -11,6 +11,7 @@ from . import usuario_router
 from . import punto_disposicion_router
 from . import lstm_router
 from . import mas_router
+from . import bridge_router
 
 # Routers pendientes de conversión a PostgreSQL directo (comentados por ahora)
 # from . import mapa_predicciones_router

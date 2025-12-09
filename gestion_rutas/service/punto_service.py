@@ -58,16 +58,27 @@ class PuntoService:
         params = []
 
         if tipo_punto:
-            where_conditions.append("tipo_punto = %s")
+            where_conditions.append("tipo = %s")
             params.append(tipo_punto)
         if estado_activo is not None:
-            where_conditions.append("estado_activo = %s")
-            params.append(estado_activo)
+            # Mapear booleano a estado string si es necesario, o usar la columna correcta
+            estado_str = 'activo' if estado_activo else 'inactivo'
+            where_conditions.append("estado = %s")
+            params.append(estado_str)
 
         where_clause = " AND ".join(where_conditions) if where_conditions else "1=1"
 
         count_query = f"SELECT COUNT(*) as total FROM punto_recoleccion WHERE {where_clause}"
         total_result = execute_query_one(count_query, tuple(params))
+        
+        # FIX: Usar nombres de columnas correctos según models.py
+        query = f"SELECT * FROM punto_recoleccion WHERE {where_clause} ORDER BY id_punto OFFSET %s LIMIT %s"
+        params.extend([skip, limit])
+        
+        puntos = execute_query(query, tuple(params))
+        total = total_result['total'] if total_result else 0
+        
+        return puntos, total
         total = total_result.get('total', 0) if total_result else 0
 
         query = f"SELECT * FROM punto_recoleccion WHERE {where_clause} LIMIT %s OFFSET %s"
