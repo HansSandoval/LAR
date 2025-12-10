@@ -9,7 +9,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "123")
 POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
 POSTGRES_DB = os.getenv("POSTGRES_DB", "gestion_rutas")
@@ -30,13 +30,15 @@ try:
         connection.execute(text("SELECT 1"))
         logger.info(f"Conectado exitosamente a PostgreSQL: {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}")
 except Exception as e:
-    error_msg = str(e)
+    error_msg = "Error desconocido"
     try:
-        # Intentar decodificar si es bytes
-        if isinstance(e, bytes):
-            error_msg = e.decode('utf-8', errors='replace')
+        error_msg = str(e)
     except:
-        pass
+        try:
+            error_msg = repr(e)
+        except:
+            pass
+            
     logger.warning(f"No se pudo conectar a PostgreSQL: {error_msg}")
     logger.warning("Activando modo fallback: SQLite local")
     engine = create_engine(

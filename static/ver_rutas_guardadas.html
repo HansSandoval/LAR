@@ -148,7 +148,8 @@
                     item.onclick = () => cargarDetalleRuta(ruta.id_ruta, item);
                     
                     const fecha = new Date(ruta.fecha).toLocaleDateString();
-                    const dist = ruta.distancia_km ? `${ruta.distancia_km.toFixed(2)} km` : 'N/A';
+                    const distValue = ruta.distancia_planificada_km || ruta.distancia_km;
+                    const dist = distValue ? `${distValue.toFixed(2)} km` : 'N/A';
                     
                     item.innerHTML = `
                         <div class="route-id">Ruta #${ruta.id_ruta}</div>
@@ -230,8 +231,13 @@
         function actualizarStats(ruta) {
             document.getElementById('stats-panel').style.display = 'block';
             document.getElementById('stat-id').textContent = ruta.id_ruta;
-            document.getElementById('stat-dist').textContent = ruta.distancia_km ? `${ruta.distancia_km.toFixed(2)} km` : 'N/A';
-            document.getElementById('stat-dur').textContent = ruta.tiempo_estimado_min ? `${ruta.tiempo_estimado_min.toFixed(1)} min` : 'N/A';
+            
+            const distValue = ruta.distancia_planificada_km || ruta.distancia_km;
+            document.getElementById('stat-dist').textContent = distValue ? `${distValue.toFixed(2)} km` : 'N/A';
+            
+            const durValue = ruta.duracion_planificada_min || ruta.tiempo_estimado_min;
+            document.getElementById('stat-dur').textContent = durValue ? `${durValue.toFixed(1)} min` : 'N/A';
+            
             document.getElementById('stat-pts').textContent = ruta.secuencia_puntos ? ruta.secuencia_puntos.length : '0';
         }
 
